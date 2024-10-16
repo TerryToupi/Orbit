@@ -39,16 +39,26 @@ if not os.path.exists(premake_executable):
     print(f"Premake executable not found for {system} at {premake_executable}")
     exit(1)
 
+# Define the absolute path for Build.lua
+build_file_path = os.path.join(parent_dir, "Build.lua")
+
+# Check if Build.lua exists
+if not os.path.exists(build_file_path):
+    print(f"Build.lua not found at {build_file_path}")
+    exit(1)
+
 # Define the Premake target based on the current system
 premake_target = premake_targets[system]
 
 # Define the command to run Premake
-premake_command = [premake_executable, "--file=Build.lua", premake_target]
+premake_command = [premake_executable, "--file=" + build_file_path, premake_target]
 
 # Run the Premake command
 try:
     subprocess.run(premake_command, check=True)
     print(f"Premake executed successfully for {system} with target {premake_target}.")
+except PermissionError:
+    print("Permission denied: Check if the Premake executable has the correct permissions.")
 except subprocess.CalledProcessError as e:
     print(f"Error running Premake: {e}")
 
