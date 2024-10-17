@@ -1,7 +1,9 @@
-#include <iostream>
+#include <iostream>    
+#include <core/logs.h>
 
 int main(void)
-{ 
-    std::cout << "Ntakse"; 
+{  
+    Engine::Logging::Init();
+    ENGINE_CORE_INFO("have a nice day!");
     return 0;
 }

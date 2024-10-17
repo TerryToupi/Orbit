@@ -1,4 +1,4 @@
-project "Engine"
+project "SpdLog"
     kind "StaticLib"
     language "C++"
     cppdialect "C++20"
@@ -7,32 +7,30 @@ project "Engine"
 
     files 
     { 
-        "include/**.h", 
-        "src/**.cpp" 
+        "src/**.h", 
+        "src/**.cpp",
+        "include/**.h",
+        "include/**.cpp"
     }
 
     includedirs
     {
-        "include",
-        "%{ExteranlIncludePath.SpdLog}" 
-    }  
+        "include", 
+    } 
 
-    links
-    { 
-        "SpdLog"
-    }
+    ExteranlIncludePath["SpdLog"] = "%{wks.location}/External/spdlog-1.14.1/include"
 
     targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
     filter "system:windows"
-        defines { } 
+        defines { "SPDLOG_COMPILED_LIB" } 
 
     filter "system:linux"
-        defines { } 
+        defines { "SPDLOG_COMPILED_LIB" } 
 
     filter "system:macosx"
-        defines { } 
+        defines { "SPDLOG_COMPILED_LIB" } 
 
     filter "configurations:Debug"
         defines { "DEBUG" }

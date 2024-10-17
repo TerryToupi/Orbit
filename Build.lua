@@ -18,16 +18,23 @@ workspace "Orbit"
          "/Zc:__cplusplus" 
       } 
 
+-- External include paths 
+ExteranlIncludePath = {}
 
+-- predefined output directory
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
+group "External" 
+    include "External/spdlog-1.14.1/Build.lua" 
+group "" 
+
 group "Engine"
-	include "Engine/Build-Engine.lua"
+    include "Engine/Build-Engine.lua"
 group ""
 
 group "Editor"
-   include "Editor/Build-Editor.lua" 
-group "" 
+    include "Editor/Build-Editor.lua" 
+group ""  
 
 -- group "Tests"
 --    include "Tests/Build-Tests.lua" 

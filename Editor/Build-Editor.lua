@@ -14,13 +14,17 @@ project "Editor"
     includedirs
     {
         "include", 
+        
+        -- External lib include
+         "%{ExteranlIncludePath.SpdLog}",
 
         -- Engine lib include 
         "../Engine/include"
     }
 
     links
-    {
+    { 
+        "SpdLog",
         "Engine"
     }
 
