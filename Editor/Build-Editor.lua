@@ -19,12 +19,11 @@ project "Editor"
          "%{ExternalIncludePaths.SpdLog}", 
 
         -- Engine lib include 
-        "../Engine/include",
+        "%{wks.location}/Engine/include",
     }
 
     links
     { 
-        "SpdLog",
         "Engine"
     }
 

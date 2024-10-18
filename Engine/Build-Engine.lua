@@ -23,7 +23,6 @@ project "Engine"
     {  
         "%{ExternalLibs.Vulkan}",
         "GLFW", 
-        "SpdLog",
     } 
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")

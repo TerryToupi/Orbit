@@ -9,8 +9,13 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-int main() {
-    int status = glfwInit();
+
+int main(void) 
+{ 
+    Engine::Logging::Init();
+
+    uint32_t status = glfwInit(); 
+    ENGINE_CORE_INFO("Window Status: {0}", status);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
@@ -18,11 +23,11 @@ int main() {
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
-    std::cout << extensionCount << " extensions supported\n"; 
+    ENGINE_CORE_INFO("Extensions supported: {0}", extensionCount);
 
     glm::mat4 matrix;
     glm::vec4 vec;
-    auto test = matrix * vec; 
+    auto test = matrix * vec;
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -32,5 +37,5 @@ int main() {
 
     glfwTerminate();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
