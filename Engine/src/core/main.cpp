@@ -1,7 +1,7 @@
 #include <iostream>    
 #include <core/logs.h> 
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS
@@ -22,7 +22,7 @@ int main() {
 
     glm::mat4 matrix;
     glm::vec4 vec;
-    auto test = matrix * vec;
+    auto test = matrix * vec; 
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
