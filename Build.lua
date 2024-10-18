@@ -24,9 +24,15 @@ ExternalLibPaths = {}
 ExternalLibs = {}
 
 -- Vulkan setup
-VULKAN_SDK = os.getenv("VULKAN_SDK")
-ExternalIncludePaths["VulkanSDK"] = "%{VULKAN_SDK}/Include"
-ExternalLibPaths["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+VULKAN_SDK = os.getenv("VULKAN_SDK") 
+
+-- main Vulkan include dir
+ExternalIncludePaths["VulkanSDK"] = "%{VULKAN_SDK}/Include" 
+
+-- Vulkan lib folder
+ExternalLibPaths["VulkanSDK"] = "%{VULKAN_SDK}/Lib" 
+
+-- Vulkan in use libs
 ExternalLibs["Vulkan"] = "%{ExternalLibPaths.VulkanSDK}/vulkan-1.lib"
 ExternalLibs["VulkanUtils"] = "%{ExternalLibPaths.VulkanSDK}/VkLayer_utils.lib"
 ExternalLibs["ShaderC_Debug"] = "%{ExternalLibPaths.VulkanSDK}/shaderc_sharedd.lib"
@@ -41,7 +47,8 @@ ExternalLibs["SPIRV_Cross_GLSL_Release"] = "%{ExternalLibPaths.VulkanSDK}/spirv-
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
 group "External" 
-    include "External/spdlog-1.14.1/Build.lua" 
+    include "External/spdlog-1.14.1/Build.lua"  
+    include "External/glfw-3.4/Build.lua"
 group "" 
 
 group "Engine"

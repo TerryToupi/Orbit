@@ -15,25 +15,37 @@ project "Engine"
     {
         "include",
         "%{ExternalIncludePaths.SpdLog}", 
-        "%{ExternalIncludePaths.VulkanSDK}"
-    }  
+        "%{ExternalIncludePaths.VulkanSDK}",
+        "%{ExternalIncludePaths.GLFW}",
+    }   
 
     links
-    { 
-        "SpdLog"
-    }
+    {  
+        "%{ExternalLibs.Vulkan}",
+        "GLFW", 
+        "SpdLog",
+    } 
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
     filter "system:windows"
-        defines { } 
+        defines 
+        {
+            "GLFW_INCLUDE_NONE"
+        } 
 
     filter "system:linux"
-        defines { } 
+        defines 
+        {
+            "GLFW_INCLUDE_NONE"
+        } 
 
     filter "system:macosx"
-        defines { } 
+        defines 
+        {
+            "GLFW_INCLUDE_NONE"
+        } 
 
     filter "configurations:Debug"
         defines { "DEBUG" }
@@ -41,10 +53,10 @@ project "Engine"
         symbols "On" 
 
         links
-		{
+		{ 
 			"%{ExternalLibs.ShaderC_Debug}",
 			"%{ExternalLibs.SPIRV_Cross_Debug}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}"
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
 		}
 
     filter "configurations:Release"
@@ -57,7 +69,7 @@ project "Engine"
 		{
 			"%{ExternalLibs.ShaderC_Release}",
 			"%{ExternalLibs.SPIRV_Cross_Release}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}"
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
 		}
 
     filter "configurations:Dist"
@@ -70,5 +82,5 @@ project "Engine"
 		{
 			"%{ExternalLibs.ShaderC_Release}",
 			"%{ExternalLibs.SPIRV_Cross_Release}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}"
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
 		}

@@ -16,10 +16,10 @@ project "Editor"
         "include", 
         
         -- External lib include
-         "%{ExternalIncludePaths.SpdLog}",
+         "%{ExternalIncludePaths.SpdLog}", 
 
         -- Engine lib include 
-        "../Engine/include"
+        "../Engine/include",
     }
 
     links
