@@ -25,12 +25,29 @@ premake_targets = {
     "Darwin": "xcode4"      # Xcode for macOS
 } 
 
-vulkan_install_path = os.path.join(parent_dir, "External", "Vulkan")
+if __name__ == "__main__": 
+    vulkan_download_path = os.path.join(parent_dir, "External", "Vulkan")
+    vulkan_installation_path = os.path.join(vulkan_download_path, "Installation")  
 
-if __name__ == "__main__":
+    # Check if the directory exists
+    if not os.path.exists(vulkan_download_path):
+        # Directory does not exist, create it
+        os.makedirs(vulkan_download_path)
+        print(f"Created directory: {vulkan_download_path}")
+    else:
+        print(f"Directory already exists: {vulkan_download_path}")
+
+    # Check if the directory exists
+    if not os.path.exists(vulkan_installation_path):
+        # Directory does not exist, create it
+        os.makedirs(vulkan_installation_path)
+        print(f"Created directory: {vulkan_installation_path}")
+    else:
+        print(f"Directory already exists: {vulkan_installation_path}")
+
     # Check if Vulkan is installed, and if not, install it 
     if not is_vulkan_installed(system=system):
-        install_vulkan_sdk(system=system, download_path=vulkan_install_path)
+        install_vulkan_sdk(system=system, download_path=vulkan_download_path)
     else:
         print("Vulkan is already installed. Skipping installation.") 
 

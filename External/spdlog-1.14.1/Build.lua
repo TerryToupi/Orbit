@@ -20,8 +20,8 @@ project "SpdLog"
 
     ExteranlIncludePath["SpdLog"] = "%{wks.location}/External/spdlog-1.14.1/include"
 
-    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
+    objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
     filter "system:windows"
         defines { "SPDLOG_COMPILED_LIB" } 
