@@ -16,7 +16,7 @@ project "Editor"
         "include", 
         
         -- External lib include
-         "%{ExteranlIncludePath.SpdLog}",
+         "%{ExternalIncludePaths.SpdLog}",
 
         -- Engine lib include 
         "../Engine/include"

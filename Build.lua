@@ -19,7 +19,23 @@ workspace "Orbit"
       } 
 
 -- External include paths 
-ExteranlIncludePath = {}
+ExternalIncludePaths = {} 
+ExternalLibPaths = {} 
+ExternalLibs = {}
+
+-- Vulkan setup
+VULKAN_SDK = os.getenv("VULKAN_SDK")
+ExternalIncludePaths["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+ExternalLibPaths["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+ExternalLibs["Vulkan"] = "%{ExternalLibPaths.VulkanSDK}/vulkan-1.lib"
+ExternalLibs["VulkanUtils"] = "%{ExternalLibPaths.VulkanSDK}/VkLayer_utils.lib"
+ExternalLibs["ShaderC_Debug"] = "%{ExternalLibPaths.VulkanSDK}/shaderc_sharedd.lib"
+ExternalLibs["SPIRV_Cross_Debug"] = "%{ExternalLibPaths.VulkanSDK}/spirv-cross-cored.lib"
+ExternalLibs["SPIRV_Cross_GLSL_Debug"] = "%{ExternalLibPaths.VulkanSDK}/spirv-cross-glsld.lib"
+ExternalLibs["SPIRV_Tools_Debug"] = "%{ExternalLibPaths.VulkanSDK}/SPIRV-Toolsd.lib"
+ExternalLibs["ShaderC_Release"] = "%{ExternalLibPaths.VulkanSDK}/shaderc_shared.lib"
+ExternalLibs["SPIRV_Cross_Release"] = "%{ExternalLibPaths.VulkanSDK}/spirv-cross-core.lib"
+ExternalLibs["SPIRV_Cross_GLSL_Release"] = "%{ExternalLibPaths.VulkanSDK}/spirv-cross-glsl.lib"
 
 -- predefined output directory
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"

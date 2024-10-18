@@ -18,7 +18,7 @@ project "SpdLog"
         "include", 
     } 
 
-    ExteranlIncludePath["SpdLog"] = "%{wks.location}/External/spdlog-1.14.1/include"
+    ExternalIncludePaths["SpdLog"] = "%{wks.location}/External/spdlog-1.14.1/include"
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
