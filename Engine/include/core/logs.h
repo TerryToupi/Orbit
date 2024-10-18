@@ -8,7 +8,7 @@
 #include	<memory>
 
 namespace Engine
-{
+{  
 	class Logging
 	{
 	public:
@@ -58,4 +58,3 @@ namespace Engine
 #define ENGINE_ERROR(...)		
 #endif 
 
-#pragma once
