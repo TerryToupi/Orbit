@@ -32,7 +32,8 @@ project "Engine"
 
     filter "system:windows"
         defines 
-        {
+        { 
+            "OP_WINDOWS",
             "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 
@@ -40,6 +41,7 @@ project "Engine"
     filter "system:linux"
         defines 
         {
+            "OP_LINUX",
             "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 
@@ -47,6 +49,7 @@ project "Engine"
     filter "system:macosx"
         defines 
         {
+            "OP_MACOS",
             "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 

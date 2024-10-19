@@ -31,13 +31,25 @@ project "Editor"
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
     filter "system:windows"
-        defines { } 
+        defines 
+        { 
+            "OP_WINDOWS",
+            "VULKAN_BACKEND"
+        } 
 
     filter "system:linux"
-        defines { } 
+        defines 
+        {
+            "OP_LINUX",
+            "VULKAN_BACKEND"
+        } 
 
     filter "system:macosx"
-        defines { } 
+        defines 
+        {
+            "OP_MACOS",
+            "VULKAN_BACKEND"
+        }  
 
     filter "configurations:Debug"
         defines { "DEBUG" }

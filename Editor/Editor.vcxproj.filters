@@ -14,10 +14,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\EditorLayer.cpp">
+    <ClCompile Include="src\EditorApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\editor.cpp">
+    <ClCompile Include="src\EditorLayer.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

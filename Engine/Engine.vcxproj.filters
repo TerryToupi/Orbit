@@ -7,6 +7,15 @@
     <Filter Include="include\core">
       <UniqueIdentifier>{A17DD969-8DE0-680E-3666-A1C422A83491}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\platform">
+      <UniqueIdentifier>{1D12BC81-090B-DBD3-323D-C0581E95BADF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\platform\imgui">
+      <UniqueIdentifier>{4781A6A4-337B-CFF6-1CE8-650708813563}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\window">
+      <UniqueIdentifier>{70DC6774-5CAA-5B7A-453E-CCA031AB37DF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
@@ -19,22 +28,51 @@
     <Filter Include="src\platform\imgui">
       <UniqueIdentifier>{6B60075C-5744-C8B1-C0A4-C204ACA7B233}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\window">
+      <UniqueIdentifier>{94D77D82-808F-BFCF-E996-982BD56D5AC0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\MainEntry.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\application.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\assert.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\core.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
     <ClInclude Include="include\core\logs.h">
       <Filter>include\core</Filter>
     </ClInclude>
-    <ClInclude Include="include\platform\imgui\ImguiBuild.h" />
+    <ClInclude Include="include\platform\imgui\ImguiBuild.h">
+      <Filter>include\platform\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\window\window.h">
+      <Filter>include\window</Filter>
+    </ClInclude>
+    <ClInclude Include="include\window\windowAPI.h">
+      <Filter>include\window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\logs.cpp">
+    <ClCompile Include="src\core\application.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\main.cpp">
+    <ClCompile Include="src\core\logs.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\imgui\ImguiBuild.cpp">
       <Filter>src\platform\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\window.cpp">
+      <Filter>src\window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\windowAPI.cpp">
+      <Filter>src\window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

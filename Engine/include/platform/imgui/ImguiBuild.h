@@ -13,7 +13,3 @@
 #endif
 
 #include <backends/imgui_impl_glfw.h> 
-
-#ifdef VULKAN_BACKEND 
-
-#endif

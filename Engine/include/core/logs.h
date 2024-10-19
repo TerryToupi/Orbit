@@ -28,10 +28,10 @@ namespace Engine
 #define ENGINE_CORE_WARN(...)		::Engine::Logging::GetCoreLogger()->warn(__VA_ARGS__)
 #define ENGINE_CORE_ERROR(...)		::Engine::Logging::GetCoreLogger()->error(__VA_ARGS__)
 
-#define ENGINE_TRACE(...)		::Engine::Logging::GetClientLogger()->trace(__VA_ARGS__)
-#define ENGINE_INFO(...)		::Engine::Logging::GetClientLogger()->info(__VA_ARGS__)
-#define ENGINE_WARN(...)		::Engine::Logging::GetClientLogger()->warn(__VA_ARGS__)
-#define ENGINE_ERROR(...)		::Engine::Logging::GetClientLogger()->error(__VA_ARGS__)
+#define ENGINE_CLIENT_TRACE(...)	::Engine::Logging::GetClientLogger()->trace(__VA_ARGS__)
+#define ENGINE_CLIENT_INFO(...)		::Engine::Logging::GetClientLogger()->info(__VA_ARGS__)
+#define ENGINE_CLIENT_WARN(...)		::Engine::Logging::GetClientLogger()->warn(__VA_ARGS__)
+#define ENGINE_CLIENT_ERROR(...)	::Engine::Logging::GetClientLogger()->error(__VA_ARGS__)
 #endif 
 
 #ifdef RELEASE 
@@ -40,10 +40,10 @@ namespace Engine
 #define ENGINE_CORE_WARN(...)		
 #define ENGINE_CORE_ERROR(...)		
 
-#define ENGINE_TRACE(...)		
-#define ENGINE_INFO(...)		
-#define ENGINE_WARN(...)		
-#define ENGINE_ERROR(...)		
+#define ENGINE_CLIENT_TRACE(...)		
+#define ENGINE_CLIENT_INFO(...)		
+#define ENGINE_CLIENT_WARN(...)		
+#define ENGINE_CLIENT_ERROR(...)		
 #endif  
 
 #ifdef DIST 
@@ -52,9 +52,9 @@ namespace Engine
 #define ENGINE_CORE_WARN(...)		
 #define ENGINE_CORE_ERROR(...)		
 
-#define ENGINE_TRACE(...)		
-#define ENGINE_INFO(...)		
-#define ENGINE_WARN(...)		
-#define ENGINE_ERROR(...)		
+#define ENGINE_CLIENT_TRACE(...)		
+#define ENGINE_CLIENT_INFO(...)		
+#define ENGINE_CLIENT_WARN(...)		
+#define ENGINE_CLIENT_ERROR(...)		
 #endif 
 
