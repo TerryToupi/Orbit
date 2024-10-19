@@ -13,11 +13,18 @@
     <Filter Include="src\core">
       <UniqueIdentifier>{C55F2ECF-B12C-89DA-DA45-7782C671BE68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\platform">
+      <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\imgui">
+      <UniqueIdentifier>{6B60075C-5744-C8B1-C0A4-C204ACA7B233}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\logs.h">
       <Filter>include\core</Filter>
     </ClInclude>
+    <ClInclude Include="include\platform\imgui\ImguiBuild.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\logs.cpp">
@@ -25,6 +32,9 @@
     </ClCompile>
     <ClCompile Include="src\core\main.cpp">
       <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\imgui\ImguiBuild.cpp">
+      <Filter>src\platform\imgui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

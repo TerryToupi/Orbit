@@ -47,7 +47,8 @@ ExternalLibs["SPIRV_Cross_GLSL_Release"] = "%{ExternalLibPaths.VulkanSDK}/spirv-
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
 group "External" 
-    include "External/spdlog-1.14.1/Build.lua"  
+    include "External/spdlog-1.14.1/Build.lua"   
+    include "External/imgui/Build.lua"
     include "External/glfw-3.4/Build.lua"
 group "" 
 

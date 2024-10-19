@@ -14,15 +14,17 @@ project "Engine"
     includedirs
     {
         "include",
-        "%{ExternalIncludePaths.SpdLog}", 
         "%{ExternalIncludePaths.VulkanSDK}",
-        "%{ExternalIncludePaths.GLFW}",
+        "%{ExternalIncludePaths.SpdLog}", 
+        "%{ExternalIncludePaths.GLFW}", 
+        "%{ExternalIncludePaths.ImGui}"
     }   
 
     links
     {  
         "%{ExternalLibs.Vulkan}",
         "GLFW", 
+        "ImGui"
     } 
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
@@ -31,19 +33,22 @@ project "Engine"
     filter "system:windows"
         defines 
         {
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "VULKAN_BACKEND"
         } 
 
     filter "system:linux"
         defines 
         {
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "VULKAN_BACKEND"
         } 
 
     filter "system:macosx"
         defines 
         {
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "VULKAN_BACKEND"
         } 
 
     filter "configurations:Debug"
