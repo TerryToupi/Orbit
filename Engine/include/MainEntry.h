@@ -1,7 +1,7 @@
-#pragma once  
+#pragma once   
 
 #include <core/logs.h> 
-#include <core/application.h>
+#include <core/application.h> 
 
 extern Engine::Application* Engine::CreateApplication();
 

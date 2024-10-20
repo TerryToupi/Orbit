@@ -1,6 +1,7 @@
 #pragma once  
 #include <core/logs.h>  
-#include <window/window.h>
+#include <window/window.h> 
+#include <events/appEvents.h>
 
 int main(int argc, char** argv);
 
@@ -12,18 +13,20 @@ namespace Engine
 		Application(); 
 		virtual ~Application(); 
 		
-		static Application& Get(); 
+		static Application& Get();  
+
 	private:
-		void Run();
-		void ShutDown();  
-		void Event();
+		void Run(); 
+		bool OnWindowClose(WindowCloseEvent& e); 
+		bool OnWindowResize(WindowResizeEvent& e);
+		void OnEvent(Event& e);
 
 	private: 
 		friend int ::main(int argc, char** argv); 
 
 	private: 
 		bool m_running = false;
-		Scope<Window> m_window;
+		Scope<Window> m_window; 
 	
 	private:
 		static Application* s_Instance;

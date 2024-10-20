@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 namespace Engine
-{
+{ 
 	class WindowAPI : public Window
 	{
 	public:
@@ -18,14 +18,20 @@ namespace Engine
 		virtual void Update() const override;
 		virtual void ResizeWindow(int w, int h) const override;
 
+		virtual void SetEventCallback(const EventCallback& cb) override;
+
 		virtual void* GetNativeWindow() const override;
 
 	private: 
-		std::string m_windowName;
-		uint32_t m_width; 
-		uint32_t m_height;  
+		struct WindowData
+		{
+			uint32_t width;
+			uint32_t height;
 
-		EventCallback m_callBack;
+			EventCallback callBack;
+		} m_data; 
+
+		std::string m_windowName;
 
 		GLFWwindow* m_nativeWindow;
 	};

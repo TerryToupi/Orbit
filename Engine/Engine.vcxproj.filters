@@ -57,6 +57,10 @@
     <ClInclude Include="include\window\windowAPI.h">
       <Filter>include\window</Filter>
     </ClInclude>
+    <ClInclude Include="include\events\event.h" />
+    <ClInclude Include="include\events\appEvents.h" />
+    <ClInclude Include="include\events\keyboardEvents.h" />
+    <ClInclude Include="include\events\mouseEvents.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp">
@@ -74,5 +78,9 @@
     <ClCompile Include="src\window\windowAPI.cpp">
       <Filter>src\window</Filter>
     </ClCompile>
+    <ClCompile Include="src\events\event.cpp" />
+    <ClCompile Include="src\events\appEvents.cpp" />
+    <ClCompile Include="src\events\keyboardEvents.cpp" />
+    <ClCompile Include="src\events\mouseEvents.cpp" />
   </ItemGroup>
 </Project>

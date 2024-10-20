@@ -1,5 +1,6 @@
 #pragma once   
-#include <core/core.h>
+#include <core/core.h> 
+#include <events/event.h>
 
 namespace Engine
 {
@@ -20,13 +21,15 @@ namespace Engine
 	class Window
 	{  
 	public: 
-		using EventCallback = std::function<void(void)>;
+		using EventCallback = std::function<void(Event&)>;
 
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 
 		virtual void Update() const = 0;
-		virtual void ResizeWindow(int w, int h) const = 0; 
+		virtual void ResizeWindow(int w, int h) const = 0;  
+
+		virtual void SetEventCallback(const EventCallback& cb) = 0;
 
 		virtual void* GetNativeWindow() const = 0; 
 

@@ -1,5 +1,5 @@
 #include <core/application.h>
-#include <core/assert.h>
+#include <core/assert.h> 
 
 namespace Engine
 { 
@@ -12,9 +12,13 @@ namespace Engine
 
 		ENGINE_CORE_INFO("Initializing Window manager!"); 
 		
-		m_window = Window::Create(WindowConfig());
+		m_window = Window::Create(WindowConfig()); 
+		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
 
-		m_running = true;
+		m_running = true; 
+
+		#ifdef EDITOR_APPLICTATION 
+		#endif
 	}
 
 	Application::~Application()
@@ -29,22 +33,36 @@ namespace Engine
 
 	void Application::Run()
 	{  
-		ENGINE_CORE_INFO("Engine is alive!"); 
-
 		while (m_running)
 		{
-			
+			m_window->Update(); 
+
+			#ifdef EDITOR_APPLICTATION 
+			{ 
+				ENGINE_CORE_TRACE("APPLICATION HOOKED");
+			}
+			#endif
 		}
 	}
 
-	void Application::ShutDown()
+	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{ 
-
+		m_running = false; 
+		return true;
 	} 
 
-	void Application::Event()
-	{ 
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{  
+		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", m_window->GetWidth(), m_window->GetHeight());
+		return true;
+	}
 
+
+	void Application::OnEvent(Event& e)
+	{ 
+		EventDispatcher dispatcher(e); 
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
 	}
 }
 

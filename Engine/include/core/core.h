@@ -19,7 +19,11 @@
 #else
 	#define DEBUGBREAK()  
 
-#endif  
+#endif   
+
+#define BIT(x) 1<<x 
+
+#define BIND_EVENT(function) [this](auto&&... args) -> decltype(auto) { return this->function(std::forward<decltype(args)>(args)...); } 
 
 namespace Engine
 {
