@@ -1,7 +1,9 @@
 #pragma once  
 #include <core/logs.h>  
 #include <window/window.h> 
-#include <events/appEvents.h>
+#include <events/appEvents.h> 
+#include <core/layerManager.h> 
+#include <editorLayer/editorBackend.h>
 
 int main(int argc, char** argv);
 
@@ -12,8 +14,15 @@ namespace Engine
 	public: 
 		Application(); 
 		virtual ~Application(); 
-		
-		static Application& Get();  
+
+		Window& GetWindow();  
+
+		void PushLayer(Layer* l);
+		void PushOverlay(Layer* l);
+		void RemoveLayer(Layer* l); 
+		void RemoveOverlay(Layer* l);
+
+		static Application& Get();    
 
 	private:
 		void Run(); 
@@ -26,7 +35,9 @@ namespace Engine
 
 	private: 
 		bool m_running = false;
-		Scope<Window> m_window; 
+		Scope<Window> m_window;
+		LayerManager m_layers;   
+		EditorBackend* m_editor;
 	
 	private:
 		static Application* s_Instance;

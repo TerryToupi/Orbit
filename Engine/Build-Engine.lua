@@ -25,7 +25,13 @@ project "Engine"
         "%{ExternalLibs.Vulkan}",
         "GLFW", 
         "ImGui"
-    } 
+    }  
+
+    defines
+    {  
+        -- remove for product
+        "EDITOR_APPLICATION"
+    }
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")

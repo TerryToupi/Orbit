@@ -16,8 +16,12 @@ namespace Engine
 		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
 
 		m_running = true; 
-
-		#ifdef EDITOR_APPLICTATION 
+		
+		m_editor = nullptr;
+		#ifdef EDITOR_APPLICATION 
+		ENGINE_CORE_INFO("Editor application initialization!");
+		m_editor = new EditorBackend(); 
+		PushOverlay(m_editor);
 		#endif
 	}
 
@@ -31,15 +35,50 @@ namespace Engine
 		return *s_Instance;
 	}
 
+	Window& Application::GetWindow()
+	{ 
+		return *m_window;
+	}
+
+	void Application::PushLayer(Layer* l)
+	{ 
+		m_layers.PushLayer(l);
+	} 
+
+	void Application::PushOverlay(Layer* l)
+	{ 
+		m_layers.PushOverlay(l);
+	}
+
+	void Application::RemoveLayer(Layer* l)
+	{ 
+		m_layers.PopLayer(l);
+	}
+
+	void Application::RemoveOverlay(Layer* l)
+	{ 
+		m_layers.PopOverlay(l);
+	}
+
 	void Application::Run()
 	{  
 		while (m_running)
 		{
-			m_window->Update(); 
+			m_window->Update();
 
-			#ifdef EDITOR_APPLICTATION 
+			for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+			{
+				(*layer)->OnUpdate();
+			}
+
+			#ifdef EDITOR_APPLICATION 
 			{ 
-				ENGINE_CORE_TRACE("APPLICATION HOOKED");
+				m_editor->start(); 
+				for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+				{
+					(*layer)->OnEditorRender();
+				} 
+				m_editor->finish();
 			}
 			#endif
 		}
@@ -62,7 +101,13 @@ namespace Engine
 	{ 
 		EventDispatcher dispatcher(e); 
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize)); 
+
+		for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); layer++)
+		{
+			if (e.Handled) break; 
+			(*layer)->OnEvent(e);
+		}
 	}
 }
 

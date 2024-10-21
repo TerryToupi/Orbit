@@ -19,7 +19,8 @@ project "Editor"
          "%{ExternalIncludePaths.SpdLog}",  
 
         -- Engine lib include 
-        "%{wks.location}/Engine/include",
+        "%{wks.location}/Engine/include", 
+        "%{wks.location}/Engine/src"
     }
 
     links

@@ -19,7 +19,12 @@ namespace Engine
 			int status = glfwInit(); 
 			ENGINE_ASSERT(status); 
 
-		#ifdef VULKAN_BACKEND
+		#ifdef VULKAN_BACKEND 
+			if (!glfwVulkanSupported())
+			{
+				ENGINE_CORE_ERROR("GLFW: Vulkan Not Supported");
+			} 
+
 			uint32_t extensionCount = 0;
 			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 			ENGINE_CORE_INFO("Vulkan Instance Extension Support: {0}", extensionCount);
@@ -138,7 +143,8 @@ namespace Engine
 
 	void WindowAPI::Update() const
 	{ 
-		glfwPollEvents();
+		glfwPollEvents(); 
+		glfwSwapBuffers(m_nativeWindow);
 	}
 
 	void WindowAPI::ResizeWindow(int w, int h) const

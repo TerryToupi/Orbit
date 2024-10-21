@@ -1,15 +1,23 @@
-#include <MainEntry.h>   
+#include <MainEntry.h>    
+#include <EditorLayer.h>
 
-namespace Engine
+namespace Editor 
 {
-	class EnditorApp : public Application
+	class Editor: public Engine::Application
 	{
+	public:   
+		Editor()
+		{  
+			PushLayer(new EditorLayer());
+		}
 
+	private: 
 	}; 
 
-	Application* CreateApplication()
-	{ 
-		ENGINE_CLIENT_TRACE("Instanciating Application");
-		return new EnditorApp();
-	}
+} 
+
+Engine::Application* Engine::CreateApplication()
+{ 
+	ENGINE_CLIENT_TRACE("Instanciating Application");
+	return new Editor::Editor();
 }
