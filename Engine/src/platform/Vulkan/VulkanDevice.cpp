@@ -166,7 +166,9 @@ namespace Engine
 
 		for (const char* extensionName : requested_extensions)
 		{
-			bool extensionFound = false;
+			bool extensionFound = false; 
+
+			ENGINE_CORE_INFO("[VULKAN] Requesting extension: {}!", std::string(extensionName));
 
 			for (const auto& extensionProperties : extensions)
 			{
