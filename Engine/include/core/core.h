@@ -2,7 +2,9 @@
 
 #include <memory>  
 #include <functional>
-#include <string>
+#include <string> 
+#include <optional> 
+#include <map>
 
 #ifdef DEBUG
 	#if defined(OP_WINDOWS)
