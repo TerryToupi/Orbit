@@ -1,10 +1,13 @@
-#include <window/window.h>
-#include <window/windowAPI.h>
+#include <window/window.h> 
+
+#include <platform/Vulkan/VulkanWindow.h>
 
 namespace Engine
 {
-	Scope<Window> Window::Create(const WindowConfig& config)
-	{
-		return MakeScope<WindowAPI>(config);
+	Unique<Window> Window::Create(const WindowConfig& config)
+	{ 
+	#ifdef VULKAN_BACKEND
+		return MakeUnique<VulkanWindow>(config); 
+	#endif
 	}
 }

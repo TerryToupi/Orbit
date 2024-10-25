@@ -20,7 +20,6 @@ project "Editor"
 
         -- Engine lib include 
         "%{wks.location}/Engine/include", 
-        "%{wks.location}/Engine/src"
     }
 
     links

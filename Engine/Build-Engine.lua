@@ -11,10 +11,11 @@ project "Engine"
         "src/**.cpp" 
     }
 
-    includedirs
+    includedirs 
     {
-        "include",
-        "%{ExternalIncludePaths.VulkanSDK}",
+        "include",  
+        "%{ExternalIncludePaths.VulkanSDK}", 
+        "%{ExternalIncludePaths.Volk}", 
         "%{ExternalIncludePaths.SpdLog}", 
         "%{ExternalIncludePaths.GLFW}", 
         "%{ExternalIncludePaths.ImGui}"
@@ -22,9 +23,9 @@ project "Engine"
 
     links
     {  
-        "%{ExternalLibs.Vulkan}",
         "GLFW", 
-        "ImGui"
+        "ImGui",
+        "Volk"
     }  
 
     defines

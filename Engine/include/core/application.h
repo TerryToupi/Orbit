@@ -2,8 +2,8 @@
 #include <core/logs.h>  
 #include <window/window.h> 
 #include <events/appEvents.h> 
-#include <core/layerManager.h> 
-#include <editorLayer/editorBackend.h>
+#include <core/layerManager.h>  
+#include <renderer/device.h>
 
 int main(int argc, char** argv);
 
@@ -35,9 +35,8 @@ namespace Engine
 
 	private: 
 		bool m_running = false;
-		Scope<Window> m_window;
+		Unique<Window> m_window;
 		LayerManager m_layers;   
-		EditorBackend* m_editor;
 	
 	private:
 		static Application* s_Instance;

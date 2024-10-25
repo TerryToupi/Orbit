@@ -1,5 +1,5 @@
-#include <core/application.h>
-#include <core/assert.h> 
+#include <core/application.h> 
+#include <core/assert.h>  
 
 namespace Engine
 { 
@@ -13,21 +13,25 @@ namespace Engine
 		ENGINE_CORE_INFO("Initializing Window manager!"); 
 		
 		m_window = Window::Create(WindowConfig()); 
-		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));
+		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));  
 
-		m_running = true; 
+		// instanciating sigleton managers
+		Device::Create(); 
+
+		m_running = true;  
+
 		
-		m_editor = nullptr;
-		#ifdef EDITOR_APPLICATION 
-		ENGINE_CORE_INFO("Editor application initialization!");
-		m_editor = new EditorBackend(); 
-		PushOverlay(m_editor);
-		#endif
+		//m_editor = nullptr;
+		//#ifdef EDITOR_APPLICATION 
+		//ENGINE_CORE_INFO("Editor application initialization!");
+		//m_editor = new EditorBackend(); 
+		//PushOverlay(m_editor);
+		//#endif
 	}
 
 	Application::~Application()
-	{ 
-
+	{  
+		Device::Destroy();
 	}
 
 	Application& Application::Get()
@@ -61,7 +65,7 @@ namespace Engine
 	}
 
 	void Application::Run()
-	{  
+	{   
 		while (m_running)
 		{
 			m_window->Update();
@@ -73,12 +77,12 @@ namespace Engine
 
 			#ifdef EDITOR_APPLICATION 
 			{ 
-				m_editor->start(); 
-				for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
-				{
-					(*layer)->OnEditorRender();
-				} 
-				m_editor->finish();
+				//m_editor->start(); 
+				//for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+				//{
+				//	(*layer)->OnEditorRender();
+				//} 
+				//m_editor->finish();
 			}
 			#endif
 		}

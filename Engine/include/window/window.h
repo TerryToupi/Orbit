@@ -33,6 +33,6 @@ namespace Engine
 
 		virtual void* GetNativeWindow() const = 0; 
 
-		static Scope<Window> Create(const WindowConfig& config);
+		static Unique<Window> Create(const WindowConfig& config);
 	};
 }
