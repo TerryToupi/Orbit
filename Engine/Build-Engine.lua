@@ -7,13 +7,13 @@ project "Engine"
 
     files 
     { 
-        "include/**.h", 
+        "src/**.h", 
         "src/**.cpp" 
     }
 
     includedirs 
     {
-        "include",  
+        "src",  
         "%{ExternalIncludePaths.VulkanSDK}", 
         "%{ExternalIncludePaths.Volk}", 
         "%{ExternalIncludePaths.SpdLog}", 

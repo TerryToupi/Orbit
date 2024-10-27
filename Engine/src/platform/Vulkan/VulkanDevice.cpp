@@ -15,16 +15,16 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	switch (messageType)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-		messageTypeAsString = "[GENERAL]";
+		messageTypeAsString = "[VULKAN_GENERAL]";
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-		messageTypeAsString = "[VALIDATION]";
+		messageTypeAsString = "[VULKAN_VALIDATION]";
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-		messageTypeAsString = "[PERFORMANCE]";
+		messageTypeAsString = "[VULKAN_PERFORMANCE]";
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT:
-		messageTypeAsString = "[DEVICE_ADDRESS_BINDING]";
+		messageTypeAsString = "[VULKAN_DEVICE_ADDRESS_BINDING]";
 		break;
 	default:
 		break;
@@ -33,7 +33,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	switch (messageSeverity)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-		ENGINE_CORE_TRACE("{} Validation layer: {}", messageTypeAsString, pCallbackData->pMessage);
+		ENGINE_CORE_INFO("{} Validation layer: {}", messageTypeAsString, pCallbackData->pMessage);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
 		ENGINE_CORE_INFO("{} Validation layer: {}", messageTypeAsString, pCallbackData->pMessage);
@@ -333,7 +333,7 @@ namespace Engine
 			createInfo.enabledLayerCount = 0;
 		}
 
-		vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device); 
+		VK_VALIDATE(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
 		volkLoadDevice(m_device);
 	}
 

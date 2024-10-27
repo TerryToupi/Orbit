@@ -7,19 +7,19 @@ project "Editor"
 
     files 
     { 
-        "include/**.h", 
+        "src/**.h", 
         "src/**.cpp" 
     }
 
     includedirs
     {
-        "include", 
+        "src", 
         
         -- External lib include
          "%{ExternalIncludePaths.SpdLog}",  
 
         -- Engine lib include 
-        "%{wks.location}/Engine/include", 
+        "%{wks.location}/Engine/src", 
     }
 
     links

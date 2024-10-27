@@ -1,147 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\core">
-      <UniqueIdentifier>{A17DD969-8DE0-680E-3666-A1C422A83491}</UniqueIdentifier>
+    <Filter Include="events">
+      <UniqueIdentifier>{5A9D08FC-463F-33D2-2FFA-46261B3BBA22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\events">
-      <UniqueIdentifier>{6D7B514B-5949-4551-42DD-B5772E4A21B6}</UniqueIdentifier>
+    <Filter Include="platform">
+      <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\platform">
-      <UniqueIdentifier>{1D12BC81-090B-DBD3-323D-C0581E95BADF}</UniqueIdentifier>
+    <Filter Include="platform\Vulkan">
+      <UniqueIdentifier>{8A99CC96-F624-3A5B-FF35-BD4F6B40965B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\platform\Vulkan">
-      <UniqueIdentifier>{FDFCB70D-6934-00A5-723E-64C8DEF4269E}</UniqueIdentifier>
+    <Filter Include="platform\imgui">
+      <UniqueIdentifier>{344023FE-200E-1704-09A2-872AF50EF368}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\platform\imgui">
-      <UniqueIdentifier>{4781A6A4-337B-CFF6-1CE8-650708813563}</UniqueIdentifier>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{9C6AA017-8837-FB22-B150-E9CA9D7C30B1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\renderer">
-      <UniqueIdentifier>{6F19995C-5B12-B8AE-8444-9D33709C97BA}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\window">
-      <UniqueIdentifier>{70DC6774-5CAA-5B7A-453E-CCA031AB37DF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\core">
-      <UniqueIdentifier>{C55F2ECF-B12C-89DA-DA45-7782C671BE68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\events">
-      <UniqueIdentifier>{91766759-7D2E-A9A6-E635-8202D20C4497}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\platform">
-      <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\platform\Vulkan">
-      <UniqueIdentifier>{A1C034B1-0D22-12BF-968F-587102F0487E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\platform\imgui">
-      <UniqueIdentifier>{6B60075C-5744-C8B1-C0A4-C204ACA7B233}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\renderer">
-      <UniqueIdentifier>{936D1A48-7FD0-A9EC-2856-E2A21498756F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\window">
-      <UniqueIdentifier>{94D77D82-808F-BFCF-E996-982BD56D5AC0}</UniqueIdentifier>
+    <Filter Include="window">
+      <UniqueIdentifier>{5DFE1E25-49A0-49FB-325B-5D4F1E9CD04B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\MainEntry.h">
-      <Filter>include</Filter>
+    <ClInclude Include="src\MainEntry.h" />
+    <ClInclude Include="src\core\application.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\application.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\core\assert.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\assert.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\core\core.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\core.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\core\layer.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\layer.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\core\layerManager.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\layerManager.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\core\logs.h">
+      <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\logs.h">
-      <Filter>include\core</Filter>
+    <ClInclude Include="src\events\appEvents.h">
+      <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="include\events\appEvents.h">
-      <Filter>include\events</Filter>
+    <ClInclude Include="src\events\event.h">
+      <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="include\events\event.h">
-      <Filter>include\events</Filter>
+    <ClInclude Include="src\events\keyboardEvents.h">
+      <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="include\events\keyboardEvents.h">
-      <Filter>include\events</Filter>
+    <ClInclude Include="src\events\mouseEvents.h">
+      <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="include\events\mouseEvents.h">
-      <Filter>include\events</Filter>
+    <ClInclude Include="src\platform\Vulkan\VulkanCore.h">
+      <Filter>platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="include\platform\Vulkan\VulkanCore.h">
-      <Filter>include\platform\Vulkan</Filter>
+    <ClInclude Include="src\platform\Vulkan\VulkanDevice.h">
+      <Filter>platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="include\platform\Vulkan\VulkanDevice.h">
-      <Filter>include\platform\Vulkan</Filter>
+    <ClInclude Include="src\platform\Vulkan\VulkanWindow.h">
+      <Filter>platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="include\platform\Vulkan\VulkanWindow.h">
-      <Filter>include\platform\Vulkan</Filter>
+    <ClInclude Include="src\platform\imgui\ImguiBuild.h">
+      <Filter>platform\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="include\platform\imgui\ImguiBuild.h">
-      <Filter>include\platform\imgui</Filter>
+    <ClInclude Include="src\renderer\device.h">
+      <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="include\renderer\device.h">
-      <Filter>include\renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="include\window\window.h">
-      <Filter>include\window</Filter>
+    <ClInclude Include="src\window\window.h">
+      <Filter>window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp">
-      <Filter>src\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\layer.cpp">
-      <Filter>src\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\layerStack.cpp">
-      <Filter>src\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\logs.cpp">
-      <Filter>src\core</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\events\appEvents.cpp">
-      <Filter>src\events</Filter>
+      <Filter>events</Filter>
     </ClCompile>
     <ClCompile Include="src\events\event.cpp">
-      <Filter>src\events</Filter>
+      <Filter>events</Filter>
     </ClCompile>
     <ClCompile Include="src\events\keyboardEvents.cpp">
-      <Filter>src\events</Filter>
+      <Filter>events</Filter>
     </ClCompile>
     <ClCompile Include="src\events\mouseEvents.cpp">
-      <Filter>src\events</Filter>
+      <Filter>events</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\Vulkan\VulkanDevice.cpp">
-      <Filter>src\platform\Vulkan</Filter>
+      <Filter>platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\Vulkan\VulkanWindow.cpp">
-      <Filter>src\platform\Vulkan</Filter>
+      <Filter>platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\imgui\ImguiBuild.cpp">
-      <Filter>src\platform\imgui</Filter>
+      <Filter>platform\imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\device.cpp">
-      <Filter>src\renderer</Filter>
+      <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\window\window.cpp">
-      <Filter>src\window</Filter>
+      <Filter>window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
