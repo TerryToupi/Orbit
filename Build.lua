@@ -4,6 +4,9 @@ workspace "Orbit"
    configurations { "Debug", "Release", "Dist" } 
    startproject "Editor"
 
+--    xcode settings
+   xcodebuildsettings = {  ["ALWAYS_SEARCH_USER_PATHS"] = "YES" } 
+
    -- Global space flags
    flags
 	{ 
