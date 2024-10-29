@@ -71,7 +71,7 @@ def is_vulkan_installed(system):
 
     elif system == "Darwin":  # macOS
         try:
-            result = subprocess.run(["brew", "list", "--cask", "molten-vk"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = subprocess.run(["brew", "list", "molten-vk"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.returncode == 0:
                 print("MoltenVK (Vulkan SDK) is already installed on macOS.")
                 return True
@@ -110,7 +110,7 @@ def install_vulkan_sdk(system, download_path):
 
     elif system == "Darwin":  # macOS
         print("Installing Vulkan SDK for macOS...")
-        subprocess.run(["brew", "install", "--cask", "molten-vk"], check=True)
+        subprocess.run(["brew", "install", "molten-vk"], check=True)
         print("Vulkan SDK (MoltenVK) installed on macOS")
 
     else:

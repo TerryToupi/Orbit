@@ -31,9 +31,16 @@ def premake_build(premake_paths, premake_targets, parent_dir, system):
 
     # Define the command to run Premake
     premake_command = [premake_executable, "--file=" + build_file_path, premake_target]
+    
+    premake_chmod_command = ["chmod", "+x", premake_executable]
 
     # Run the Premake command
-    try:
+    try: 
+        if system == "Linux" or system == "Darwin":
+            subprocess.run(premake_chmod_command, check=True)
+            print(f"Changing premake to an executable.")
+            
+        
         subprocess.run(premake_command, check=True)
         print(f"Premake executed successfully for {system} with target {premake_target}.")
     except PermissionError:
