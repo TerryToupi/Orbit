@@ -22,10 +22,10 @@ namespace Editor
 		Component(std::string name, ComponentType type);
 		~Component();
 
-		virtual void onStart();
-		virtual void onEnd();
-		virtual void onUpdate();
-		virtual void onRender();
+		//virtual void onStart();
+		//virtual void onEnd();
+		//virtual void onUpdate();
+		//virtual void onRender();
 
 	public:
 		void SetClosable(bool closable);

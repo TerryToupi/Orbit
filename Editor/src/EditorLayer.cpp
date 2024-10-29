@@ -30,7 +30,7 @@ namespace Editor {
 		Component* assets = new Component("Hierarchy", ComponentType::AssetManager);
 		Component* menu = new Component("Hierarchy", ComponentType::MenuBar);
 		Component* console = new Component("Hierarchy", ComponentType::Console);
-		Component* menu = new Component("Hierarchy", ComponentType::MenuBar);
+		//Component* menu = new Component("Hierarchy", ComponentType::MenuBar);
 	}
 
 
