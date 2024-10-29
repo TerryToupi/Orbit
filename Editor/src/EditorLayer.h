@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <Component.h>
 #include <core/layer.h> 
 
 namespace Editor { 
@@ -17,6 +18,11 @@ namespace Editor {
 		virtual void OnEditorRender() override {}
 		virtual void OnEvent(Engine::Event& e) override {}
 
+	public:
+		//static EditorLayer& Get();
+		void AddComponent(Component* comp);
+		void Init();
+
 	private:
 		bool onMouseButtonPress();
 		bool onMouseButtonRelease();
@@ -25,7 +31,8 @@ namespace Editor {
 		bool onKeyRelease(); 
 		bool onKeyTap();
 
-	private: 
-		
+	private:
+		//static EditorLayer *s_Instance;
+		std::unordered_map<std::string, Component*> m_Panels;
 	};
 }
