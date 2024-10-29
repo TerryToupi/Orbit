@@ -5,8 +5,6 @@
 
 extern Engine::Application* Engine::CreateApplication();
 
-#ifdef OP_WINDOWS 
-
 int main(int argc, char** argv)
 {
 	Engine::Logging::Init();  
@@ -18,4 +16,3 @@ int main(int argc, char** argv)
 	delete app;
 }
 
-#endif
