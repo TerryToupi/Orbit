@@ -83,4 +83,6 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 __pycache__
-Downloads 
+Downloads  
+
+Premake
