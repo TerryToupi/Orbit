@@ -8,11 +8,6 @@ namespace Engine
 {  
 	Device* Device::s_instance = nullptr;
 
-	Device& Device::Get()
-	{ 
-		return *s_instance;
-	}
-
 	void Device::Create()
 	{ 
 		ENGINE_ASSERT(!Device::s_instance); 

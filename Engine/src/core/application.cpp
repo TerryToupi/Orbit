@@ -1,5 +1,5 @@
 #include <core/application.h> 
-#include <core/assert.h>  
+#include <core/assert.h>   
 
 namespace Engine
 { 
@@ -20,7 +20,6 @@ namespace Engine
 
 		m_running = true;  
 
-		
 		//m_editor = nullptr;
 		//#ifdef EDITOR_APPLICATION 
 		//ENGINE_CORE_INFO("Editor application initialization!");
@@ -65,7 +64,12 @@ namespace Engine
 	}
 
 	void Application::Run()
-	{   
+	{  
+		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+		{
+			(*layer)->OnStart();
+		}
+
 		while (m_running)
 		{
 			m_window->Update();
@@ -74,17 +78,6 @@ namespace Engine
 			{
 				(*layer)->OnUpdate();
 			}
-
-			#ifdef EDITOR_APPLICATION 
-			{ 
-				//m_editor->start(); 
-				//for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
-				//{
-				//	(*layer)->OnEditorRender();
-				//} 
-				//m_editor->finish();
-			}
-			#endif
 		}
 	}
 

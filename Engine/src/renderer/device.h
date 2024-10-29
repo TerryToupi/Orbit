@@ -16,8 +16,13 @@ namespace Engine
 	{
 	public:
 		virtual ~Device() = default;
+	
+		template <typename T>
+		static T& Get()
+		{ 
+			return static_cast<T&>(*s_instance);
+		}
 
-		static Device& Get(); 
 		static void Create(); 
 		static void Destroy();
 

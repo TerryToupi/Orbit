@@ -50,18 +50,18 @@ namespace Engine
 
 				switch (action)
 				{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent event(key);
-					data.callBack(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent event(key);
-					data.callBack(event);
-					break;
-				}
+					case GLFW_PRESS:
+					{
+						KeyPressedEvent event(key);
+						data.callBack(event);
+						break;
+					}
+					case GLFW_RELEASE:
+					{
+						KeyReleasedEvent event(key);
+						data.callBack(event);
+						break;
+					}
 				}
 			});
 
@@ -87,18 +87,18 @@ namespace Engine
 
 				switch (action)
 				{
-				case GLFW_PRESS:
-				{
-					MouseButtonPressedEvent event(button);
-					data.callBack(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					MouseButtonReleasedEvent event(button);
-					data.callBack(event);
-					break;
-				}
+					case GLFW_PRESS:
+					{
+						MouseButtonPressedEvent event(button);
+						data.callBack(event);
+						break;
+					}
+					case GLFW_RELEASE:
+					{
+						MouseButtonReleasedEvent event(button);
+						data.callBack(event);
+						break;
+					}
 				}
 			});
 	}

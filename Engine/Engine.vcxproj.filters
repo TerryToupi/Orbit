@@ -73,6 +73,7 @@
     <ClInclude Include="src\window\window.h">
       <Filter>window</Filter>
     </ClInclude>
+    <ClInclude Include="src\utilities\handles.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp">

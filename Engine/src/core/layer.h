@@ -12,7 +12,8 @@ namespace Engine
 		virtual ~Layer() = default;
 
 		virtual void OnAttach() {}
-		virtual void OnDetach() {}
+		virtual void OnDetach() {} 
+		virtual void OnStart()	{}
 		virtual void OnUpdate() {}
 		virtual void OnEditorRender() {}
 		virtual void OnEvent(Event& e) {}
@@ -21,5 +22,4 @@ namespace Engine
 	protected:
 		std::string m_DebugName;
 	};
-
 }

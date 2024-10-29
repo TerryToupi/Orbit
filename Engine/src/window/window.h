@@ -6,9 +6,12 @@ namespace Engine
 {
 	struct WindowConfig
 	{ 
+		using EventCallback = std::function<void(Event&)>; 
+
 		std::string WindowName;
 		uint32_t Width;
 		uint32_t Height; 
+		EventCallback callback = nullptr;
 
 		WindowConfig(const std::string& title = "Orbit",
 				uint32_t Width = 1024,

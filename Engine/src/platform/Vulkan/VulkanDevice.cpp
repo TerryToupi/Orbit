@@ -133,9 +133,9 @@ namespace Engine
 		{
 			createInfo.enabledLayerCount = 0;
 			createInfo.pNext = nullptr;
-		}
-
-		VK_VALIDATE(vkCreateInstance(&createInfo, nullptr, &m_instance)); 
+		} 
+		
+		VK_VALIDATE(vkCreateInstance(&createInfo, nullptr, &m_instance));  
 
 		volkLoadInstance(m_instance);
 	}
