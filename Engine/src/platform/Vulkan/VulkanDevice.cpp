@@ -245,10 +245,12 @@ namespace Engine
 	}
 
 	void VulkanDevice::SetupSurface()
-	{ 
+	{
+		VulkanWindow* wm = static_cast<VulkanWindow*>(Window::instance);
+
 		VK_VALIDATE(glfwCreateWindowSurface(
 			m_instance,
-			static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), 
+			wm->GetNativeWindow(),
 			nullptr,
 			&m_surface
 			)

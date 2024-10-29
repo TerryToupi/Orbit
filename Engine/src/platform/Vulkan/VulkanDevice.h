@@ -25,7 +25,7 @@ namespace Engine
 		std::vector<VkPresentModeKHR> PresentModes;
 	};
 
-	class VulkanDevice : public Device 
+	class VulkanDevice final: public Device 
 	{  
 	public:
 		const VkDevice& GetDevice(); 
@@ -36,7 +36,6 @@ namespace Engine
 		const VkPhysicalDeviceProperties& GetPhysicalProperties(); 
 		const VkPhysicalDeviceFeatures& GetPhysicaFeatures();
 
-	protected:
 		virtual void Init() override;
 		virtual void ShutDown() override;  
 

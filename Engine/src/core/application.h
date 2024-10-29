@@ -3,7 +3,7 @@
 #include <window/window.h> 
 #include <events/appEvents.h> 
 #include <core/layerManager.h>  
-#include <renderer/device.h>
+#include <renderer/device.h> 
 
 int main(int argc, char** argv);
 
@@ -13,9 +13,7 @@ namespace Engine
 	{
 	public: 
 		Application(); 
-		virtual ~Application(); 
-
-		Window& GetWindow();  
+		virtual ~Application();  
 
 		void PushLayer(Layer* l);
 		void PushOverlay(Layer* l);
@@ -35,7 +33,6 @@ namespace Engine
 
 	private: 
 		bool m_running = false;
-		Unique<Window> m_window;
 		LayerManager m_layers;   
 	
 	private:

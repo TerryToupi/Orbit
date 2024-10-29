@@ -15,7 +15,7 @@ namespace Editor {
 		virtual void OnAttach() override {}
 		virtual void OnDetach() override {}
 		virtual void OnUpdate() override {}
-		virtual void OnEditorRender() override {}
+		virtual void OnImguiRender() override {}
 		virtual void OnEvent(Engine::Event& e) override {}
 
 	public:

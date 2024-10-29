@@ -6,24 +6,32 @@
 
 namespace Engine
 {
-	static uint8_t s_activeWindowCount = 0;
-
-	VulkanWindow::VulkanWindow(const WindowConfig& config)
+	VulkanWindow::VulkanWindow(const WindowConfig& config) 
+		: m_data {
+			.width = config.Width,  
+			.height = config.Height,
+			.callBack = nullptr
+		} , 
+		m_windowName(config.WindowName),
+		m_nativeWindow(nullptr)
 	{
-		m_data.width = config.Width;
-		m_data.height = config.Height;
-		m_windowName = config.WindowName;
+	}
 
-		if (s_activeWindowCount == 0)
-		{
-			int status = glfwInit();
-			ENGINE_ASSERT(status);
-		} 
+	void VulkanWindow::ShutDown()
+	{
+		ENGINE_CORE_INFO("Terminating window API!");
+		glfwDestroyWindow(m_nativeWindow);
+		glfwTerminate();
+	}
+
+	void VulkanWindow::Init()
+	{ 
+		int status = glfwInit();
+		ENGINE_ASSERT(status);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_nativeWindow = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_windowName.c_str(), nullptr, nullptr);
-		++s_activeWindowCount;
 
 		glfwSetWindowUserPointer(m_nativeWindow, &m_data);
 
@@ -50,18 +58,18 @@ namespace Engine
 
 				switch (action)
 				{
-					case GLFW_PRESS:
-					{
-						KeyPressedEvent event(key);
-						data.callBack(event);
-						break;
-					}
-					case GLFW_RELEASE:
-					{
-						KeyReleasedEvent event(key);
-						data.callBack(event);
-						break;
-					}
+				case GLFW_PRESS:
+				{
+					KeyPressedEvent event(key);
+					data.callBack(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					KeyReleasedEvent event(key);
+					data.callBack(event);
+					break;
+				}
 				}
 			});
 
@@ -87,34 +95,20 @@ namespace Engine
 
 				switch (action)
 				{
-					case GLFW_PRESS:
-					{
-						MouseButtonPressedEvent event(button);
-						data.callBack(event);
-						break;
-					}
-					case GLFW_RELEASE:
-					{
-						MouseButtonReleasedEvent event(button);
-						data.callBack(event);
-						break;
-					}
+				case GLFW_PRESS:
+				{
+					MouseButtonPressedEvent event(button);
+					data.callBack(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					MouseButtonReleasedEvent event(button);
+					data.callBack(event);
+					break;
+				}
 				}
 			});
-	}
-
-	VulkanWindow::~VulkanWindow()
-	{
-		glfwDestroyWindow(m_nativeWindow);
-		--s_activeWindowCount;
-
-		ENGINE_CORE_INFO("Active window count: {0}", s_activeWindowCount);
-
-		if (s_activeWindowCount == 0)
-		{
-			ENGINE_CORE_INFO("Terminating window API!");
-			glfwTerminate();
-		}
 	}
 
 	unsigned int VulkanWindow::GetWidth() const
@@ -127,7 +121,7 @@ namespace Engine
 		return m_data.height;
 	}
 
-	void* VulkanWindow::GetNativeWindow() const
+	GLFWwindow* VulkanWindow::GetNativeWindow() const 
 	{
 		return m_nativeWindow;
 	}

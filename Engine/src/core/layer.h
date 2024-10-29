@@ -15,11 +15,12 @@ namespace Engine
 		virtual void OnDetach() {} 
 		virtual void OnStart()	{}
 		virtual void OnUpdate() {}
-		virtual void OnEditorRender() {}
+		virtual void OnImguiRender() {}
 		virtual void OnEvent(Event& e) {}
 
 		const std::string& GetName() const { return m_DebugName; }
 	protected:
 		std::string m_DebugName;
 	};
-}
+} 
+

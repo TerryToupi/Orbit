@@ -19,6 +19,9 @@
     <Filter Include="renderer">
       <UniqueIdentifier>{9C6AA017-8837-FB22-B150-E9CA9D7C30B1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utilities">
+      <UniqueIdentifier>{212A0ED3-8D94-C249-D6D2-73EF427CA09E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="window">
       <UniqueIdentifier>{5DFE1E25-49A0-49FB-325B-5D4F1E9CD04B}</UniqueIdentifier>
     </Filter>
@@ -70,10 +73,12 @@
     <ClInclude Include="src\renderer\device.h">
       <Filter>renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\utilities\handles.h">
+      <Filter>utilities</Filter>
+    </ClInclude>
     <ClInclude Include="src\window\window.h">
       <Filter>window</Filter>
     </ClInclude>
-    <ClInclude Include="src\utilities\handles.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp">
@@ -82,7 +87,7 @@
     <ClCompile Include="src\core\layer.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\layerStack.cpp">
+    <ClCompile Include="src\core\layerManager.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\logs.cpp">
@@ -108,12 +113,6 @@
     </ClCompile>
     <ClCompile Include="src\platform\imgui\ImguiBuild.cpp">
       <Filter>platform\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\device.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\window\window.cpp">
-      <Filter>window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

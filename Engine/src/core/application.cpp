@@ -1,5 +1,11 @@
 #include <core/application.h> 
-#include <core/assert.h>   
+#include <core/assert.h>     
+
+#ifdef VULKAN_BACKEND
+#include <platform/Vulkan/VulkanDevice.h>  
+#include <platform/Vulkan/VulkanWindow.h>
+#endif // VULKAN_BACKEND
+
 
 namespace Engine
 { 
@@ -10,37 +16,31 @@ namespace Engine
 		ENGINE_ASSERT_MSG(!s_Instance, "Application instance already exists!");
 		s_Instance = this;  
 
-		ENGINE_CORE_INFO("Initializing Window manager!"); 
+		#ifdef VULKAN_BACKEND
+		Device::instance = static_cast<VulkanDevice*>(new VulkanDevice()); 
+		Window::instance = static_cast<VulkanWindow*>(new VulkanWindow(WindowConfig()));
+		#else  
+		ENGINE_CORE_ERROR("Chose an apropriate backend for the engine in the build system!");
+		#endif  
 		
-		m_window = Window::Create(WindowConfig()); 
-		m_window->SetEventCallback(BIND_EVENT(Application::OnEvent));  
-
-		// instanciating sigleton managers
-		Device::Create(); 
-
+		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent));
 		m_running = true;  
-
-		//m_editor = nullptr;
-		//#ifdef EDITOR_APPLICATION 
-		//ENGINE_CORE_INFO("Editor application initialization!");
-		//m_editor = new EditorBackend(); 
-		//PushOverlay(m_editor);
-		//#endif
 	}
 
 	Application::~Application()
 	{  
-		Device::Destroy();
+		ENGINE_CORE_INFO("Shutting down gfx device!");
+		Device::instance->ShutDown(); 
+		delete Device::instance; 
+
+		ENGINE_CORE_INFO("Shutting down gfx window!"); 
+		Window::instance->ShutDown();
+		delete Window::instance;
 	}
 
 	Application& Application::Get()
 	{
 		return *s_Instance;
-	}
-
-	Window& Application::GetWindow()
-	{ 
-		return *m_window;
 	}
 
 	void Application::PushLayer(Layer* l)
@@ -64,7 +64,10 @@ namespace Engine
 	}
 
 	void Application::Run()
-	{  
+	{ 
+		Window::instance->Init();
+		Device::instance->Init(); 
+
 		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
 		{
 			(*layer)->OnStart();
@@ -72,7 +75,7 @@ namespace Engine
 
 		while (m_running)
 		{
-			m_window->Update();
+			Window::instance->Update();
 
 			for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
 			{
@@ -89,7 +92,7 @@ namespace Engine
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{  
-		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", m_window->GetWidth(), m_window->GetHeight());
+		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", Window::instance->GetWidth(), Window::instance->GetHeight());
 		return true;
 	}
 

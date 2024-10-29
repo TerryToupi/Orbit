@@ -5,11 +5,14 @@
 
 namespace Engine
 {
-	class VulkanWindow : public Window
+	class VulkanWindow final: public Window
 	{
 	public:
 		VulkanWindow(const WindowConfig& config);
-		virtual ~VulkanWindow();
+		virtual ~VulkanWindow() = default;
+ 
+		virtual void Init() override;
+		virtual void ShutDown() override;
 
 		unsigned int GetWidth() const override;
 		unsigned int GetHeight() const override;
@@ -19,7 +22,7 @@ namespace Engine
 
 		virtual void SetEventCallback(const EventCallback& cb) override;
 
-		virtual void* GetNativeWindow() const override;
+		GLFWwindow* GetNativeWindow() const;
 
 	private:
 		struct WindowData
