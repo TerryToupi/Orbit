@@ -7,6 +7,8 @@
 #endif // VULKAN_BACKEND
 
 
+#include <utilities/pools.h>
+
 namespace Engine
 { 
 	Application* Application::s_Instance = nullptr;
@@ -64,10 +66,10 @@ namespace Engine
 	}
 
 	void Application::Run()
-	{ 
+	{  
 		Window::instance->Init();
-		Device::instance->Init(); 
-
+		Device::instance->Init();   
+ 
 		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
 		{
 			(*layer)->OnStart();

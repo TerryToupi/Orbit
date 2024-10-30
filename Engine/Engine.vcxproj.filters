@@ -79,6 +79,9 @@
     <ClInclude Include="src\window\window.h">
       <Filter>window</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\resourceManager.h" />
+    <ClInclude Include="src\utilities\pools.h" />
+    <ClInclude Include="src\utilities\arena.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp">

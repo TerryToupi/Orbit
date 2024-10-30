@@ -3,7 +3,7 @@
 #include <core/core.h> 
 
 namespace Engine
-{
+{   
 	template<typename T>
 	class Handle
 	{
@@ -24,6 +24,8 @@ namespace Engine
 
 	private:
 		uint32_t m_index;
-		uint32_t m_generation; 
+		uint32_t m_generation;  
+
+		template<typename U, typename V> friend class Pool;
 	};
 }
