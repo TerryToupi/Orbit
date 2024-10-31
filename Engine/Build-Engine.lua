@@ -11,7 +11,7 @@ project "Engine"
         "src/**.cpp" 
     }
 
-    includedirs 
+    externalincludedirs 
     {
         "src",  
         "%{ExternalIncludePaths.VulkanSDK}", 

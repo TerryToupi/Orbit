@@ -8,7 +8,7 @@ project "Volk"
         "volk.c"
 	}  
 
-	includedirs 
+	externalincludedirs 
 	{
         "%{ExternalIncludePaths.VulkanSDK}"
 	}

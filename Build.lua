@@ -1,13 +1,7 @@
 -- premake5.lua
 workspace "Orbit"
-   architecture "x86_64"
    configurations { "Debug", "Release", "Dist" } 
    startproject "Editor"
-
---    xcode settings
-   xcodebuildsettings = {
-      ["ALWAYS_SEARCH_USER_PATHS"] = "YES"
-   } 
 
    -- Global space flags
    flags
@@ -16,12 +10,20 @@ workspace "Orbit"
 	}
 
    -- Workspace-wide build options for MSVC
-   filter "system:windows"
+   filter "system:windows" 
+      architecture "amd64"
       buildoptions { 
          "/EHsc", 
          "/Zc:preprocessor", 
          "/Zc:__cplusplus" 
-      } 
+      }  
+
+   filter "system:macosx"
+      architecture "universal"
+      xcodebuildsettings {
+         ["ALWAYS_SEARCH_USER_PATHS"] = "NO",
+         ["CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER"] = "YES"
+      }
 
 -- External include paths 
 ExternalIncludePaths = {} 

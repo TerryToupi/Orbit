@@ -91,26 +91,39 @@ project "GLFW"
 		} 
 
 	filter "system:macosx"
+		systemversion "latest"
 		pic "On"
 
-		files
-		{
-			"src/cocoa_init.m",
-			"src/cocoa_monitor.m",
-			"src/cocoa_window.m",
-			"src/cocoa_joystick.m",
-			"src/cocoa_time.c",
-			"src/nsgl_context.m",
-			"src/posix_thread.c",
-			"src/posix_module.c",
-			"src/osmesa_context.c",
-			"src/egl_context.c"
-		}
+		-- files
+		-- {
+		-- 	"src/cocoa_init.m",
+		-- 	"src/cocoa_monitor.m",
+		-- 	"src/cocoa_window.m",
+		-- 	"src/cocoa_joystick.m",
+		-- 	"src/cocoa_time.c",
+		-- 	"src/nsgl_context.m",
+		-- 	"src/posix_thread.c",
+		-- 	"src/posix_module.c",
+		-- 	"src/osmesa_context.c",
+		-- 	"src/egl_context.c"
+		-- }
 
-		defines
-		{
-			"_GLFW_COCOA"
-		}
+		files
+        {
+            "src/cocoa_time.c",
+            "src/posix_module.c",
+            "src/posix_thread.c",
+            "src/cocoa_init.m",
+            "src/cocoa_joystick.m",
+            "src/cocoa_monitor.m",
+            "src/cocoa_window.m",
+            "src/nsgl_context.m",
+        }
+
+        defines
+        {
+            "_GLFW_COCOA"
+        }
 
 	filter "configurations:Debug"
 		runtime "Debug"

@@ -11,7 +11,7 @@ project "Editor"
         "src/**.cpp" 
     }
 
-    includedirs
+    externalincludedirs
     {
         "src", 
         
@@ -24,7 +24,9 @@ project "Editor"
 
     links
     {  
-        "Engine"
+        "Engine",
+        "GLFW", 
+        "ImGui"
     }
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
