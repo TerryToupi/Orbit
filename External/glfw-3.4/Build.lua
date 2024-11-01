@@ -1,5 +1,5 @@
 project "GLFW"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C" 
 	staticruntime "on"
 
