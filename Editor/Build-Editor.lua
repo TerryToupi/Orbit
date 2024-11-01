@@ -25,9 +25,6 @@ project "Editor"
     links
     {  
         "Engine",
-        "GLFW", 
-        "ImGui",
-        "Volk"
     }
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
