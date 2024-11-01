@@ -17,7 +17,8 @@ CMakeUserPresets.json
 .vs
 Binaries
 **.vcxproj
-**.vcxproj.user 
+**.vcxproj.user  
+**.vcxproj.filters
 **.sln   
 # Xcode
 #
@@ -84,5 +85,3 @@ fastlane/test_output
 
 __pycache__
 Downloads  
-
-Premake/
