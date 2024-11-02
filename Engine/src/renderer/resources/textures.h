@@ -4,5 +4,5 @@ namespace Engine
 {
 	class Texture;
 
-	class TextureDesc;
+	struct TextureDesc;
 }

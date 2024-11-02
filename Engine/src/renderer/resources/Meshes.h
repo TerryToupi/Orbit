@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-	class Shader;
+	class Mesh;
 
-	struct ShaderDesc;
+	struct MeshDesc;
 }
