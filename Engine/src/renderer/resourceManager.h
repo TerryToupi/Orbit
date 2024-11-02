@@ -1,14 +1,14 @@
 #pragma once  
 
-#include <utilities/pools.h>
+#include <utilities/pools.h> 
+
+#include <renderer/resources/bindGroups.h>
+#include <renderer/resources/buffers.h>
+#include <renderer/resources/textures.h>
+#include <renderer/resources/shaders.h>
 
 namespace Engine
 {
-	class Shader;
-	class BindGroup;
-	class Texture;
-	class Buffer; 
-
 	class ResourceManager
 	{
 	public: 
@@ -19,10 +19,10 @@ namespace Engine
 		virtual void Init(std::size_t memory_space) = 0;
 		virtual void ShutDown() = 0;
 
-		virtual Handle<Shader> createShader() = 0; 
-		virtual Handle<BindGroup> createBindgroup() = 0; 
-		virtual Handle<Texture> createTexture() = 0; 
-		virtual Handle<Buffer> createBuffer() = 0; 
+		virtual Handle<Shader> createShader(ShaderDesc desc) = 0; 
+		virtual Handle<BindGroup> createBindgroup(BindGroupDesc desc) = 0; 
+		virtual Handle<Texture> createTexture(TextureDesc desc) = 0; 
+		virtual Handle<Buffer> createBuffer(BufferDesc desc) = 0; 
 
 		virtual void destroyShader(Handle<Shader> handle) = 0; 
 		virtual void destroyBindgroup(Handle<BindGroup> handle) = 0; 
