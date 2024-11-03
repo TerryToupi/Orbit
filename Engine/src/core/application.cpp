@@ -19,8 +19,8 @@ namespace Engine
 		s_Instance = this;  
 
 		#ifdef VULKAN_BACKEND
-		Device::instance = static_cast<VulkanDevice*>(new VulkanDevice()); 
 		Window::instance = static_cast<VulkanWindow*>(new VulkanWindow(WindowConfig()));
+		Device::instance = static_cast<VulkanDevice*>(new VulkanDevice()); 
 		#else  
 		ENGINE_CORE_ERROR("Chose an apropriate backend for the engine in the build system!");
 		#endif  

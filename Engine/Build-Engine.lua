@@ -41,7 +41,6 @@ project "Engine"
         defines 
         { 
             "OP_WINDOWS",
-            "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 
 
@@ -49,7 +48,6 @@ project "Engine"
         defines 
         {
             "OP_LINUX",
-            "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 
 
@@ -57,7 +55,6 @@ project "Engine"
         defines 
         {
             "OP_MACOS",
-            "GLFW_INCLUDE_NONE",
             "VULKAN_BACKEND"
         } 
 
