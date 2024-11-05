@@ -21,12 +21,12 @@ project "Engine"
         "%{ExternalIncludePaths.ImGui}"
     }   
 
-    links
-    {  
-        "GLFW", 
-        "ImGui",
-        "Volk"
-    }  
+    -- links
+    -- {  
+    --     "GLFW", 
+    --     "ImGui",
+    --     "Volk"
+    -- }  
 
     defines
     {  
@@ -63,12 +63,12 @@ project "Engine"
         runtime "Debug"
         symbols "On" 
 
-        links
-		{ 
-			"%{ExternalLibs.ShaderC_Debug}",
-			"%{ExternalLibs.SPIRV_Cross_Debug}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
-		}
+        -- links
+		-- { 
+		-- 	"%{ExternalLibs.ShaderC_Debug}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_Debug}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
+		-- }
 
     filter "configurations:Release"
         defines { "RELEASE" }
@@ -76,12 +76,12 @@ project "Engine"
         optimize "On"
         symbols "On" 
 
-        links
-		{
-			"%{ExternalLibs.ShaderC_Release}",
-			"%{ExternalLibs.SPIRV_Cross_Release}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
-		}
+        -- links
+		-- {
+		-- 	"%{ExternalLibs.ShaderC_Release}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_Release}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		-- }
 
     filter "configurations:Dist"
         defines { "DIST" }
@@ -89,9 +89,9 @@ project "Engine"
         optimize "On"
         symbols "Off"
 
-        links
-		{
-			"%{ExternalLibs.ShaderC_Release}",
-			"%{ExternalLibs.SPIRV_Cross_Release}",
-			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
-		}
+        -- links
+		-- {
+		-- 	"%{ExternalLibs.ShaderC_Release}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_Release}",
+		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		-- }

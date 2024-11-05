@@ -24,7 +24,10 @@ project "Editor"
 
     links
     {  
-        "Engine",
+        "Engine", 
+        "GLFW", 
+        "ImGui",
+        "Volk"
     }
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
@@ -54,16 +57,37 @@ project "Editor"
     filter "configurations:Debug"
         defines { "DEBUG" }
         runtime "Debug"
-        symbols "On"
+        symbols "On" 
+
+        links
+		{ 
+			"%{ExternalLibs.ShaderC_Debug}",
+			"%{ExternalLibs.SPIRV_Cross_Debug}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
+		}
 
     filter "configurations:Release"
         defines { "RELEASE" }
         runtime "Release"
         optimize "On"
-        symbols "On"
+        symbols "On" 
+
+        links
+        {
+			"%{ExternalLibs.ShaderC_Release}",
+			"%{ExternalLibs.SPIRV_Cross_Release}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		}
 
     filter "configurations:Dist"
         defines { "DIST" }
         runtime "Release"
         optimize "On"
-        symbols "Off"
+        symbols "Off" 
+
+        links
+		{
+			"%{ExternalLibs.ShaderC_Release}",
+			"%{ExternalLibs.SPIRV_Cross_Release}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		}
