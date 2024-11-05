@@ -1,1 +1,0 @@
-ExternalIncludePaths["SpdLog"] = "%{wks.location}/External/spdlog-1.14.1/include"

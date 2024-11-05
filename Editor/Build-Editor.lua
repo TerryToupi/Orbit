@@ -11,16 +11,13 @@ project "Editor"
         "src/**.cpp" 
     }
 
-    externalincludedirs 
+    includedirs 
     {
         "src", 
 
         -- Include Engine
         "%{wks.location}/Engine/src", 
-
-        -- include External
-        "%{ExternalIncludePaths.SpdLog}", 
-    }   
+    } 
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
@@ -46,7 +43,7 @@ project "Editor"
             "VULKAN_BACKEND"
         } 
 
-    filter "configurations:Debug"
+    filter "configurations:debug"
         defines { "DEBUG" }
         runtime "Debug"
         symbols "On" 
@@ -58,7 +55,7 @@ project "Editor"
 		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
 		-- }
 
-    filter "configurations:Release"
+    filter "configurations:release"
         defines { "RELEASE" }
         runtime "Release"
         optimize "On"

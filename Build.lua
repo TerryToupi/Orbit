@@ -1,6 +1,6 @@
 -- premake5.lua
 workspace "Orbit"
-   configurations { "Debug", "Release" } 
+   configurations { "debug", "release" } 
    startproject "Application"
 
    -- Global space flags
@@ -53,12 +53,7 @@ ExternalLibs["SPIRV_Cross_GLSL_Release"] = "%{ExternalLibPaths.VulkanSDK}/spirv-
 -- predefined output directory
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
-group "External"  
-    include "External/volk-1.3.295/Build.lua"
-    include "External/spdlog-1.14.1/Build.lua"   
-    include "External/imgui/Build.lua"
-    include "External/glfw-3.4/Build.lua"
-group "" 
+
 
 group "Engine"
     include "Engine/Build-Engine.lua"

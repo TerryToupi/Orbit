@@ -1,5 +1,6 @@
 import os
-import platform
+import platform 
+import subprocess
 
 from setupVulkan import is_vulkan_installed, install_vulkan_sdk
 from setupPremake import premake_build  
@@ -23,7 +24,15 @@ premake_targets = {
     "Windows": "vs2022",    # Visual Studio 2022 for Windows
     "Linux": "gmake2",      # GNU Make for Linux
     "Darwin": "xcode4"      # Xcode for macOS
-} 
+}  
+
+def install_dependecies(build_type):
+    subprocess.run((
+        'conan', 'install', '.', 
+        '--build', 'missing', 
+        f'--output-folder={parent_dir}/External/Dependencies', 
+        f'--settings=build_type={build_type}'
+    ))
 
 if __name__ == "__main__": 
     vulkan_download_path = os.path.join(parent_dir, "External", "Downloads")
@@ -40,7 +49,10 @@ if __name__ == "__main__":
     if not is_vulkan_installed(system=system):
         install_vulkan_sdk(system=system, download_path=vulkan_download_path)
     else:
-        print("Vulkan is already installed. Skipping installation.") 
+        print("Vulkan is already installed. Skipping installation.")  
+
+    install_dependecies("Debug")
+    install_dependecies("Release")
 
     premake_build(
         premake_paths=premake_paths,
