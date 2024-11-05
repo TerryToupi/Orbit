@@ -1,9 +1,9 @@
 #pragma once 
 
-#include <memory>  
+#include <memory>
 #include <functional>
-#include <string> 
-#include <optional> 
+#include <string>
+#include <optional>
 #include <map>
 
 #ifdef DEBUG

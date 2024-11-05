@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <Component.h>
-#include <core/layer.h> 
+#include "Component.h"
+#include "core/layer.h"
 
 namespace Editor { 
 
