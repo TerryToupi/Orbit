@@ -1,7 +1,7 @@
 -- premake5.lua
 workspace "Orbit"
-   configurations { "Debug", "Release", "Dist" } 
-   startproject "Editor"
+   configurations { "Debug", "Release" } 
+   startproject "Application"
 
    -- Global space flags
    flags
@@ -66,7 +66,11 @@ group ""
 
 group "Editor"
     include "Editor/Build-Editor.lua" 
-group ""  
+group ""   
+
+group "Application"  
+    include "App/Build-App.lua"
+group ""
 
 -- group "Tests"
 --    include "Tests/Build-Tests.lua" 

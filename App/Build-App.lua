@@ -1,5 +1,5 @@
-project "Editor"
-    kind "StaticLib"
+project "Application"
+    kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
     targetdir "Binaries/%{cfg.buildcfg}"
@@ -11,16 +11,25 @@ project "Editor"
         "src/**.cpp" 
     }
 
-    externalincludedirs 
+    externalincludedirs
     {
         "src", 
+        
+        -- External lib include
+        "%{wks.location}/Editor/src", 
 
-        -- Include Engine
+        -- Engine lib include 
         "%{wks.location}/Engine/src", 
+    }
 
-        -- include External
-        "%{ExternalIncludePaths.SpdLog}", 
-    }   
+    links
+    {   
+        "Editor",
+        "Engine", 
+        "GLFW", 
+        "ImGui",
+        "Volk"
+    }
 
     targetdir ("%{wks.location}/Binaries/" .. OutputDir .. "/%{prj.name}")
     objdir ("%{wks.location}/Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
@@ -44,19 +53,19 @@ project "Editor"
         {
             "OP_MACOS",
             "VULKAN_BACKEND"
-        } 
+        }  
 
     filter "configurations:Debug"
         defines { "DEBUG" }
         runtime "Debug"
         symbols "On" 
 
-        -- links
-		-- { 
-		-- 	"%{ExternalLibs.ShaderC_Debug}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_Debug}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
-		-- }
+        links
+		{ 
+			"%{ExternalLibs.ShaderC_Debug}",
+			"%{ExternalLibs.SPIRV_Cross_Debug}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Debug}",
+		}
 
     filter "configurations:Release"
         defines { "RELEASE" }
@@ -64,9 +73,22 @@ project "Editor"
         optimize "On"
         symbols "On" 
 
-        -- links
-		-- {
-		-- 	"%{ExternalLibs.ShaderC_Release}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_Release}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
-		-- }
+        links
+        {
+			"%{ExternalLibs.ShaderC_Release}",
+			"%{ExternalLibs.SPIRV_Cross_Release}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		}
+
+    filter "configurations:Dist"
+        defines { "DIST" }
+        runtime "Release"
+        optimize "On"
+        symbols "Off" 
+
+        links
+		{
+			"%{ExternalLibs.ShaderC_Release}",
+			"%{ExternalLibs.SPIRV_Cross_Release}",
+			"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
+		}

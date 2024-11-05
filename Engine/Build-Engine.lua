@@ -21,13 +21,6 @@ project "Engine"
         "%{ExternalIncludePaths.ImGui}"
     }   
 
-    -- links
-    -- {  
-    --     "GLFW", 
-    --     "ImGui",
-    --     "Volk"
-    -- }  
-
     defines
     {  
         -- remove for product
@@ -75,19 +68,6 @@ project "Engine"
         runtime "Release"
         optimize "On"
         symbols "On" 
-
-        -- links
-		-- {
-		-- 	"%{ExternalLibs.ShaderC_Release}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_Release}",
-		-- 	"%{ExternalLibs.SPIRV_Cross_GLSL_Release}",
-		-- }
-
-    filter "configurations:Dist"
-        defines { "DIST" }
-        runtime "Release"
-        optimize "On"
-        symbols "Off"
 
         -- links
 		-- {
