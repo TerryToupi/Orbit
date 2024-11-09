@@ -88,4 +88,8 @@ Downloads
 
 
 # conan
-External/Dependencies
+External/Dependencies 
+
+
+#cmake 
+out/
