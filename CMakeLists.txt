@@ -67,7 +67,7 @@ if(MSVC) # If using the VS compiler...
 
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
 
-	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") #no console  
+	#set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") #no console  
 
 endif()
 
@@ -79,5 +79,11 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG)
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS) 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC VULKAN_BACKEND) 
 
-target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glfw 
-    spdlog volk Vulkan-Headers)
+target_link_libraries(
+	"${CMAKE_PROJECT_NAME}" 
+	PRIVATE 
+		glfw 
+		spdlog 
+		volk 
+		Vulkan-Headers
+)
