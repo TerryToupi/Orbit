@@ -10,16 +10,24 @@ set(CMAKE_CXX_STANDARD 20)
 #basically this will change the RESOURCES_PATH to be the local path
 #! ! ! ! ! ! !
 #DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD!
-option(PRODUCTION_BUILD "Make this a production build" OFF)
+option(PRODUCTION "Make this a production build" OFF)
 #DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD! 
 
+# Select one of the following backends. ONLY ONE MUST BE SELECTED
+option(VULKAN_BACKEND "Select Vulkan as the native backend" ON)
+option(WEBGPU_BACKEND "Select Vulkan as the native backend" OFF)
+option(D3D12_BACKEND "Select Vulkan as the native backend" 0FF)
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>") 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>") 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) #link time optimization
 
-if(MSVC) 
-add_compile_options(/arch:AVX2) #make sure SIMD optimizations take place
+if(MSVC)
+	#make sure SIMD optimizations take place
+	add_compile_options(/arch:AVX2)
+
 endif()
 
 project(Orbit)
@@ -41,43 +49,82 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/
 file(GLOB_RECURSE EDITOR_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Editor/src/**.cpp")
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/App/src/**.cpp")
 
+# executable stage
 add_executable("${CMAKE_PROJECT_NAME}")
 
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1) 
 
-if(PRODUCTION_BUILD)
+if(PRODUCTION AND MSVC)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
+
 	# setup the ASSETS_PATH macro to be in the root folder of your exe
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
 
 	# remove the option to debug asserts.
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=1) 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=1) 
+	
+	# no console
+	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 
-else()
+	# Define Variable for windows	
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS=1) 
+
+elseif(PRODUCTION AND APPLE)
+	# setup the ASSETS_PATH macro to be in the root folder of your exe
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
+
+	# remove the option to debug asserts.
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=1)
+
+	# Define Variable for macos 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS=1)
+
+elseif(MSVC) 
 	# This is useful to get an ASSETS_PATH in your IDE during development
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=0)  
+
+	# Keep Debug Asserts
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=0)   
+
+	# asserting the DEBUG variable
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG=1) 
+
+	# Define Variable for windows	
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS=1)
+
+elseif(APPLE) 
+	# This is useful to get an ASSETS_PATH in your IDE during development
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+
+	# Keep Debug Asserts
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=0)   
+
+	# asserting the DEBUG variable
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG=1) 
+
+	# Define Variable for windows	
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS=1)
 
 endif()
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${ENGINE_SOURCES} ${EDITOR_SOURCES} ${APP_SOURCES})
 
-if(MSVC) # If using the VS compiler...
-
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
-
-	#set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") #no console  
-
-endif()
-
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/")
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Editor/src/")
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/App/src/")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/App/src/") 
 
-target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG) 
-target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS) 
-target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC VULKAN_BACKEND) 
+if (VULKAN_BACKEND)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC VULKAN_BACKEND)  
+
+elseif(WEBGPU_BACKEND)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC WEBGPU_BACKEND)   
+
+elseif(D3D12_BACKEND)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC WEBGPU_BACKEND)
+
+endif()
 
 target_link_libraries(
 	"${CMAKE_PROJECT_NAME}" 
