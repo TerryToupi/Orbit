@@ -2,18 +2,20 @@
 #include "core/assert.h" 
 #include "events/appEvents.h" 
 #include "events/keyboardEvents.h"
-#include "events/mouseEvents.h" 
+#include "events/mouseEvents.h"
+#include "core/timeManager.h"
 
 namespace Engine
 {
-	VulkanWindow::VulkanWindow(const WindowConfig& config) 
-		: m_data {
-			.width = config.Width,  
+	VulkanWindow::VulkanWindow(const WindowConfig& config)
+		: m_data{
+			.width = config.Width,
 			.height = config.Height,
 			.callBack = nullptr
-		} , 
+		},
 		m_windowName(config.WindowName),
-		m_nativeWindow(nullptr)
+		m_nativeWindow(nullptr),
+		m_time_elapsed(0)
 	{
 	}
 
@@ -126,9 +128,15 @@ namespace Engine
 		return m_nativeWindow;
 	}
 
-	void VulkanWindow::Update() const
-	{
-		glfwPollEvents();
+	void VulkanWindow::Update(uint64_t ts)
+	{ 
+		if (m_time_elapsed >= m_period) 
+		{ 
+			glfwPollEvents(); 
+			m_time_elapsed = 0;
+		} 
+		m_time_elapsed += ts;
+
 		glfwSwapBuffers(m_nativeWindow);
 	}
 

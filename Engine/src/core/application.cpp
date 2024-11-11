@@ -18,6 +18,8 @@ namespace Engine
 		ENGINE_ASSERT_MSG(!s_Instance, "Application instance already exists!");
 		s_Instance = this;  
 
+		SystemClock::instance = new SystemClock(); 
+
 		#ifdef VULKAN_BACKEND
 		Window::instance = static_cast<VulkanWindow*>(new VulkanWindow(WindowConfig()));
 		Device::instance = static_cast<VulkanDevice*>(new VulkanDevice()); 
@@ -25,7 +27,9 @@ namespace Engine
 		ENGINE_CORE_ERROR("Chose an apropriate backend for the engine in the build system!");
 		#endif  
 		
-		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent));
+		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent)); 
+		
+		m_time_elapsed = SystemClock::instance->GetTime();
 		m_running = true;  
 	}
 
@@ -37,7 +41,11 @@ namespace Engine
 
 		ENGINE_CORE_INFO("Shutting down gfx window!"); 
 		Window::instance->ShutDown();
-		delete Window::instance;
+		delete Window::instance; 
+
+		ENGINE_CORE_INFO("Shutting down system clock!");
+		SystemClock::instance->ShutDown();
+		delete SystemClock::instance;
 	}
 
 	Application& Application::Get()
@@ -66,7 +74,8 @@ namespace Engine
 	}
 
 	void Application::Run()
-	{  
+	{   
+		SystemClock::instance->Init();
 		Window::instance->Init();
 		Device::instance->Init();   
  
@@ -76,8 +85,12 @@ namespace Engine
 		}
 
 		while (m_running)
-		{
-			Window::instance->Update();
+		{ 
+			uint64_t time = SystemClock::instance->GetTime();
+			uint64_t timestep = time - m_time_elapsed;
+			m_time_elapsed = time; 
+
+			Window::instance->Update(timestep); 
 
 			for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
 			{

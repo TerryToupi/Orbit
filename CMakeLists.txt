@@ -61,50 +61,44 @@ if(PRODUCTION AND MSVC)
 	# setup the ASSETS_PATH macro to be in the root folder of your exe
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
 
-	# remove the option to debug asserts.
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=1) 
-	
 	# no console
 	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+	
+	# remove the option to debug asserts.
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION) 
 
 	# Define Variable for windows	
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS=1) 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS) 
 
 elseif(PRODUCTION AND APPLE)
 	# setup the ASSETS_PATH macro to be in the root folder of your exe
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
 
 	# remove the option to debug asserts.
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=1)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION)
 
 	# Define Variable for macos 
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS=1)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS)
 
 elseif(MSVC) 
 	# This is useful to get an ASSETS_PATH in your IDE during development
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
 
-	# Keep Debug Asserts
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=0)   
-
 	# asserting the DEBUG variable
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG=1) 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG) 
 
 	# Define Variable for windows	
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS=1)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_WINDOWS)
 
 elseif(APPLE) 
 	# This is useful to get an ASSETS_PATH in your IDE during development
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
 
-	# Keep Debug Asserts
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION=0)   
-
 	# asserting the DEBUG variable
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG=1) 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC DEBUG) 
 
 	# Define Variable for windows	
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS=1)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC OP_MACOS)
 
 endif()
 

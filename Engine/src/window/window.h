@@ -31,7 +31,7 @@ namespace Engine
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 
-		virtual void Update() const = 0;
+		virtual void Update(uint64_t ts) = 0;
 		virtual void ResizeWindow(int w, int h) const = 0;  
 
 		virtual void SetEventCallback(const EventCallback& cb) = 0;

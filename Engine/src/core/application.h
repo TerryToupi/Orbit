@@ -3,7 +3,8 @@
 #include "window/window.h" 
 #include "events/appEvents.h" 
 #include "core/layerManager.h"
-#include "renderer/device.h"
+#include "renderer/device.h" 
+#include "core/timeManager.h"
 
 int main(int argc, char** argv);
 
@@ -32,7 +33,8 @@ namespace Engine
 		friend int ::main(int argc, char** argv); 
 
 	private: 
-		bool m_running = false;
+		bool m_running = false; 
+		uint64_t m_time_elapsed;
 		LayerManager m_layers;   
 	
 	private:

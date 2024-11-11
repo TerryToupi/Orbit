@@ -18,7 +18,7 @@ namespace Engine
 		unsigned int GetWidth() const override;
 		unsigned int GetHeight() const override;
 
-		virtual void Update() const override;
+		virtual void Update(uint64_t ts) override;
 		virtual void ResizeWindow(int w, int h) const override;
 
 		virtual void SetEventCallback(const EventCallback& cb) override;
@@ -36,6 +36,9 @@ namespace Engine
 
 		std::string m_windowName;
 
-		GLFWwindow* m_nativeWindow;
+		GLFWwindow* m_nativeWindow; 
+
+		uint64_t m_time_elapsed;
+		uint64_t m_period = 500;
 	};
 }

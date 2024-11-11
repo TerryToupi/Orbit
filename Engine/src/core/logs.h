@@ -34,7 +34,7 @@ namespace Engine
 #define ENGINE_CLIENT_ERROR(...)	::Engine::Logging::GetClientLogger()->error(__VA_ARGS__)
 #endif 
 
-#ifdef RELEASE 
+#ifdef PRODUCTION 
 #define ENGINE_CORE_TRACE(...)		
 #define ENGINE_CORE_INFO(...)		
 #define ENGINE_CORE_WARN(...)		
@@ -45,16 +45,3 @@ namespace Engine
 #define ENGINE_CLIENT_WARN(...)		
 #define ENGINE_CLIENT_ERROR(...)		
 #endif  
-
-#ifdef DIST 
-#define ENGINE_CORE_TRACE(...)		
-#define ENGINE_CORE_INFO(...)		
-#define ENGINE_CORE_WARN(...)		
-#define ENGINE_CORE_ERROR(...)		
-
-#define ENGINE_CLIENT_TRACE(...)		
-#define ENGINE_CLIENT_INFO(...)		
-#define ENGINE_CLIENT_WARN(...)		
-#define ENGINE_CLIENT_ERROR(...)		
-#endif 
-
