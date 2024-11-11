@@ -121,7 +121,7 @@ elseif(WEBGPU_BACKEND)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC WEBGPU_BACKEND)   
 
 elseif(D3D12_BACKEND)
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC WEBGPU_BACKEND)
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC D3D12_BACKEND)
 
 endif()
 
