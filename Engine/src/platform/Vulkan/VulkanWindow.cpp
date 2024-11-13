@@ -130,7 +130,7 @@ namespace Engine
 
 	void VulkanWindow::Update(uint64_t ts)
 	{ 
-		if (m_time_elapsed >= m_period) 
+		if (m_time_elapsed >= M_INPUT_PERIOD_US)
 		{ 
 			glfwPollEvents(); 
 			m_time_elapsed = 0;

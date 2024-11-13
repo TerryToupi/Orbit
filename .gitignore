@@ -92,5 +92,6 @@ External/Dependencies
 
 
 #cmake 
-out/ 
+out/  
+build/
 CMakeSettings.json

@@ -2,7 +2,9 @@
 
 #include "window/window.h"
 #define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
+#include "GLFW/glfw3.h" 
+
+#define M_INPUT_PERIOD_US 500
 
 namespace Engine
 {
@@ -39,6 +41,5 @@ namespace Engine
 		GLFWwindow* m_nativeWindow; 
 
 		uint64_t m_time_elapsed;
-		uint64_t m_period = 500;
 	};
 }

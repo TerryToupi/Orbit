@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "core/core.h"  
-#include "core/logs.h"
+#include "core/assert.h"
 
 namespace Engine
 {
@@ -17,7 +17,8 @@ namespace Engine
 		ArenaAllocator(const std::size_t totalSize)
 			: m_total_size(totalSize)
 		{
-			m_start_addr = (std::size_t*)malloc(m_total_size);
+			m_start_addr = (std::size_t*)malloc(m_total_size);  
+			ENGINE_ASSERT(m_start_addr);
 			m_offset = 0;
 		}
 

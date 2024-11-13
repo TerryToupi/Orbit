@@ -6,11 +6,8 @@
 #include "platform/Vulkan/VulkanWindow.h"
 #endif // VULKAN_BACKEND
 
-
-#include "utilities/pools.h"
-
 namespace Engine
-{ 
+{
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
@@ -27,7 +24,9 @@ namespace Engine
 		ENGINE_CORE_ERROR("Chose an apropriate backend for the engine in the build system!");
 		#endif  
 		
-		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent)); 
+		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent));  
+
+		JobManager::instance = new JobManager();
 		
 		m_time_elapsed = SystemClock::instance->GetTime();
 		m_running = true;  
@@ -45,7 +44,11 @@ namespace Engine
 
 		ENGINE_CORE_INFO("Shutting down system clock!");
 		SystemClock::instance->ShutDown();
-		delete SystemClock::instance;
+		delete SystemClock::instance; 
+
+		ENGINE_CORE_INFO("Shutting down job manager!");
+		JobManager::instance->ShutDown();
+		delete JobManager::instance;
 	}
 
 	Application& Application::Get()
@@ -77,7 +80,8 @@ namespace Engine
 	{   
 		SystemClock::instance->Init();
 		Window::instance->Init();
-		Device::instance->Init();   
+		Device::instance->Init();     
+		JobManager::instance->Init();
  
 		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
 		{
