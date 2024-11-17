@@ -23,11 +23,10 @@ namespace Engine
 		#else  
 		ENGINE_CORE_ERROR("Chose an apropriate backend for the engine in the build system!");
 		#endif  
-		
-		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent));  
 
 		JobManager::instance = new JobManager();
 		
+		Window::instance->SetEventCallback(BIND_EVENT(Application::OnEvent));  
 		m_time_elapsed = SystemClock::instance->GetTime();
 		m_running = true;  
 	}
@@ -124,7 +123,9 @@ namespace Engine
 
 		for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); layer++)
 		{
-			if (e.Handled) break; 
+			if (e.Handled) 
+				break;  
+
 			(*layer)->OnEvent(e);
 		}
 	}

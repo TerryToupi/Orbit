@@ -1,4 +1,4 @@
-#include "utilities/jobDispathcer.h"    // include our interface 
+#include "jobDispathcer.h"    // include our interface 
 #include "core/assert.h"
 
 #include <algorithm>    // std::max
@@ -8,13 +8,12 @@
 #include <sstream>
 #include <assert.h>
 
-#ifdef _WIN32
+#ifdef OP_WINDOWS 
 #define NOMINMAX
 #include <Windows.h>
-#include "jobDispathcer.h"
 #endif
 
-#ifdef __APPLE__  
+#ifdef OP_MACOS 
 #include <pthread.h>           // For pthread_t, pthread_setname_np, pthread_mach_thread_np, etc.
 #include <mach/mach.h>         // For thread_policy_set, thread_port_t, and kern_return_t types.
 #include <mach/thread_policy.h> // For thread_affinity_policy_data_t and THREAD_AFFINITY_POLICY.
@@ -115,7 +114,7 @@ namespace Engine
 	void JobManager::poll()
 	{
 		m_wakeCondition.notify_one(); // wake one worker thread
-		std::this_thread::yield(); // allow this thread to be rescheduled
+		std::this_thread::yield(); // allow this thread to be rescheduled 
 	}
 
 	void JobManager::Execute(const std::function<void()>& job)

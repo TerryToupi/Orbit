@@ -1,4 +1,5 @@
-#pragma once  
+#pragma once
+
 #include "core/logs.h" 
 #include "window/window.h" 
 #include "events/appEvents.h" 
@@ -24,7 +25,10 @@ namespace Engine
 
 		static Application& Get();    
 
-	private:
+	private: 
+		Application(const Application&);
+		Application(const Application&&);
+
 		void Run(); 
 		bool OnWindowClose(WindowCloseEvent& e); 
 		bool OnWindowResize(WindowResizeEvent& e);
