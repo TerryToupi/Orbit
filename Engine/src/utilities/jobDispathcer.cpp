@@ -1,5 +1,5 @@
 #include "jobDispathcer.h"    // include our interface 
-#include "core/assert.h"
+#include "src/core/assert.h"
 
 #include <algorithm>    // std::max
 #include <atomic>    // to use std::atomic<uint64_t>

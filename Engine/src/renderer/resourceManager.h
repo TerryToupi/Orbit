@@ -1,15 +1,15 @@
 #pragma once  
 
-#include "utilities/pools.h"
+#include "src/utilities/pools.h"
 
-#include "renderer/resources/bindGroups.h"
-#include "renderer/resources/buffers.h"
-#include "renderer/resources/textures.h"
-#include "renderer/resources/shaders.h" 
-#include "renderer/resources/Meshes.h" 
-#include "renderer/resources/RenderPassLayouts.h" 
-#include "renderer/resources/RenderPasses.h" 
-#include "renderer/resources/FrameBuffers.h"
+#include "src/renderer/resources/bindGroups.h"
+#include "src/renderer/resources/buffers.h"
+#include "src/renderer/resources/textures.h"
+#include "src/renderer/resources/shaders.h" 
+#include "src/renderer/resources/Meshes.h" 
+#include "src/renderer/resources/RenderPassLayouts.h" 
+#include "src/renderer/resources/RenderPasses.h" 
+#include "src/renderer/resources/FrameBuffers.h"
 
 namespace Engine
 {

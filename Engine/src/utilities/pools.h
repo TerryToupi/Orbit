@@ -1,8 +1,8 @@
 #pragma once 
 
-#include "core/core.h"  
-#include "utilities/handles.h"
-#include "utilities/arena.h" 
+#include "src/core/core.h"  
+#include "src/utilities/handles.h"
+#include "src/utilities/arena.h" 
 
 #include <stack>
 

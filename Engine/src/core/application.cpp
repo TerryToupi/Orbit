@@ -1,5 +1,5 @@
-#include "core/application.h"
-#include "core/assert.h"
+#include "src/core/application.h"
+#include "src/core/assert.h"
 
 #ifdef VULKAN_BACKEND
 #include "platform/Vulkan/VulkanDevice.h"

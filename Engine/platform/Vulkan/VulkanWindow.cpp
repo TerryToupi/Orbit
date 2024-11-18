@@ -1,9 +1,9 @@
 #include "platform/Vulkan/VulkanWindow.h"
-#include "core/assert.h" 
-#include "events/appEvents.h" 
-#include "events/keyboardEvents.h"
-#include "events/mouseEvents.h"
-#include "core/timeManager.h"
+#include "src/core/assert.h" 
+#include "src/events/appEvents.h" 
+#include "src/events/keyboardEvents.h"
+#include "src/events/mouseEvents.h"
+#include "src/core/timeManager.h"
 
 namespace Engine
 {
@@ -14,8 +14,7 @@ namespace Engine
 			.callBack = nullptr
 		},
 		m_windowName(config.WindowName),
-		m_nativeWindow(nullptr),
-		m_time_elapsed(0)
+		m_nativeWindow(nullptr)
 	{
 	}
 
@@ -130,13 +129,7 @@ namespace Engine
 
 	void VulkanWindow::Update(uint64_t ts)
 	{ 
-		if (m_time_elapsed >= M_INPUT_PERIOD_US)
-		{ 
-			glfwPollEvents(); 
-			m_time_elapsed = 0;
-		} 
-		m_time_elapsed += ts;
-
+		glfwPollEvents(); 
 		glfwSwapBuffers(m_nativeWindow);
 	}
 

@@ -1,10 +1,8 @@
 #pragma once 
 
-#include "window/window.h"
+#include "src/window/window.h"
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h" 
-
-#define M_INPUT_PERIOD_US 500
 
 namespace Engine
 {
@@ -39,7 +37,5 @@ namespace Engine
 		std::string m_windowName;
 
 		GLFWwindow* m_nativeWindow; 
-
-		uint64_t m_time_elapsed;
 	};
 }

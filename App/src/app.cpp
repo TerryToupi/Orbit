@@ -1,4 +1,4 @@
-#include "MainEntry.h"
+#include "src/MainEntry.h"
 
 class GameApp: public Engine::Application
 {

@@ -1,7 +1,7 @@
 #pragma once 
 
-#include "core/core.h"  
-#include "core/assert.h"
+#include "src/core/core.h"  
+#include "src/core/assert.h"
 
 namespace Engine
 {
