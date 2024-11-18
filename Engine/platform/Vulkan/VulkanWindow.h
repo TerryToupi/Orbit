@@ -36,6 +36,6 @@ namespace Engine
 
 		std::string m_windowName;
 
-		GLFWwindow* m_nativeWindow; 
+		GLFWwindow* m_nativeWindow;
 	};
 }
