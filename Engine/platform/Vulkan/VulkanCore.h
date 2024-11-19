@@ -3,4 +3,4 @@
 #include "src/core/assert.h"
 #include "volk.h" 
  
-#define VK_VALIDATE(check) if(!(check == VK_SUCCESS)) { ENGINE_ASSERT(false, "VK Failed at: " ENGINE_STRINGIFY_MACRO(check)); }
+#define VK_VALIDATE(check) if(!(check == VK_SUCCESS)) { ENGINE_ASSERT(false, "[VULKAN ASSERT] " ENGINE_STRINGIFY_MACRO(check)); }

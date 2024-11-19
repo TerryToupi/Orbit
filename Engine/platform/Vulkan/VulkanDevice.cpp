@@ -118,6 +118,9 @@ namespace Engine
 		auto extensions = GetRequiredExtensions();
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
+		
+		// Additional flags for instance
+		createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
 		// Validation layers.
 		if (m_enableValidationLayers)
@@ -309,7 +312,8 @@ namespace Engine
 
 		if (m_enableValidationLayers)
 		{
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); 
+			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 		}
 
 		if (!CheckInstanceExtensionSupport(extensions))
@@ -336,7 +340,8 @@ namespace Engine
 			{
 				if (strcmp(extensionName, extensionProperties.extensionName) == 0)
 				{
-					extensionFound = true;
+					extensionFound = true; 
+					ENGINE_CORE_TRACE("[VK INFO] Extension support: {}", extensionName);
 					break;
 				}
 			}
