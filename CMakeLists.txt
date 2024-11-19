@@ -65,9 +65,7 @@ function(assign_source_groups base_dir)
 endfunction() 
 
 # making filters to be used for easier navigation inside Xcode or VS solution (if you open it that way)
-assign_source_groups("${CMAKE_SOURCE_DIR}/Engine")
-assign_source_groups("${CMAKE_SOURCE_DIR}/Editor")
-assign_source_groups("${CMAKE_SOURCE_DIR}/App")
+assign_source_groups("${CMAKE_SOURCE_DIR}")
 
 # MY_SOURCES is defined to be a list of all the source files for my game 
 # DON'T ADD THE SOURCES BY HAND, they are already added with this macro
