@@ -30,7 +30,8 @@ namespace Engine
 		auto numCores = std::thread::hardware_concurrency();
 
 		// Calculate the actual number of worker threads we want:
-		m_numThreads = std::max(1u, numCores);
+		m_numThreads = std::max(1u, numCores); 
+		ENGINE_CORE_INFO("Available concurency: {}", m_numThreads);
 
 		// Create all our worker threads while immediately starting them:
 		for (uint32_t threadID = 0; threadID < m_numThreads; ++threadID)
@@ -58,7 +59,7 @@ namespace Engine
 
 			});
 
-			#ifdef _WIN32 
+			#ifdef OP_WINDOWS 
 			{
 				// Do Windows-specific thread setup: 
 				HANDLE handle = (HANDLE)worker.native_handle();
@@ -68,9 +69,9 @@ namespace Engine
 				DWORD_PTR affinity_result = SetThreadAffinityMask(handle, affinityMask);
 				ENGINE_ASSERT((affinity_result > 0));
 
-				//// Increase thread priority:
-				//BOOL priority_result = SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
-				//ENGINE_ASSERT(priority_result != 0);
+				// Increase thread priority:
+				BOOL priority_result = SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+				ENGINE_ASSERT(priority_result != 0);
 
 				// Name the thread:
 				std::wstringstream wss;
@@ -80,7 +81,7 @@ namespace Engine
 			}
 			#endif // _WIN32 
 
-			#ifdef __APPLE__
+			#ifdef OP_MACOS
 			{
 				// Thread setup for macOS:
 				pthread_t handle = worker.native_handle();
