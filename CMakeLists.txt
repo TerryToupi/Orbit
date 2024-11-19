@@ -40,20 +40,47 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(External/glfw-3.4)
 add_subdirectory(External/spdlog-1.15.0)
 add_subdirectory(External/volk-1.3.295)
-add_subdirectory(External/Vulkan-Headers)
+add_subdirectory(External/Vulkan-Headers) 
+
+function(assign_source_groups base_dir)
+    # Collect only .cpp and .h files recursively
+    file(GLOB_RECURSE ALL_FILES
+        "${base_dir}/*.cpp"
+        "${base_dir}/*.h"
+    )
+
+    foreach(file IN LISTS ALL_FILES)
+        # Get the relative path from the base directory
+        file(RELATIVE_PATH rel_path "${base_dir}" "${file}")
+
+        # Extract the directory part of the relative path
+        get_filename_component(group_path "${rel_path}" DIRECTORY)
+
+        # Replace '/' with '\\' for Windows compatibility
+        string(REPLACE "/" "\\" group_path "${group_path}")
+
+        # Assign the file to the appropriate source group
+        source_group("${group_path}" FILES "${file}")
+    endforeach()
+endfunction() 
+
+# making filters to be used for easier navigation inside Xcode or VS solution (if you open it that way)
+assign_source_groups("${CMAKE_SOURCE_DIR}/Engine")
+assign_source_groups("${CMAKE_SOURCE_DIR}/Editor")
+assign_source_groups("${CMAKE_SOURCE_DIR}/App")
 
 # MY_SOURCES is defined to be a list of all the source files for my game 
 # DON'T ADD THE SOURCES BY HAND, they are already added with this macro
-file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Engine/**.cpp")
-file(GLOB_RECURSE EDITOR_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Editor/**.cpp")
-file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/App/**.cpp")
+file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Engine/**.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Engine/**.h")
+file(GLOB_RECURSE EDITOR_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Editor/**.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/Editor/**.h")
+file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/App/**.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/App/**.h")
 
 # executable stage
 add_executable("${CMAKE_PROJECT_NAME}")
 
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 
-target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1) 
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE) 
 
 if(PRODUCTION AND MSVC)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
