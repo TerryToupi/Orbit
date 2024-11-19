@@ -89,7 +89,7 @@ namespace Engine
 				// Note: macOS does not officially support CPU affinity for threads.
 				// You might need to use `thread_policy_set` with THREAD_AFFINITY_POLICY on macOS.
 				// However, it's rarely reliable and may not work across all macOS versions.
-				thread_affinity_policy_data_t policy = { threadID % std::thread::hardware_concurrency() };
+                thread_affinity_policy_data_t policy = { static_cast<integer_t>(threadID % std::thread::hardware_concurrency()) };
 				thread_port_t mach_thread = pthread_mach_thread_np(handle);
 				kern_return_t kr = thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY, (thread_policy_t)&policy, THREAD_AFFINITY_POLICY_COUNT);
 				ENGINE_ASSERT(kr == KERN_SUCCESS);
