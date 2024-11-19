@@ -118,9 +118,12 @@ namespace Engine
 		auto extensions = GetRequiredExtensions();
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
-		
-		// Additional flags for instance
-		createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+
+		// Enabling portability subset
+		// if not for MoltenVK we wouldn't need this
+		#ifdef OP_MACOS
+		createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR; 
+		#endif
 
 		// Validation layers.
 		if (m_enableValidationLayers)
@@ -312,8 +315,11 @@ namespace Engine
 
 		if (m_enableValidationLayers)
 		{
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); 
-			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);   
+
+			#ifdef OP_MACOS
+			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME); 
+			#endif
 		}
 
 		if (!CheckInstanceExtensionSupport(extensions))
