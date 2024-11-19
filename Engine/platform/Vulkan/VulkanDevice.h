@@ -70,6 +70,7 @@ namespace Engine
 		const std::vector<const char*> m_deviceExtensions =
 		{
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+			VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
 		};
 
 		const std::vector<const char*> m_validationLayers =
