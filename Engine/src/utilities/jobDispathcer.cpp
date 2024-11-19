@@ -79,29 +79,7 @@ namespace Engine
 				HRESULT hr = SetThreadDescription(handle, wss.str().c_str());
 				ENGINE_ASSERT(SUCCEEDED(hr));
 			}
-			#endif // _WIN32 
-
-			#ifdef OP_MACOS
-			{
-				// Thread setup for macOS:
-				pthread_t handle = worker.native_handle();
-
-				// Attempt to set thread affinity:
-				// Note: macOS does not officially support CPU affinity for threads.
-				// You might need to use `thread_policy_set` with THREAD_AFFINITY_POLICY on macOS.
-				// However, it's rarely reliable and may not work across all macOS versions.
-                thread_affinity_policy_data_t policy = { static_cast<integer_t>(threadID % std::thread::hardware_concurrency()) };
-				thread_port_t mach_thread = pthread_mach_thread_np(handle);
-				kern_return_t kr = thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY, (thread_policy_t)&policy, THREAD_AFFINITY_POLICY_COUNT);
-				ENGINE_ASSERT(kr == KERN_SUCCESS);
-
-				// Name the thread:
-				std::stringstream ss;
-				ss << "EngineJob_" << threadID;
-				int result = pthread_setname_np(ss.str().c_str());
-				ENGINE_ASSERT(result == 0);
-			}
-			#endif
+			#endif // _WIN32  
 
 			worker.detach(); // forget about this thread, let it do it's job in the infinite loop that we created above
 		}
