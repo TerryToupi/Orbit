@@ -12,7 +12,7 @@ namespace Engine
 
 	Application::Application()
 	{   
-		ENGINE_ASSERT_MSG(!s_Instance, "Application instance already exists!");
+		ENGINE_ASSERT(!s_Instance, "Application instance already exists!");
 		s_Instance = this;  
 
 		SystemClock::instance = new SystemClock(); 

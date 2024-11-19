@@ -73,11 +73,11 @@ namespace Engine
 	}
 
 	void VulkanDevice::ShutDown()
-	{ 
+	{
 		vkDeviceWaitIdle(m_device);
 
 		vkDestroyDevice(m_device, nullptr);
-		vkDestroySurfaceKHR(m_instance, m_surface, nullptr); 
+		vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 
 		if (m_enableValidationLayers)
 		{
@@ -86,62 +86,191 @@ namespace Engine
 			{
 				func(m_instance, m_debugMessenger, nullptr);
 			}
-		} 
+		}
 
 		vkDestroyInstance(m_instance, nullptr);
 	}
 
 	void VulkanDevice::SetupInstance()
-	{ 
+	{
 		if (m_enableValidationLayers && !CheckValidationLayerSupport())
 		{
-			ENGINE_CORE_ERROR("VALIDATION layers not available!");
-			ENGINE_ASSERT(false);
-		} 
+			ENGINE_ASSERT(false, "Validation layers requested, but not available!");
+		}
 
+		// Application Info
 		VkApplicationInfo appInfo =
 		{
 			.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-			.pApplicationName = "Orbit Application",
+			.pApplicationName = "Orbit",
 			.applicationVersion = VK_MAKE_VERSION(1, 0, 0),
 			.pEngineName = "Orbit Engine",
 			.engineVersion = VK_MAKE_VERSION(1, 0, 0),
 			.apiVersion = VK_API_VERSION_1_2,
-		}; 
+		};
 
+		// Instance info
 		VkInstanceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
-		auto extensions = GetRequiredExtensions(); 
+		// Get extensions.
+		auto extensions = GetRequiredExtensions();
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-		createInfo.ppEnabledExtensionNames = extensions.data(); 
+		createInfo.ppEnabledExtensionNames = extensions.data();
 
+		// Validation layers.
 		if (m_enableValidationLayers)
 		{
 			createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
 			createInfo.ppEnabledLayerNames = m_validationLayers.data();
 
-			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-			debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-			debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-			debugCreateInfo.pfnUserCallback = debugCallback;
-			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo; 
+			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo =
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+				.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+				.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+				.pfnUserCallback = debugCallback,
+			};
+			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
 		}
 		else
 		{
 			createInfo.enabledLayerCount = 0;
 			createInfo.pNext = nullptr;
-		} 
-		
-		VK_VALIDATE(vkCreateInstance(&createInfo, nullptr, &m_instance));  
+		}
 
+		VK_VALIDATE(vkCreateInstance(&createInfo, nullptr, &m_instance)); 
 		volkLoadInstance(m_instance);
 	}
 
+	void VulkanDevice::SetupDebugMessenger()
+	{
+		if (!m_enableValidationLayers)
+		{
+			return;
+		}
+
+		VkDebugUtilsMessengerCreateInfoEXT createInfo =
+		{
+			.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+			.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+			.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+			.pfnUserCallback = debugCallback,
+		};
+
+		VkResult result;
+		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
+		if (func != nullptr)
+		{
+			result = func(m_instance, &createInfo, nullptr, &m_debugMessenger);
+		}
+		else
+		{
+			result = VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+
+		VK_VALIDATE(result);
+	}
+
+	void VulkanDevice::SetupSurface()
+	{
+		VulkanWindow* wm = static_cast<VulkanWindow*>(Window::instance);
+
+		VK_VALIDATE(glfwCreateWindowSurface(
+			m_instance,
+			wm->GetNativeWindow(),
+			nullptr,
+			&m_surface
+		)
+		);
+	}
+
+	void VulkanDevice::SetupPhysicalDevice()
+	{
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+
+		if (deviceCount == 0)
+		{
+			ENGINE_ASSERT(false, "Failed to find GPUs with Vulkan support!");
+		}
+
+		std::vector<VkPhysicalDevice> devices(deviceCount);
+		vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+		m_physicalDevice = VK_NULL_HANDLE;
+
+		for (const auto& device : devices)
+		{
+			if (IsDeviceSuitable(device))
+			{
+				m_physicalDevice = device;
+				break;
+			}
+		}
+
+		if (m_physicalDevice == VK_NULL_HANDLE)
+		{
+			ENGINE_ASSERT(false, "Failed to find a suitable GPU!");
+		}
+
+		vkGetPhysicalDeviceProperties(m_physicalDevice, &m_vkGPUProperties);
+	}
+
+	void VulkanDevice::SetupLogicalDevice()
+	{
+		// Find swapchain capabilities
+		m_swapChainSupportDetails = QuerySwapChainSupport(m_physicalDevice);
+
+		// Find queue families
+		m_queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+
+		// Create queue families info
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		std::set<uint32_t> uniqueQueueFamilies = { m_queueFamilyIndices.graphicsFamily.value(), m_queueFamilyIndices.presentFamily.value() };
+
+		float queuePriority = 1.0f;
+		for (uint32_t queueFamily : uniqueQueueFamilies)
+		{
+			VkDeviceQueueCreateInfo queueCreateInfo =
+			{
+				.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+				.queueFamilyIndex = queueFamily,
+				.queueCount = 1,
+				.pQueuePriorities = &queuePriority,
+			};
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+
+		VkPhysicalDeviceFeatures deviceFeatures = {};
+
+		VkDeviceCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+		createInfo.pEnabledFeatures = &deviceFeatures;
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(m_deviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = m_deviceExtensions.data();
+
+		if (m_enableValidationLayers)
+		{
+			createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
+			createInfo.ppEnabledLayerNames = m_validationLayers.data();
+		}
+		else
+		{
+			createInfo.enabledLayerCount = 0;
+		}
+
+		VK_VALIDATE(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device)); 
+		volkLoadDevice(m_device);
+	}
+
+	// Helper
+
 	bool VulkanDevice::CheckValidationLayerSupport()
-	{ 
+	{
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -170,201 +299,38 @@ namespace Engine
 		return true;
 	}
 
-	int VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
-	{ 
-		int score = 0; 
-
-		QueueFamilyIndices indices = FindQueueFamilies(device);
-
-		// Check device extension support
-		uint32_t extensionCount;
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-		std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
-
-		for (const auto& extension : availableExtensions)
-		{
-			requiredExtensions.erase(extension.extensionName);
-		}
-		bool extensionsSupported = requiredExtensions.empty(); 
-
-		bool swapChainAdequate = false;
-		if (extensionsSupported)
-		{
-			SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
-			swapChainAdequate = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
-		} 
-
-		if (!indices.isComplete() && !extensionsSupported && !swapChainAdequate)
-			return 0;
-
-		VkPhysicalDeviceProperties deviceProperties;
-		VkPhysicalDeviceFeatures deviceFeatures;
-		vkGetPhysicalDeviceProperties(device, &deviceProperties);
-		vkGetPhysicalDeviceFeatures(device, &deviceFeatures); 
-
-		// Discrete GPUs have a significant performance advantage
-		if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-			score += 1000;
-		}
-
-		// Maximum possible size of textures affects graphics quality
-		score += deviceProperties.limits.maxImageDimension2D;
-
-		return score;
-	}
-
-	void VulkanDevice::SetupDebugMessenger()
-	{
-		if (!m_enableValidationLayers)
-		{
-			return;
-		}
-
-		VkDebugUtilsMessengerCreateInfoEXT createInfo {};
-		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-		createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-		createInfo.pfnUserCallback = debugCallback;
-
-		VkResult result;
-		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
-		if (func != nullptr)
-		{
-			result = func(m_instance, &createInfo, nullptr, &m_debugMessenger);
-		}
-		else
-		{
-			result = VK_ERROR_EXTENSION_NOT_PRESENT;
-		}
-
-		VK_VALIDATE(result);
-	}
-
-	void VulkanDevice::SetupSurface()
-	{
-		VulkanWindow* wm = static_cast<VulkanWindow*>(Window::instance);
-
-		VK_VALIDATE(glfwCreateWindowSurface(
-			m_instance,
-			wm->GetNativeWindow(),
-			nullptr,
-			&m_surface
-			)
-		);
-	}
-
-	void VulkanDevice::SetupPhysicalDevice()
-	{ 
-		std::multimap<int, VkPhysicalDevice> candidates; 
-
-		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
-
-		ENGINE_ASSERT(deviceCount);
-
-		std::vector<VkPhysicalDevice> devices(deviceCount);
-		vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data()); 
-
-		for (const auto& device : devices)
-		{
-			int score = rateDeviceSuitability(device); 
-			candidates.insert(std::make_pair(score, device));
-		} 
-
-		if (candidates.rbegin()->first > 0)
-		{
-			m_physicalDevice = candidates.rbegin()->second;
-		} 
-
-		if (m_physicalDevice == VK_NULL_HANDLE)
-		{
-			ENGINE_CORE_ERROR("[VULKAN] Failed to setup a physical device!"); 
-			ENGINE_ASSERT(false);
-		} 
-
-		vkGetPhysicalDeviceProperties(m_physicalDevice, &m_vkGPUProperties);
-		vkGetPhysicalDeviceFeatures(m_physicalDevice, &m_vkGPUFeatures);
-	}
-
-	void VulkanDevice::SetupLogicalDevice()
-	{
-		m_swapChainSupportDetails = QuerySwapChainSupport(m_physicalDevice);
-		m_queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
-
-		// Create queue families info
-		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = { 
-			m_queueFamilyIndices.graphicsFamily.value(), 
-			m_queueFamilyIndices.presentFamily.value() 
-		};
-
-		float queuePriority = 1.0f;
-		for (uint32_t queueFamily : uniqueQueueFamilies)
-		{
-			VkDeviceQueueCreateInfo queueCreateInfo =
-			{
-				.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				.queueFamilyIndex = queueFamily,
-				.queueCount = 1,
-				.pQueuePriorities = &queuePriority,
-			};
-			queueCreateInfos.push_back(queueCreateInfo);
-		}
-
-		VkPhysicalDeviceFeatures deviceFeatures = {};
-
-		VkDeviceCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-		createInfo.pQueueCreateInfos = queueCreateInfos.data();
-		createInfo.pEnabledFeatures = &deviceFeatures;
-		createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
-		createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
-
-		if (m_enableValidationLayers)
-		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
-			createInfo.ppEnabledLayerNames = m_validationLayers.data();
-		}
-		else
-		{
-			createInfo.enabledLayerCount = 0;
-		}
-
-		VK_VALIDATE(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
-		volkLoadDevice(m_device);
-	}
-
 	std::vector<const char*> VulkanDevice::GetRequiredExtensions()
 	{
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions;
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount); 
-
-		std::vector<const char*> requested_extensions(glfwExtensions, glfwExtensions + glfwExtensionCount); 
+		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 		if (m_enableValidationLayers)
 		{
-			requested_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-		} 
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		}
 
-		// Validate extensions
+		if (!CheckInstanceExtensionSupport(extensions))
+		{
+			ENGINE_ASSERT(false, "Device does not support required extensions!")
+		}
+
+		return extensions;
+	}
+
+	bool VulkanDevice::CheckInstanceExtensionSupport(const std::vector<const char*>& glfwExtensionNames)
+	{
 		uint32_t extensionCount = 0;
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
-		ENGINE_ASSERT(extensionCount);
-
 		std::vector<VkExtensionProperties> extensions(extensionCount);
-		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data()); 
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-		for (const char* extensionName : requested_extensions)
+		for (const char* extensionName : glfwExtensionNames)
 		{
-			bool extensionFound = false; 
+			bool extensionFound = false;
 
 			for (const auto& extensionProperties : extensions)
 			{
@@ -374,17 +340,18 @@ namespace Engine
 					break;
 				}
 			}
-			
-			ENGINE_ASSERT(extensionFound);
-			ENGINE_CORE_INFO("[VULKAN] Found extension: {}", std::string(extensionName));
+
+			if (!extensionFound)
+			{
+				return false;
+			}
 		}
 
-		return requested_extensions;
-	} 
-
+		return true;
+	}
 
 	QueueFamilyIndices VulkanDevice::FindQueueFamilies(VkPhysicalDevice device)
-	{ 
+	{
 		QueueFamilyIndices indices;
 
 		uint32_t queueFamilyCount = 0;
@@ -418,10 +385,10 @@ namespace Engine
 		}
 
 		return indices;
-	} 
+	}
 
 	SwapChainSupportDetails VulkanDevice::QuerySwapChainSupport(VkPhysicalDevice device)
-	{ 
+	{
 		SwapChainSupportDetails details;
 
 		// Formats set up.
@@ -448,7 +415,37 @@ namespace Engine
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.Capabilities);
 
 		return details;
-	} 
+	}
+
+	bool VulkanDevice::IsDeviceSuitable(VkPhysicalDevice device)
+	{
+		// Find queue families
+		QueueFamilyIndices indices = FindQueueFamilies(device);
+
+		// Check device extension support
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+		std::set<std::string> requiredExtensions(m_deviceExtensions.begin(), m_deviceExtensions.end());
+
+		for (const auto& extension : availableExtensions)
+		{
+			requiredExtensions.erase(extension.extensionName);
+		}
+		bool extensionsSupported = requiredExtensions.empty();
+
+		bool swapChainAdequate = false;
+		if (extensionsSupported)
+		{
+			SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+			swapChainAdequate = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
+		}
+
+		return indices.isComplete() && extensionsSupported && swapChainAdequate;
+	}
 
 	const VkDevice& VulkanDevice::GetDevice()
 	{ 

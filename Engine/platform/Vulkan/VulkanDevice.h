@@ -48,10 +48,12 @@ namespace Engine
 
 	private:
 		bool CheckValidationLayerSupport();  
-		int rateDeviceSuitability(VkPhysicalDevice device);
+		//int rateDeviceSuitability(VkPhysicalDevice device); 
+		bool CheckInstanceExtensionSupport(const std::vector<const char*>& glfwExtensionNames);
 		std::vector<const char*> GetRequiredExtensions(); 
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device); 
+		bool IsDeviceSuitable(VkPhysicalDevice device);
 		
 	private:  
 		VkDevice m_device;
@@ -65,7 +67,7 @@ namespace Engine
 		QueueFamilyIndices m_queueFamilyIndices{};
 		SwapChainSupportDetails m_swapChainSupportDetails{};
 
-		const std::vector<const char*> m_DeviceExtensions =
+		const std::vector<const char*> m_deviceExtensions =
 		{
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 		};
@@ -77,10 +79,8 @@ namespace Engine
 
 		#ifdef DEBUG
 		const bool m_enableValidationLayers = true;
-		#elif RELEASE
-		const bool m_enableValidationLayers = false; 
-		#elif DIST
-		const bool m_enableValidationLayers = false; 
+		#elif PRODUCTION
+		const bool m_enableValidationLayers = false;  
 		#endif
 	};
 }
