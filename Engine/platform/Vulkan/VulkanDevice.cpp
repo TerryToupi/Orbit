@@ -317,8 +317,10 @@ namespace Engine
 		{
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);   
 
-			#ifdef OP_MACOS
-			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME); 
+			#ifdef OP_MACOS 
+			{
+				extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+			}
 			#endif
 		}
 
