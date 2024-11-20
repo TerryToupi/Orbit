@@ -31,6 +31,7 @@ endif()
 
 project(Orbit)
 
+# import external libs
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -78,6 +79,8 @@ add_executable("${CMAKE_PROJECT_NAME}")
 
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 20)
 
+
+# -------------------------------- TARGET DEFINITIONS ---------------------------------------
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE) 
 
 if(PRODUCTION AND MSVC)
@@ -127,12 +130,6 @@ elseif(APPLE)
 
 endif()
 
-target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${ENGINE_SOURCES} ${EDITOR_SOURCES} ${APP_SOURCES})
-
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Engine/")
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Editor/")
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/App/") 
-
 if (VULKAN_BACKEND)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC VULKAN_BACKEND)  
 
@@ -142,7 +139,15 @@ elseif(WEBGPU_BACKEND)
 elseif(D3D12_BACKEND)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC D3D12_BACKEND)
 
-endif()
+endif() 
+# -------------------------------- TARGET DEFINITIONS --------------------------------------- 
+
+
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${ENGINE_SOURCES} ${EDITOR_SOURCES} ${APP_SOURCES})
+
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Engine/")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Editor/")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/App/") 
 
 target_link_libraries(
 	"${CMAKE_PROJECT_NAME}" 
