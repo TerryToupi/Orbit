@@ -23,7 +23,9 @@ namespace Engine
 	public:  
 		using EventCallback = std::function<void(Event&)>; 
 
-		static inline Window* instance = nullptr;   
+		static inline Window* instance = nullptr;    
+
+		virtual ~Window() = default;
 
 		virtual void Init() = 0;
 		virtual void ShutDown() = 0;
