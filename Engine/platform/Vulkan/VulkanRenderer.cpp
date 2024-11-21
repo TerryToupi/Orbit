@@ -10,6 +10,7 @@ namespace Engine
         vkGetDeviceQueue(device->GetVkDevice(), device->GetVkQueueFamilyIndices().presentFamily.value(), 0, &m_presentQueue); 
 
         createSwapChain();
+        createImageViews();
     } 
 
     void VulkanRenderer::ShutDown()
