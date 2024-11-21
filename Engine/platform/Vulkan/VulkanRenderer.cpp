@@ -11,7 +11,9 @@ namespace Engine
 
         createSwapChain();
         createImageViews();
-    } 
+
+        ENGINE_CORE_INFO("[VULKAN] Vulkan Renderer initialized!");
+    }
 
     void VulkanRenderer::ShutDown()
     { 
