@@ -9,12 +9,12 @@ namespace Engine
 
 		virtual ~Renderer() = default;
 
-		void Init() = 0; 
-		void ShutDown() = 0;
+		virtual void Init() = 0; 
+		virtual void ShutDown() = 0; 
 
-		void BeginFrame() = 0;
-		void EndFrame() = 0; 
-		void Present() = 0; 
+		virtual void BeginFrame() = 0;
+		virtual void EndFrame() = 0; 
+		virtual void Present() = 0; 
 
 	private: 
 

@@ -28,13 +28,15 @@ namespace Engine
 	class VulkanDevice final: public Device 
 	{  
 	public:
-		const VkDevice& GetDevice(); 
-		const VkInstance& GetInsance(); 
-		const VkDebugUtilsMessengerEXT& GetDebugMessenger(); 
-		const VkSurfaceKHR& GetSurface(); 
-		const VkPhysicalDevice& GetPhysicalDevice();
-		const VkPhysicalDeviceProperties& GetPhysicalProperties(); 
-		const VkPhysicalDeviceFeatures& GetPhysicaFeatures();
+		const VkDevice& GetVkDevice(); 
+		const VkInstance& GetVkInsance(); 
+		const VkDebugUtilsMessengerEXT& GetVkDebugMessenger(); 
+		const VkSurfaceKHR& GetVkSurface(); 
+		const VkPhysicalDevice& GetVkPhysicalDevice();
+		const VkPhysicalDeviceProperties& GetVkPhysicalProperties(); 
+		const VkPhysicalDeviceFeatures& GetVkPhysicaFeatures(); 
+		const QueueFamilyIndices& GetVkQueueFamilyIndices();
+		const SwapChainSupportDetails& GetVkSwapChainSupportDetails();
 
 		virtual void Init() override;
 		virtual void ShutDown() override;  

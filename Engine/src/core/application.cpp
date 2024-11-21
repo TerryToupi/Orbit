@@ -3,7 +3,8 @@
 
 #ifdef VULKAN_BACKEND
 #include "platform/Vulkan/VulkanDevice.h"
-#include "platform/Vulkan/VulkanWindow.h"
+#include "platform/Vulkan/VulkanWindow.h" 
+#include "platform/Vulkan/VulkanRenderer.h"
 #endif // VULKAN_BACKEND
 
 namespace Engine
@@ -18,8 +19,9 @@ namespace Engine
 		SystemClock::instance = new SystemClock(); 
 
 		#ifdef VULKAN_BACKEND
-		Window::instance = static_cast<VulkanWindow*>(new VulkanWindow(WindowConfig()));
-		Device::instance = static_cast<VulkanDevice*>(new VulkanDevice()); 
+		Window::instance = new VulkanWindow(WindowConfig());
+		Device::instance = new VulkanDevice(); 
+		Renderer::instance = new VulkanRenderer();
 		#else  
 		ENGINE_ASSERT(false, "Chose an apropriate backend for the engine in the build system!");
 		#endif  
@@ -33,19 +35,23 @@ namespace Engine
 
 	Application::~Application()
 	{  
-		ENGINE_CORE_INFO("Shutting down gfx device!");
+		ENGINE_CORE_WARN("Shutting down gfx renderer!"); 
+		Renderer::instance->ShutDown(); 
+		delete Renderer::instance;
+
+		ENGINE_CORE_WARN("Shutting down gfx device!");
 		Device::instance->ShutDown(); 
 		delete Device::instance; 
 
-		ENGINE_CORE_INFO("Shutting down gfx window!"); 
+		ENGINE_CORE_WARN("Shutting down gfx window!");
 		Window::instance->ShutDown();
 		delete Window::instance; 
 
-		ENGINE_CORE_INFO("Shutting down system clock!");
+		ENGINE_CORE_WARN("Shutting down system clock!");
 		SystemClock::instance->ShutDown();
 		delete SystemClock::instance; 
 
-		ENGINE_CORE_INFO("Shutting down job manager!");
+		ENGINE_CORE_WARN("Shutting down job manager!");
 		JobManager::instance->ShutDown();
 		delete JobManager::instance;
 	}
@@ -79,7 +85,8 @@ namespace Engine
 	{   
 		SystemClock::instance->Init();
 		Window::instance->Init();
-		Device::instance->Init();     
+		Device::instance->Init();
+		Renderer::instance->Init();
 		JobManager::instance->Init();
  
 		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)

@@ -79,7 +79,7 @@ namespace Engine
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 				MouseMotionEvent event((float)xPos, (float)yPos);
-				data.callBack(event);
+				data.callBack(event); 
 			});
 
 		glfwSetScrollCallback(m_nativeWindow, [](GLFWwindow* window, double xOffset, double yOffset)

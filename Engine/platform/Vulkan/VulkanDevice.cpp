@@ -19,7 +19,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
 		messageTypeAsString = "[VULKAN_VALIDATION]";
-		break;
+ 		break;
 	case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
 		messageTypeAsString = "[VULKAN_PERFORMANCE]";
 		break;
@@ -234,7 +234,10 @@ namespace Engine
 
 		// Create queue families info
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = { m_queueFamilyIndices.graphicsFamily.value(), m_queueFamilyIndices.presentFamily.value() };
+		std::set<uint32_t> uniqueQueueFamilies = { 
+			m_queueFamilyIndices.graphicsFamily.value(), 
+			m_queueFamilyIndices.presentFamily.value()
+		};
 
 		float queuePriority = 1.0f;
 		for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -460,38 +463,48 @@ namespace Engine
 		return indices.isComplete() && extensionsSupported && swapChainAdequate;
 	}
 
-	const VkDevice& VulkanDevice::GetDevice()
+	const VkDevice& VulkanDevice::GetVkDevice()
 	{ 
 		return m_device;
 	} 
 
-	const VkInstance& VulkanDevice::GetInsance()
+	const VkInstance& VulkanDevice::GetVkInsance()
 	{ 
 		return m_instance;
 	} 
 
-	const VkDebugUtilsMessengerEXT& VulkanDevice::GetDebugMessenger()
+	const VkDebugUtilsMessengerEXT& VulkanDevice::GetVkDebugMessenger()
 	{ 
 		return m_debugMessenger;
 	} 
 
-	const VkSurfaceKHR& VulkanDevice::GetSurface() 
+	const VkSurfaceKHR& VulkanDevice::GetVkSurface() 
 	{ 
 		return m_surface;
 	} 
 
-	const VkPhysicalDevice& VulkanDevice::GetPhysicalDevice()
+	const VkPhysicalDevice& VulkanDevice::GetVkPhysicalDevice()
 	{ 
 		return m_physicalDevice;
 	} 
 
-	const VkPhysicalDeviceProperties& VulkanDevice::GetPhysicalProperties()
+	const VkPhysicalDeviceProperties& VulkanDevice::GetVkPhysicalProperties()
 	{ 
 		return m_vkGPUProperties;
 	} 
 
-	const VkPhysicalDeviceFeatures& VulkanDevice::GetPhysicaFeatures()
+	const VkPhysicalDeviceFeatures& VulkanDevice::GetVkPhysicaFeatures()
 	{ 
 		return m_vkGPUFeatures;
+	} 
+
+	const QueueFamilyIndices& VulkanDevice::GetVkQueueFamilyIndices()
+	{ 
+		return m_queueFamilyIndices;
+	} 
+
+	const SwapChainSupportDetails& VulkanDevice::GetVkSwapChainSupportDetails()
+	{ 
+		return m_swapChainSupportDetails;
 	}
 }
