@@ -4,7 +4,8 @@
 #ifdef VULKAN_BACKEND
 #include "platform/Vulkan/VulkanDevice.h"
 #include "platform/Vulkan/VulkanWindow.h" 
-#include "platform/Vulkan/VulkanRenderer.h"
+#include "platform/Vulkan/VulkanRenderer.h" 
+#include "platform/Vulkan/resources/VkResourceManager.h"
 #endif // VULKAN_BACKEND
 
 namespace Engine
@@ -21,7 +22,8 @@ namespace Engine
 		#ifdef VULKAN_BACKEND
 		Window::instance = new VulkanWindow(WindowConfig());
 		Device::instance = new VulkanDevice(); 
-		Renderer::instance = new VulkanRenderer();
+		Renderer::instance = new VulkanRenderer(); 
+		ResourceManager::instance = new VkResourceManager();
 		#else  
 		ENGINE_ASSERT(false, "Chose an apropriate backend for the engine in the build system!");
 		#endif  
@@ -37,7 +39,11 @@ namespace Engine
 	{  
 		ENGINE_CORE_WARN("Shutting down gfx renderer!"); 
 		Renderer::instance->ShutDown(); 
-		delete Renderer::instance;
+		delete Renderer::instance; 
+
+		ENGINE_CORE_WARN("Shutting down gfx Resource Manager!");
+		ResourceManager::instance->ShutDown();
+		delete ResourceManager::instance;
 
 		ENGINE_CORE_WARN("Shutting down gfx device!");
 		Device::instance->ShutDown(); 
@@ -85,7 +91,8 @@ namespace Engine
 	{   
 		SystemClock::instance->Init();
 		Window::instance->Init();
-		Device::instance->Init();
+		Device::instance->Init(); 
+		ResourceManager::instance->Init();
 		Renderer::instance->Init();
 		JobManager::instance->Init();
  

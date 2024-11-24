@@ -4,5 +4,8 @@ namespace Engine
 {
 	class BindGroup;
 
-	struct BindGroupDesc;
+	struct BindGroupDesc
+	{
+		int data;
+	};
 }

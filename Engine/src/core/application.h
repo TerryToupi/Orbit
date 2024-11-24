@@ -1,11 +1,9 @@
 #pragma once
 
 #include "src/core/logs.h" 
-#include "src/window/window.h" 
-#include "src/events/appEvents.h" 
 #include "src/core/layerManager.h"
-#include "src/renderer/device.h" 
 #include "src/core/timeManager.h" 
+#include "src/events/appEvents.h" 
 #include "src/utilities/jobDispathcer.h"
 
 int main(int argc, char** argv);

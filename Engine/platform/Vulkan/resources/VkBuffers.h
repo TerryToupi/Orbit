@@ -1,6 +1,11 @@
-#pragma once 
+#pragma once  
+
+#include "src/renderer/resources/buffers.h"
 
 namespace Engine
 {
-	class VkBuffer;
+	class VkBuffer
+	{
+		int data;
+	};
 }

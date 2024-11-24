@@ -4,5 +4,8 @@ namespace Engine
 {
 	class RenderPass;
 
-	struct RenderPassDesc;
+	struct RenderPassDesc
+	{
+		int data;
+	};
 }

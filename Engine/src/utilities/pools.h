@@ -1,19 +1,23 @@
 #pragma once 
 
-#include "src/core/core.h"  
+#include "src/core/assert.h"
+#include "src/core/core.h"
 #include "src/utilities/handles.h"
 #include "src/utilities/arena.h" 
 
-#include <stack>
+#include <stack>  
+#include <string>
+#include <stdlib.h>
 
 namespace Engine
 {
 	template<typename U, typename V> class Pool
 	{
 	public: 
-		Pool(ArenaAllocator& arena)
-		{ 
-			m_data = arena.allocate<U>(sizeof(U) * m_size, 8);
+		Pool(uint32_t reserveSize, std::string debugName)
+			: m_size(reserveSize), m_debugName(debugName)
+		{  
+			m_data = (U*)malloc(sizeof(U) * m_size);
 
 			memset(m_data, 0, sizeof(U) * m_size);
 
@@ -36,7 +40,10 @@ namespace Engine
 		{ 
 			// TODO: assert error
 			//if (m_freeList.empty())
-			//	Reallocate(); 
+			//	Reallocate();  
+
+			//if (m_freeList.empty())
+			//	ENGINE_ASSERT(false, "Pool {} out of memory space!", m_debugName);
 
 			uint32_t index = m_freeList.back();
 			m_freeList.pop_back(); 
@@ -68,9 +75,10 @@ namespace Engine
 		}
 
 	private:
-		U* m_data;  
+		U* m_data;   
+		std::string m_debugName;
 		std::vector<uint32_t> m_generation;
 		std::vector<uint32_t> m_freeList;
-		uint32_t m_size = 32;
+		uint32_t m_size;
 	};
 }

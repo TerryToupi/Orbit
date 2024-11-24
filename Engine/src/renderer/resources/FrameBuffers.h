@@ -4,5 +4,8 @@ namespace Engine
 {
 	class FrameBuffer;
 
-	struct FrameBufferDesc;
+	struct FrameBufferDesc
+	{
+		int data;
+	};
 }

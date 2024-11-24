@@ -4,5 +4,8 @@ namespace Engine
 {
 	class Shader;
 
-	struct ShaderDesc;
+	struct ShaderDesc
+	{
+		int data;
+	};
 }

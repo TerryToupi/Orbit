@@ -4,5 +4,8 @@ namespace Engine
 {
 	class Mesh;
 
-	struct MeshDesc;
+	struct MeshDesc
+	{
+		int data;
+	};
 }

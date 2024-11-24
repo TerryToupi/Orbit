@@ -4,5 +4,8 @@ namespace Engine
 {
 	class Buffer;
 
-	struct BufferDesc;
+	struct BufferDesc
+	{
+		int data;
+	};
 }

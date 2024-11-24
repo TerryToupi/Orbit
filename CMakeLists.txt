@@ -157,5 +157,5 @@ target_link_libraries(
 		spdlog 
 		volk 
 		Vulkan-Headers
-		GPUOpen::VulkanMemoryAllocator
+		VulkanMemoryAllocator
 )
