@@ -38,12 +38,11 @@ namespace Engine
 
 		Handle<V> Insert(const U& data)
 		{ 
-			// TODO: assert error
-			//if (m_freeList.empty())
-			//	Reallocate();  
-
-			//if (m_freeList.empty())
-			//	ENGINE_ASSERT(false, "Pool {} out of memory space!", m_debugName);
+			if (m_freeList.empty()) 
+			{   
+				ENGINE_CORE_ERROR("Out of Memory Pool: {}", m_debugName);
+				ENGINE_ASSERT(false);
+			}
 
 			uint32_t index = m_freeList.back();
 			m_freeList.pop_back(); 

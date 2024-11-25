@@ -51,7 +51,7 @@ namespace Engine
 
 	void VkResourceManager::Init()
 	{ 
-		CreateMemoryAllocator();  
+		CreateMemoryAllocator(); 
 	} 
 
 	void VkResourceManager::ShutDown()
