@@ -19,11 +19,13 @@ namespace Engine
 
 		SystemClock::instance = new SystemClock(); 
 
-		#ifdef VULKAN_BACKEND
-		Window::instance = new VulkanWindow(WindowConfig());
-		Device::instance = new VulkanDevice(); 
-		Renderer::instance = new VulkanRenderer(); 
-		ResourceManager::instance = new VkResourceManager();
+		#ifdef VULKAN_BACKEND 
+		{
+			Window::instance = new VulkanWindow(WindowConfig());
+			Device::instance = new VulkanDevice(); 
+			Renderer::instance = new VulkanRenderer(); 
+			ResourceManager::instance = new VkResourceManager();
+		}
 		#else  
 		ENGINE_ASSERT(false, "Chose an apropriate backend for the engine in the build system!");
 		#endif  

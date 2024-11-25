@@ -42,7 +42,8 @@ add_subdirectory(External/glfw-3.4)
 add_subdirectory(External/spdlog-1.15.0)
 add_subdirectory(External/volk-1.3.295)
 add_subdirectory(External/Vulkan-Headers)  
-add_subdirectory(External/VulkanMemoryAllocator-3.1.0)
+add_subdirectory(External/VulkanMemoryAllocator-3.1.0) 
+add_subdirectory(External/stb_image)
 
 function(assign_source_groups base_dir)
     # Collect only .cpp and .h files recursively
@@ -158,4 +159,5 @@ target_link_libraries(
 		volk 
 		Vulkan-Headers
 		VulkanMemoryAllocator
+		stb_image
 )

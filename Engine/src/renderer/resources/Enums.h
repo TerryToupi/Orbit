@@ -2,14 +2,14 @@
 
 namespace Engine
 {
-	enum ShaderType
+	enum class ShaderType
 	{
 		VERTEX = 0x1,
 		FRAGMENT = 0x2,
 		COMPUTE = 0x3,
 	}; 
 
-	enum BufferBindingType
+	enum class BufferBindingType
 	{
 		UNIFORM = 0x0, 
 		UNIFORM_DYNAMIC_OFFSET = 0x1,
@@ -18,7 +18,7 @@ namespace Engine
 		READ_WRITE_STORAGE = 0x4, 
 	}; 
 
-	enum Compare
+	enum class Compare
 	{
 		LESS = 0x1,
 		LESS_OR_EQUAL = 0x2,
@@ -30,7 +30,7 @@ namespace Engine
 		NONE = 0x8,
 	}; 
 
-	enum VertexFormat
+	enum class VertexFormat
 	{
 		F32	  = 0x0,
 		F32x2 = 0x1,
@@ -46,14 +46,14 @@ namespace Engine
 		U32x4 = 0x11,
 	}; 
 
-	enum Filter
+	enum class Filter
 	{
 		NEAREST = 0x0,
 		LINEAR = 0x1,
 		CUBIC = 0x2,
 	}; 
 
-	enum Wrap
+	enum class Wrap
 	{
 		REPEAT = 0x0,
 		REPEAT_MIRRORED = 0x1,
@@ -62,7 +62,7 @@ namespace Engine
 		MIRROR_CLAMP_TO_EDGE = 0x4,
 	};
 
-	enum Topology
+	enum class Topology
 	{
 		POINT_LIST = 0x0,
 		LINE_LIST = 0x1,
@@ -73,14 +73,14 @@ namespace Engine
 		PATCH_LIST = 0x6,
 	};
 
-	enum PolygonMode
+	enum class PolygonMode
 	{
 		FILL = 0x0,
 		LINE = 0x1,
 		POINT = 0x2,
 	};
 
-	enum CullMode
+	enum class CullMode
 	{
 		NONE = 0x0,
 		FRONT_FACE = 0x1,
@@ -88,7 +88,7 @@ namespace Engine
 		FRONT_AND_BACK = 0x3,
 	};
 
-	enum TextureFormat
+	enum class TextureFormat
 	{
 		RGB32_FLOAT = 0x1,
 		D32_FLOAT = 0x2,
@@ -97,9 +97,13 @@ namespace Engine
 		RG16_FLOAT = 0x5,
 		RGBA8_FLOAT = 0x6,
 		R32_FLOAT = 0x7,
+		RGBA8_SRGB = 0x8,
+		RGBA8_LINEAR = 0x9,
+		BGRA8_UNORM = 0x10,
+		BGRA8_SRGB = 0x11,
 	};
 
-	enum MemoryUsage
+	enum class MemoryUsage
 	{
 		CPU_ONLY = 0x0,
 		GPU_ONLY = 0x1,
@@ -107,7 +111,7 @@ namespace Engine
 		CPU_GPU = 0x3,
 	};
 
-	enum BufferUsage
+	enum class BufferUsage
 	{
 		MAP_READ = 0x1,
 		MAP_WRITE = 0x2,
@@ -121,20 +125,20 @@ namespace Engine
 		QUERY_RESOLVE = 0x10,
 	};
 
-	enum BufferUsageHint
+	enum class BufferUsageHint
 	{
 		STATIC = 0x1,
 		DYNAMIC = 0x2,
 	};
 
-	enum TextureType
+	enum class TextureType
 	{
 		D1 = 0x0,
 		D2 = 0x1,
 		D3 = 0x2,
 	};
 
-	enum TextureAspect
+	enum class TextureAspect
 	{
 		NONE = 0x0,
 		COLOR = 0x1,
@@ -142,7 +146,7 @@ namespace Engine
 		STENCIL = 0x3,
 	};
 
-	enum TextureUsage
+	enum class TextureUsage
 	{
 		COPY_SRC = 0x1,
 		COPY_DST = 0x2,
@@ -153,7 +157,7 @@ namespace Engine
 		DEPTH_STENCIL = 0x7,
 	};
 
-	enum TextureLayout
+	enum class TextureLayout
 	{
 		UNDEFINED = 0x0,
 		COPY_SRC = 0x1,
@@ -163,7 +167,7 @@ namespace Engine
 		PRESENT = 0x5,
 	};
 
-	enum BlendOperation
+	enum class BlendOperation
 	{
 		ADD = 0x0,
 		MUL = 0x1,
@@ -172,7 +176,7 @@ namespace Engine
 		MAX = 0x4,
 	};
 
-	enum BlendFactor
+	enum class BlendFactor
 	{
 		SRC_ALPHA = 0x0,
 		ONE_MINUS_SRC_ALPHA = 0x1,
@@ -180,13 +184,13 @@ namespace Engine
 		ZERO = 0x3,
 	};
 
-	enum StoreOperation
+	enum class StoreOperation
 	{
 		STORE = 0x1,
 		DONT_CARE = 0x2,
 	};
 
-	enum LoadOperation
+	enum class LoadOperation
 	{
 		CLEAR = 0x0,
 		LOAD = 0x1,

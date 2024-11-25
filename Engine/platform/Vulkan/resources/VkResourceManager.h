@@ -41,7 +41,9 @@ namespace Engine
 		virtual void destroyMesh(Handle<Mesh> handle) override{}
 		virtual void destroyRenderPassLayout(Handle<RenderPassLayout> handle) override{}
 		virtual void destroyRenderPass(Handle<RenderPass> handle) override{}
-		virtual void destroyFrameBuffer(Handle<FrameBuffer> handle) override{}
+		virtual void destroyFrameBuffer(Handle<FrameBuffer> handle) override{} 
+
+		VmaAllocator& GetVmaAllocator() { return m_allocator; } 
 
 	private:
 		void CreateMemoryAllocator();
@@ -51,7 +53,7 @@ namespace Engine
 		Pool<VkBindGroup, BindGroup> m_bindGroups{32, "VkBindGroups"};
 		Pool<VkBindGroupLayout, BindGroupLayout> m_bindGroupLayout{32, "VkBindGroupLayouts"};
 		Pool<VkTexture, Texture> m_textures{32, "VkTextures"};
-		Pool<VkBuffer, Buffer> m_buffers{32, "VkBuffers"};
+		Pool<VkDataBuffer, Buffer> m_buffers{32, "VkBuffers"};
 		Pool<VkRenderPassLayout, RenderPassLayout> m_renderPassLayouts{32, "VkRenderPassLayout"};
 		Pool<VkRenderPass, RenderPass> m_renderPasses{32, "VkRenderPasses"};
 		Pool<VkFrameBuffer, FrameBuffer> m_frameBuffers{32, "VkFrameBuffers"};
