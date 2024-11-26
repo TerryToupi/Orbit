@@ -175,5 +175,51 @@ namespace Engine
 		}
 
 		return VK_COMPARE_OP_MAX_ENUM;
+	} 
+
+	VkBufferUsageFlags VkEnums::BufferUsageToVkBufferUsageFlags(BufferUsage bufferUsage)
+	{
+		switch (bufferUsage)
+		{
+		case BufferUsage::MAP_READ:
+			break;
+		case BufferUsage::MAP_WRITE:
+			break;
+		case BufferUsage::COPY_SRC:
+			return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		case BufferUsage::COPY_DST:
+			return VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		case BufferUsage::INDEX:
+			return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		case BufferUsage::VERTEX:
+			return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		case BufferUsage::UNIFORM:
+			return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		case BufferUsage::STORAGE:
+			return VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		case BufferUsage::INDIRECT:
+			return VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+		case BufferUsage::QUERY_RESOLVE:
+			break;
+		}
+
+		return VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM;
+	} 
+
+	VmaMemoryUsage VkEnums::MemoryUsageToVmaMemoryUsage(MemoryUsage memoryUsage)
+	{
+		switch (memoryUsage)
+		{
+		case MemoryUsage::CPU_ONLY:
+			return VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_ONLY;
+		case MemoryUsage::GPU_ONLY:
+			return VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
+		case MemoryUsage::GPU_CPU:
+			return VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_TO_CPU;
+		case MemoryUsage::CPU_GPU:
+			return VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
+		}
+
+		return VMA_MEMORY_USAGE_MAX_ENUM;
 	}
 }

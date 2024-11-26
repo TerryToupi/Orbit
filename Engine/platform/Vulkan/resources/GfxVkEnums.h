@@ -16,5 +16,7 @@ namespace Engine
 		VkSamplerMipmapMode FilterToVkVkSamplerMipmapMode(Filter filter);
 		VkSamplerAddressMode WrapToVkSamplerAddressMode(Wrap wrap); 
 		VkCompareOp CompareToVkCompareOp(Compare compare);
+		VkBufferUsageFlags BufferUsageToVkBufferUsageFlags(BufferUsage bufferUsage); 
+		VmaMemoryUsage MemoryUsageToVmaMemoryUsage(MemoryUsage memoryUsage);
 	}
 }

@@ -61,7 +61,7 @@ namespace Engine
 
 			void* mappedData;
 			vmaMapMemory(rm->GetVmaAllocator(), stagingAllocation, &mappedData);
-			memcpy(mappedData, desc.data, (size_t)imageSize);
+			memmove(mappedData, desc.data, (size_t)imageSize);
 			vmaUnmapMemory(rm->GetVmaAllocator(), stagingAllocation);
 
 			stbi_image_free(desc.data);
