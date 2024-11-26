@@ -4,8 +4,10 @@
 
 namespace Engine
 {
-	class VkShader
-	{
-		int data;
+	class GfxVkShader
+	{ 
+	public:
+		
+	private:
 	};
 }

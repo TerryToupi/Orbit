@@ -2,8 +2,8 @@
 #include "src/renderer/device.h"
 
 // Vulkan
-#include "platform/Vulkan/VulkanCore.h" 
-#include "platform/Vulkan/VulkanWindow.h"
+#include "platform/Vulkan/GfxVulkanCore.h" 
+#include "platform/Vulkan/GfxVulkanWindow.h"
 
 namespace Engine
 {  

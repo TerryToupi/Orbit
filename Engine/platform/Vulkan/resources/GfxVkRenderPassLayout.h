@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class VkRenderPassLayout
+	class GfxVkRenderPassLayout
 	{
 		int data;
 	};

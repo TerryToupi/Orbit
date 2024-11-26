@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class VkRenderPass
+	class GfxVkRenderPass
 	{
 		int data;
 	};

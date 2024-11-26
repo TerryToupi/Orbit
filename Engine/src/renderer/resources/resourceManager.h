@@ -5,7 +5,8 @@
 #include "src/renderer/resources/bindGroups.h"
 #include "src/renderer/resources/bindGroupLayout.h"
 #include "src/renderer/resources/buffers.h"
-#include "src/renderer/resources/textures.h"
+#include "src/renderer/resources/textures.h" 
+#include "src/renderer/resources/sampler.h"
 #include "src/renderer/resources/shaders.h"
 #include "src/renderer/resources/meshes.h" 
 #include "src/renderer/resources/renderPassLayouts.h" 
@@ -28,6 +29,7 @@ namespace Engine
 		virtual Handle<BindGroup> createBindgroup(BindGroupDesc desc) = 0; 
 		virtual Handle<BindGroupLayout> createBindgroupLayout(BindGroupLayoutDesc desc) = 0;
 		virtual Handle<Texture> createTexture(TextureDesc desc) = 0; 
+		virtual Handle<Sampler> createSampler(SamplerDesc) = 0; 
 		virtual Handle<Buffer> createBuffer(BufferDesc desc) = 0;  
 		virtual Handle<Mesh> createMesh(MeshDesc desc) = 0; 
 		virtual Handle<RenderPassLayout> createRenderPassLayout(RenderPassLayoutDesc desc) = 0; 
@@ -38,6 +40,7 @@ namespace Engine
 		virtual void destroyBindgroup(Handle<BindGroup> handle) = 0; 
 		virtual void destroyBindgroupLaout(Handle<BindGroupLayout> handle) = 0; 
 		virtual void destroyTexture(Handle<Texture> handle) = 0; 
+		virtual void destroySampler(Handle<Sampler> handle) = 0; 
 		virtual void destroyBuffer(Handle<Buffer> handle) = 0;  
 		virtual void destroyMesh(Handle<Mesh> handle) = 0; 
 		virtual void destroyRenderPassLayout(Handle<RenderPassLayout> handle) = 0;

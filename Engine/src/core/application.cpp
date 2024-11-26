@@ -2,10 +2,10 @@
 #include "src/core/assert.h"
 
 #ifdef VULKAN_BACKEND
-#include "platform/Vulkan/VulkanDevice.h"
-#include "platform/Vulkan/VulkanWindow.h" 
-#include "platform/Vulkan/VulkanRenderer.h" 
-#include "platform/Vulkan/resources/VkResourceManager.h"
+#include "platform/Vulkan/GfxVulkanDevice.h"
+#include "platform/Vulkan/GfxVulkanWindow.h" 
+#include "platform/Vulkan/GfxVulkanRenderer.h" 
+#include "platform/Vulkan/resources/GfxVkResourceManager.h"
 #endif // VULKAN_BACKEND
 
 namespace Engine

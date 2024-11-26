@@ -1,17 +1,18 @@
 #pragma once
 
-#include "src/renderer/resourceManager.h"  
+#include "src/renderer/resources/resourceManager.h"  
 
-#include "platform/Vulkan/VulkanCore.h"
-#include "platform/Vulkan/resources/VkBindGroups.h"
-#include "platform/Vulkan/resources/VkBindGroupLayout.h"
-#include "platform/Vulkan/resources/VkBuffers.h"
-#include "platform/Vulkan/resources/VkTextures.h"
-#include "platform/Vulkan/resources/VkShaders.h"
-#include "platform/Vulkan/resources/VkMeshes.h"
-#include "platform/Vulkan/resources/VkRenderPassLayout.h"
-#include "platform/Vulkan/resources/VkRenderPasses.h"
-#include "platform/Vulkan/resources/VkFrameBuffers.h" 
+#include "platform/Vulkan/GfxVulkanCore.h"
+#include "platform/Vulkan/resources/GfxVkBindGroups.h"
+#include "platform/Vulkan/resources/GfxVkBindGroupLayout.h"
+#include "platform/Vulkan/resources/GfxVkBuffers.h"
+#include "platform/Vulkan/resources/GfxVkTextures.h" 
+#include "platform/Vulkan/resources/GfxVkSamplers.h" 
+#include "platform/Vulkan/resources/GfxVkShaders.h"
+#include "platform/Vulkan/resources/GfxVkMeshes.h"
+#include "platform/Vulkan/resources/GfxVkRenderPassLayout.h"
+#include "platform/Vulkan/resources/GfxVkRenderPasses.h"
+#include "platform/Vulkan/resources/GfxVkFrameBuffers.h" 
 
 namespace Engine
 {
@@ -27,6 +28,7 @@ namespace Engine
 		virtual Handle<BindGroup> createBindgroup(BindGroupDesc desc) override{return Handle<BindGroup>();}
 		virtual Handle<BindGroupLayout> createBindgroupLayout(BindGroupLayoutDesc desc) override{return Handle<BindGroupLayout>();}
 		virtual Handle<Texture> createTexture(TextureDesc desc) override{return Handle<Texture>();}
+		virtual Handle<Sampler> createSampler(SamplerDesc) override{return Handle<Sampler>();}
 		virtual Handle<Buffer> createBuffer(BufferDesc desc) override{return Handle<Buffer>();}
 		virtual Handle<Mesh> createMesh(MeshDesc desc) override {return Handle<Mesh>();}
 		virtual Handle<RenderPassLayout> createRenderPassLayout(RenderPassLayoutDesc desc) override{return Handle<RenderPassLayout>();}
@@ -37,6 +39,7 @@ namespace Engine
 		virtual void destroyBindgroup(Handle<BindGroup> handle)override{}
 		virtual void destroyBindgroupLaout(Handle<BindGroupLayout> handle) override{}
 		virtual void destroyTexture(Handle<Texture> handle) override{}
+		virtual void destroySampler(Handle<Sampler> handle) override{}
 		virtual void destroyBuffer(Handle<Buffer> handle) override{}
 		virtual void destroyMesh(Handle<Mesh> handle) override{}
 		virtual void destroyRenderPassLayout(Handle<RenderPassLayout> handle) override{}
@@ -49,14 +52,15 @@ namespace Engine
 		void CreateMemoryAllocator();
 
 	private: 
-		Pool<VkShader, Shader> m_shaders{32, "vkShaders"};
-		Pool<VkBindGroup, BindGroup> m_bindGroups{32, "VkBindGroups"};
-		Pool<VkBindGroupLayout, BindGroupLayout> m_bindGroupLayout{32, "VkBindGroupLayouts"};
-		Pool<VkTexture, Texture> m_textures{32, "VkTextures"};
-		Pool<VkDataBuffer, Buffer> m_buffers{32, "VkBuffers"};
-		Pool<VkRenderPassLayout, RenderPassLayout> m_renderPassLayouts{32, "VkRenderPassLayout"};
-		Pool<VkRenderPass, RenderPass> m_renderPasses{32, "VkRenderPasses"};
-		Pool<VkFrameBuffer, FrameBuffer> m_frameBuffers{32, "VkFrameBuffers"};
+		Pool<GfxVkShader, Shader> m_shaders{ 32, "GfxvkShaders" };
+		Pool<GfxVkBindGroup, BindGroup> m_bindGroups{ 32, "GfxVkBindGroups" };
+		Pool<GfxVkBindGroupLayout, BindGroupLayout> m_bindGroupLayout{ 32, "GfxVkBindGroupLayouts" };
+		Pool<GfxVkTexture, Texture> m_textures{ 32, "GfxVkTextures" }; 
+		Pool<GfxVkSampler, Sampler> m_samplers{ 32, "GfxVkSampler" };
+		Pool<GfxVkBuffer, Buffer> m_buffers{ 32, "GfxVkBuffers" };
+		Pool<GfxVkRenderPassLayout, RenderPassLayout> m_renderPassLayouts{ 32, "GfxVkRenderPassLayout" };
+		Pool<GfxVkRenderPass, RenderPass> m_renderPasses{ 32, "GfxVkRenderPasses" };
+		Pool<GfxVkFrameBuffer, FrameBuffer> m_frameBuffers{ 32, "GfxVkFrameBuffers" }; 
 
 	private: 
 		VmaAllocator m_allocator;

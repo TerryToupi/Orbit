@@ -1,14 +1,15 @@
 #pragma once 
 
 #include "src/renderer/resources/textures.h"  
-#include "platform/Vulkan/VulkanCore.h"
+#include "platform/Vulkan/GfxVulkanCore.h" 
+#include "platform/Vulkan/resources/GfxVkEnums.h"
 
 namespace Engine
 {
-	class VkTexture
+	class GfxVkTexture
 	{ 
 	public:
-		VkTexture(const TextureDesc&& desc);
+		GfxVkTexture(const TextureDesc&& desc);
 		
 		void destroy();
 
@@ -17,12 +18,6 @@ namespace Engine
 		VkImageView& GetImageView();
 		VmaAllocation& GetAllocation();
 		VkExtent3D& GetExtent();
-
-		static VkImageUsageFlags TextureUsageToVkVkImageUsageFlags(TextureUsage usage); 
-		static VkImageType TextureTypeToVkImageType(TextureType type); 
-		static VkFormat TextureFormatToVkFormat(TextureFormat format);
-		static VkImageAspectFlags TextureAspectToVkImageAspectFlags(TextureAspect aspect);
-		static VkImageViewType TextureTypeToVkVkImageViewType(TextureType textureType);
 
 	private: 
 		void CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation);

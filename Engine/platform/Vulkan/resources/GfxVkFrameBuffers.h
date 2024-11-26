@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class VkFrameBuffer
+	class GfxVkFrameBuffer
 	{
 		int data;
 	};

@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class VkBindGroupLayout
+	class GfxVkBindGroupLayout
 	{ 
 		int data;
 	};

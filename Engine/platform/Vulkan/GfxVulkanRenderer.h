@@ -1,8 +1,8 @@
 #pragma once
 
-#include "platform/Vulkan/VulkanCore.h" 
-#include "platform/Vulkan/VulkanDevice.h" 
-#include "platform/Vulkan/VulkanWindow.h"
+#include "platform/Vulkan/GfxVulkanCore.h" 
+#include "platform/Vulkan/GfxVulkanDevice.h" 
+#include "platform/Vulkan/GfxVulkanWindow.h"
 
 #include "src/renderer/renderer.h" 
 

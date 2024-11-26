@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class VkMesh
+	class GfxVkMesh
 	{
 		int data;
 	};

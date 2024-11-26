@@ -1,4 +1,4 @@
-#include "platform/Vulkan/VulkanWindow.h"
+#include "platform/Vulkan/GfxVulkanWindow.h"
 #include "src/core/assert.h" 
 #include "src/events/appEvents.h" 
 #include "src/events/keyboardEvents.h"

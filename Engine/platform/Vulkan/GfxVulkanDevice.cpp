@@ -1,4 +1,4 @@
-#include "platform/Vulkan/VulkanDevice.h"
+#include "platform/Vulkan/GfxVulkanDevice.h"
 #include "src/core/application.h"
 
 #include <map> 

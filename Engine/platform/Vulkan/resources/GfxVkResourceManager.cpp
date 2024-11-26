@@ -1,5 +1,5 @@
-#include "platform/Vulkan/resources/VkResourceManager.h"  
-#include "platform/Vulkan/VulkanDevice.h"
+#include "platform/Vulkan/resources/GfxVkResourceManager.h"  
+#include "platform/Vulkan/GfxVulkanDevice.h"
 
 namespace Engine
 {

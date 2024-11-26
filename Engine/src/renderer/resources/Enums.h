@@ -19,7 +19,8 @@ namespace Engine
 	}; 
 
 	enum class Compare
-	{
+	{ 
+		NEVER = 0x0,
 		LESS = 0x1,
 		LESS_OR_EQUAL = 0x2,
 		GREATER = 0x3,
