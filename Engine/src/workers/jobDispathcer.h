@@ -1,5 +1,5 @@
 #include "src/utilities/ringBuffer.h"
-#include <functional> 
+#include <functional>   
 
 namespace Engine
 {

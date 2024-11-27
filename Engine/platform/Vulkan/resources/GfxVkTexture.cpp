@@ -66,7 +66,7 @@ namespace Engine
 
 			stbi_image_free(desc.data);
 
-			CopyBufferToTexture(stagingBuffer);
+			CopyBufferToTexture(stagingBuffer, desc);
 		} 
 
 		VkImageViewCreateInfo imageViewCreateInfo =
@@ -154,59 +154,92 @@ namespace Engine
 		));
 	} 
 
-	void GfxVkTexture::CopyBufferToTexture(VkBuffer stagingBuffer)
-	{  
-		ENGINE_ASSERT(false);
-		//VkImageSubresourceRange range =
-		//{
-		//	.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		//	.baseMipLevel = 0,
-		//	.levelCount = 1,
-		//	.baseArrayLayer = 0,
-		//	.layerCount = 1,
-		//};
+	void GfxVkTexture::CopyBufferToTexture(VkBuffer stagingBuffer, const TextureDesc& desc)
+	{
+		VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
 
-		//VkImageMemoryBarrier imageBarrierToTransfer =
-		//{
-		//	.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-		//	.srcAccessMask = 0,
-		//	.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-		//	.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		//	.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		//	.image = Image,
-		//	.subresourceRange = range,
-		//};
+		renderer->ImmediateSubmit([&](VkCommandBuffer cmd)
+			{
+				VkImageSubresourceRange range =
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.baseMipLevel = 0,
+					.levelCount = desc.mipLevels,
+					.baseArrayLayer = 0,
+					.layerCount = 1,
+				};
 
-		//vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageBarrierToTransfer);
+				VkImageMemoryBarrier imageBarrierToTransfer =
+				{
+					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+					.srcAccessMask = 0,
+					.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+					.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+					.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					.image = m_image,
+					.subresourceRange = range,
+				};
 
-		//VkBufferImageCopy copyRegion =
-		//{
-		//	.bufferOffset = 0,
-		//	.bufferRowLength = 0,
-		//	.bufferImageHeight = 0,
-		//	.imageSubresource =
-		//	{
-		//		.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-		//		.mipLevel = 0,
-		//		.baseArrayLayer = 0,
-		//		.layerCount = 1,
-		//	},
-		//	.imageExtent = Extent,
-		//};
+				vkCmdPipelineBarrier(
+					cmd,
+					VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+					VK_PIPELINE_STAGE_TRANSFER_BIT,
+					0,
+					0,
+					nullptr,
+					0,
+					nullptr,
+					1,
+					&imageBarrierToTransfer
+				);
 
-		//vkCmdCopyBufferToImage(cmd, stagingBuffer, Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+				VkBufferImageCopy copyRegion =
+				{
+					.bufferOffset = 0,
+					.bufferRowLength = 0,
+					.bufferImageHeight = 0,
+					.imageSubresource =
+					{
+						.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+						.mipLevel = desc.mipLevels,
+						.baseArrayLayer = 0,
+						.layerCount = 1,
+					},
+					.imageExtent = m_extent,
+				};
 
-		//VkImageMemoryBarrier imageBarrierToReadable =
-		//{
-		//	.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-		//	.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
-		//	.dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-		//	.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		//	.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		//	.image = Image,
-		//	.subresourceRange = range,
-		//};
+				vkCmdCopyBufferToImage(
+					cmd, 
+					stagingBuffer, 
+					m_image, 
+					VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
+					1, 
+					&copyRegion
+				);
 
-		//vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &imageBarrierToReadable);
-	} 
+				VkImageMemoryBarrier imageBarrierToReadable =
+				{
+					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+					.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+					.dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+					.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+					.image = m_image,
+					.subresourceRange = range,
+				};
+
+				vkCmdPipelineBarrier(
+					cmd, 
+					VK_PIPELINE_STAGE_TRANSFER_BIT, 
+					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 
+					0, 
+					0, 
+					nullptr, 
+					0, 
+					nullptr, 
+					1, 
+					&imageBarrierToReadable
+				);
+			});
+	}
 }

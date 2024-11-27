@@ -10,21 +10,72 @@ namespace Engine
         vkGetDeviceQueue(device->GetVkDevice(), device->GetVkQueueFamilyIndices().presentFamily.value(), 0, &m_presentQueue); 
 
         createSwapChain();
-        createImageViews();
+        createImageViews(); 
+        createCommands();
+        createSyncStructures(); 
+        createDescriptorPool();
 
         ENGINE_CORE_INFO("[VULKAN] Vulkan Renderer initialized!");
     }
 
     void VulkanRenderer::ShutDown()
-    { 
-        VulkanDevice* device = (VulkanDevice*)Device::instance;  
+    {  
+        VulkanDevice* device = (VulkanDevice*)Device::instance; 
+
+        vkDeviceWaitIdle(device->GetVkDevice()); 
+
+        m_cleanup.Flush();
 
         for (auto imageView : m_swapChainImageViews) {
             vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
         }
 
-        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
+        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr); 
     } 
+
+    void VulkanRenderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func)
+    {
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        VkCommandBuffer cmd = m_upload.CommandBuffer;
+
+        VkCommandBufferBeginInfo cmdBeginInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .pNext = nullptr,
+            .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+            .pInheritanceInfo = nullptr,
+        };
+
+        VK_VALIDATE(vkBeginCommandBuffer(cmd, &cmdBeginInfo));
+
+        func(cmd);
+
+        VK_VALIDATE(vkEndCommandBuffer(cmd));
+
+        VkSubmitInfo submit =
+        {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .waitSemaphoreCount = 0,
+            .pWaitSemaphores = nullptr,
+            .pWaitDstStageMask = nullptr,
+            .commandBufferCount = 1,
+            .pCommandBuffers = &cmd,
+            .signalSemaphoreCount = 0,
+            .pSignalSemaphores = nullptr,
+        };
+
+        // Submit command buffer to the queue and execute it.
+        // UploadFence will now block until the graphic commands finish execution
+        VK_VALIDATE(vkQueueSubmit(m_graphicsQueue, 1, &submit, m_upload.UploadFence));
+
+        vkWaitForFences(device->GetVkDevice(), 1, &m_upload.UploadFence, true, 9999999999);
+        vkResetFences(device->GetVkDevice(), 1, &m_upload.UploadFence);
+
+        // Reset the command buffers inside the command pool
+        vkResetCommandPool(device->GetVkDevice(), m_upload.CommandPool, 0);
+    }
 
     void VulkanRenderer::createSwapChain()
     { 
@@ -70,7 +121,9 @@ namespace Engine
         }
         else 
         {
-            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE; 
+            createInfo.queueFamilyIndexCount = 0;
+            createInfo.pQueueFamilyIndices = nullptr;
         }
 
         createInfo.preTransform = swapChainSupport.Capabilities.currentTransform;
@@ -120,11 +173,144 @@ namespace Engine
         }
     }
 
+    void VulkanRenderer::createSyncStructures()
+    { 
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        // Create synchronization structures.
+        VkFenceCreateInfo fenceCreateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = VK_FENCE_CREATE_SIGNALED_BIT,
+        };
+
+
+        // For the semaphores we don't need any flags.
+        VkSemaphoreCreateInfo semaphoreCreateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+        };
+
+        for (int i = 0; i < FRAMES_IN_FLIGHT; i++)
+        {
+            VK_VALIDATE(vkCreateFence(device->GetVkDevice(), &fenceCreateInfo, nullptr, &m_frameData[i].flightFence));
+
+            //enqueue the destruction of the fence
+            m_cleanup.appendFunction([=]()
+                {
+                    vkDestroyFence(device->GetVkDevice(), m_frameData[i].flightFence, nullptr);
+                });
+
+            VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].ImageAvailableSemaphore));
+            VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].PresentRenderFinishedSemaphore));
+            VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].GuiRenderFinishedSemaphore));
+
+            //enqueue the destruction of semaphores
+            m_cleanup.appendFunction([=]()
+                {
+                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].ImageAvailableSemaphore, nullptr);
+                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].PresentRenderFinishedSemaphore, nullptr);
+                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].GuiRenderFinishedSemaphore, nullptr);
+
+                }
+            );
+        }
+
+        VkFenceCreateInfo uploadFenceCreateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            .pNext = nullptr,
+        };
+
+        VK_VALIDATE(vkCreateFence(
+            device->GetVkDevice(),
+            &uploadFenceCreateInfo,
+            nullptr, 
+            &m_upload.UploadFence
+        ));
+
+        m_cleanup.appendFunction([=]()
+			{
+				vkDestroyFence(device->GetVkDevice(), m_upload.UploadFence, nullptr);
+			}
+        );
+    }
+
+    void VulkanRenderer::createCommands()
+    { 
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        const QueueFamilyIndices& indices = device->GetVkQueueFamilyIndices();
+
+        // Create a command pool for commands submitted to the graphics queue. We also want the pool to allow for resetting of individual command buffers
+        VkCommandPoolCreateInfo commandPoolInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+            .queueFamilyIndex = indices.graphicsFamily.value(),
+        };
+
+        VkCommandPoolCreateInfo secondaryCommandPoolInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .queueFamilyIndex = indices.graphicsFamily.value(),
+        };
+    }
+
+    void VulkanRenderer::createDescriptorPool()
+    {  
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        VkDescriptorPoolSize poolSizes[] =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, 100 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100 },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 100 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 100 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 100 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 100 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 100 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 100 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 100 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 100 },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 100 }
+        };
+
+        VkDescriptorPoolCreateInfo tDescriptorPoolInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+            .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+            .maxSets = 100,
+            .poolSizeCount = std::size(poolSizes),
+            .pPoolSizes = poolSizes,
+        };
+
+        VK_VALIDATE(vkCreateDescriptorPool
+        (
+            device->GetVkDevice(), 
+            &tDescriptorPoolInfo, 
+            NULL, 
+            &m_descriptorPool
+        )); 
+
+        m_cleanup.appendFunction([=]()
+            {
+                vkDestroyDescriptorPool(device->GetVkDevice(), m_descriptorPool, nullptr);
+            }
+        );
+    }
+
     VkSurfaceFormatKHR VulkanRenderer::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) 
     {
         for (const auto& availableFormat : availableFormats) 
         {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB 
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM 
                 && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) 
             {
                 return availableFormat;

@@ -21,7 +21,7 @@ namespace Engine
 
 	private: 
 		void CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation);
-		void CopyBufferToTexture(VkBuffer stagingBuffer);
+		void CopyBufferToTexture(VkBuffer stagingBuffer, const TextureDesc& desc);
 
 	private: 
 		const char* m_debugName; 

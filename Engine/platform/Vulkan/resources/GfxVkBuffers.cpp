@@ -75,17 +75,17 @@ namespace Engine
 			memmove(mappedData, m_data, m_byteSize);
 			vmaUnmapMemory(rm->GetVmaAllocator(), stagingBufferAllocation); 
 
-			//renderer->ImmediateSubmit([=](VkCommandBuffer cmd)
-			//	{
-			//		VkBufferCopy copy =
-			//		{
-			//			.srcOffset = 0,
-			//			.dstOffset = 0,
-			//			.size = ByteSize,
-			//		};
+			renderer->ImmediateSubmit([=](VkCommandBuffer cmd)
+				{
+					VkBufferCopy copy =
+					{
+						.srcOffset = 0,
+						.dstOffset = 0,
+						.size = m_byteSize,
+					};
 
-			//		vkCmdCopyBuffer(cmd, stagingBuffer, Buffer, 1, &copy);
-			//	});
+					vkCmdCopyBuffer(cmd, stagingBuffer, m_buffer, 1, &copy);
+				});
 
 			vmaDestroyBuffer(rm->GetVmaAllocator(), stagingBuffer, stagingBufferAllocation);
 		}
