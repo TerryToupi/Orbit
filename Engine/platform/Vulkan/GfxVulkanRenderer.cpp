@@ -25,12 +25,6 @@ namespace Engine
         vkDeviceWaitIdle(device->GetVkDevice()); 
 
         m_cleanup.Flush();
-
-        for (auto imageView : m_swapChainImageViews) {
-            vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
-        }
-
-        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr); 
     } 
 
     void VulkanRenderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func)
@@ -140,7 +134,12 @@ namespace Engine
         vkGetSwapchainImagesKHR(device->GetVkDevice(), m_swapChain, &imageCount, m_swapChainImages.data());
 
         m_swapChainImageFormat = surfaceFormat.format;
-        m_swapChainExtent = extent;
+        m_swapChainExtent = extent; 
+
+        m_cleanup.appendFunction([=]()
+            {
+                vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
+            });
     }
 
     void VulkanRenderer::createImageViews()
@@ -170,7 +169,14 @@ namespace Engine
             createInfo.subresourceRange.layerCount = 1;
 
             VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));
-        }
+        } 
+
+        m_cleanup.appendFunction([=]()
+            {
+                for (auto imageView : m_swapChainImageViews) {
+                    vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
+                }
+            });
     }
 
     void VulkanRenderer::createSyncStructures()
