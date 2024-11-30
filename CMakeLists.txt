@@ -33,7 +33,6 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) #link time optimization
 if(MSVC)
 	#make sure SIMD optimizations take place
 	add_compile_options(/arch:AVX2)
-
 endif()
 
 project(Orbit)
