@@ -197,4 +197,16 @@ namespace Engine
 		LOAD = 0x1,
 		DONT_CARE = 0x2,
 	};
+
+	enum class CommandBufferType
+	{
+		MAIN = 0x0,
+		UI = 0x1
+	};
+
+	enum class RenderPassStage
+	{
+		MAIN = 0x0,
+		IMGUI = 0x1
+	};
 }

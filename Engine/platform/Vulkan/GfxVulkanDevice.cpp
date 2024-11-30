@@ -122,7 +122,9 @@ namespace Engine
 		// Enabling portability subset
 		// if not for MoltenVK we wouldn't need this
 		#ifdef OP_MACOS
-		createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR; 
+		{
+			createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+		}
 		#endif
 
 		// Validation layers.

@@ -73,7 +73,7 @@ namespace Engine
 		{
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME, 
 
-			#ifdef OP_MACOS 
+			#ifdef OP_MACOS
 			// force portability subset for MoltenVK
 			VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME 
 			#endif

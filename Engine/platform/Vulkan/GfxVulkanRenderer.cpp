@@ -220,7 +220,6 @@ namespace Engine
                     vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].ImageAvailableSemaphore, nullptr);
                     vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].PresentRenderFinishedSemaphore, nullptr);
                     vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].GuiRenderFinishedSemaphore, nullptr);
-
                 }
             );
         }
@@ -245,8 +244,8 @@ namespace Engine
         );
     }
 
-    void VulkanRenderer::createCommands()
-    { 
+    void VulkanRenderer::createCommands() {
+
         VulkanDevice* device = (VulkanDevice*)Device::instance;
 
         const QueueFamilyIndices& indices = device->GetVkQueueFamilyIndices();
@@ -260,13 +259,80 @@ namespace Engine
             .queueFamilyIndex = indices.graphicsFamily.value(),
         };
 
-        VkCommandPoolCreateInfo secondaryCommandPoolInfo =
+        // VkCommandPoolCreateInfo secondaryCommandPoolInfo =
+        // {
+        //     .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        //     .pNext = nullptr,
+        //     .flags = 0,
+        //     .queueFamilyIndex = indices.graphicsFamily.value(),
+        // };
+
+        for (int i = 0; i < FRAMES_IN_FLIGHT; i++)
+        {
+            VK_VALIDATE(vkCreateCommandPool(device->GetVkDevice(), &commandPoolInfo, nullptr, &m_frameData[i].CommandPool));
+
+            VkCommandBuffer commandBuffers[2];
+            VkCommandBufferAllocateInfo commandBuffersAllocInfo =
+            {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                .pNext = nullptr,
+                .commandPool = m_frameData[i].CommandPool,
+                .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                .commandBufferCount = 2
+            };
+
+            VK_VALIDATE(vkAllocateCommandBuffers(device->GetVkDevice(), &commandBuffersAllocInfo, commandBuffers));
+
+            m_frameData[i].MainCommandBuffer = commandBuffers[0];
+            m_frameData[i].GuiCommandBuffer = commandBuffers[1];
+
+            m_cleanup.appendFunction([=]()
+            {
+                vkDestroyCommandPool(device->GetVkDevice(), m_frameData[i].CommandPool, nullptr);
+            });
+
+            m_mainCommandBuffer[i] = GfxVkCommandBuffer({
+                .type = CommandBufferType::MAIN,
+                .commandBuffer = m_frameData[i].MainCommandBuffer,
+                .fence = VK_NULL_HANDLE,
+                .waitSemaphore = m_frameData[i].ImageAvailableSemaphore,
+                .signalSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
+            });
+            m_uiCommandBuffer[i] = GfxVkCommandBuffer({
+                .type = CommandBufferType::UI,
+                .commandBuffer = m_frameData[i].GuiCommandBuffer,
+                .fence = VK_NULL_HANDLE,
+                .waitSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
+                .signalSemaphore = m_frameData[i].GuiRenderFinishedSemaphore,
+            });
+        }
+
+        //TODO: change to streaming like above
+        VkCommandPoolCreateInfo uploadCommandPoolInfo =
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
-            .flags = 0,
+            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = indices.graphicsFamily.value(),
         };
+
+        VK_VALIDATE(vkCreateCommandPool(device->GetVkDevice(), &uploadCommandPoolInfo, nullptr, &m_upload.CommandPool));
+
+        m_cleanup.appendFunction([=]()
+        {
+            vkDestroyCommandPool(device->GetVkDevice(), m_upload.CommandPool, nullptr);
+        });
+
+        VkCommandBufferAllocateInfo uploadCommandBufferAllocInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .commandPool = m_upload.CommandPool,
+            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            .commandBufferCount = 1
+        };
+
+        VK_VALIDATE(vkAllocateCommandBuffers(device->GetVkDevice(), &uploadCommandBufferAllocInfo, &m_upload.CommandBuffer));
     }
 
     void VulkanRenderer::createDescriptorPool()
@@ -301,7 +367,7 @@ namespace Engine
         (
             device->GetVkDevice(), 
             &tDescriptorPoolInfo, 
-            NULL, 
+            nullptr,
             &m_descriptorPool
         )); 
 

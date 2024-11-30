@@ -3,6 +3,7 @@
 #include "platform/Vulkan/GfxVulkanCore.h" 
 #include "platform/Vulkan/GfxVulkanDevice.h" 
 #include "platform/Vulkan/GfxVulkanWindow.h"
+#include "platform/Vulkan/GfxVkCommandBuffers.h"
 
 #include "src/renderer/renderer.h"  
 #include "src/utilities/cleanupQueue.h"
@@ -19,7 +20,8 @@ namespace Engine
 
 		VkFence flightFence;
 
-		VkCommandPool CommandPool; 
+		VkCommandPool CommandPool;
+		VkCommandBuffer MainCommandBuffer;
 		VkCommandBuffer GuiCommandBuffer;
 	};
 
@@ -61,9 +63,10 @@ namespace Engine
 		VkFormat m_swapChainImageFormat;
 		VkExtent2D m_swapChainExtent;
 		std::vector<VkImage> m_swapChainImages;
-		std::vector<VkImageView> m_swapChainImageViews; 
+		std::vector<VkImageView> m_swapChainImageViews;
 
 		//immediate submit data
+		//TODO: replace this with a streaming commandBuffer running in parallel with frame
 		struct ImmediateContext
 		{
 			VkFence UploadFence;
@@ -72,7 +75,11 @@ namespace Engine
 		} m_upload; 
 
 		//Frame data for frames in flight
-		Frame m_frameData[FRAMES_IN_FLIGHT]; 
+		Frame m_frameData[FRAMES_IN_FLIGHT];
+
+		//Active Command buffers
+		GfxVkCommandBuffer m_mainCommandBuffer[FRAMES_IN_FLIGHT];
+		GfxVkCommandBuffer m_uiCommandBuffer[FRAMES_IN_FLIGHT];
 
 		//Descriptor pools 
 		VkDescriptorPool m_descriptorPool;
