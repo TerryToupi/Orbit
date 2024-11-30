@@ -87,7 +87,7 @@ namespace Engine
 		#ifdef DEBUG
 		const bool m_enableValidationLayers = true;
 		#elif PRODUCTION
-		const bool m_enableValidationLayers = false;  
+		const bool m_enableValidationLayers = false;
 		#endif
 	};
 }
