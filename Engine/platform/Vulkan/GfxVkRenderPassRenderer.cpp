@@ -27,14 +27,17 @@ namespace Engine
 
     void GfxVkRenderPassRenderer::Submit()
     {
-        VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
+        VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance; 
+
+        VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
         VkSubmitInfo submitInfo =
         {
             .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-            .pCommandBuffers = nullptr,
+            .pNext = nullptr,
             .waitSemaphoreCount = 1,
             .pWaitSemaphores = &m_commandBuffer->GetSignalSemaphore(),
+            .pWaitDstStageMask = &waitStage,
             .commandBufferCount = 1,
             .pCommandBuffers = &m_commandBuffer->GetCommandBuffer(),
             .signalSemaphoreCount = 1,
