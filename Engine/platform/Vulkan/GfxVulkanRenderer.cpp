@@ -25,7 +25,49 @@ namespace Engine
         vkDeviceWaitIdle(device->GetVkDevice()); 
 
         m_cleanup.Flush();
-    } 
+    }
+
+    GfxVkCommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
+    {
+        VkCommandBuffer buffer = VK_NULL_HANDLE;
+        GfxVkCommandBuffer* pCommandBuffer = nullptr;
+
+        switch (type)
+        {
+            case CommandBufferType::MAIN:
+                switch (stage)
+                {
+                    case RenderPassStage::MAIN:
+                        buffer = GetCurrentFrame().MainCommandBuffer;
+                        pCommandBuffer = &m_mainCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT];
+                        break;
+                }
+                break;
+
+            case CommandBufferType::UI:
+                switch (stage)
+                {
+                    case RenderPassStage::IMGUI:
+                        buffer = GetCurrentFrame().GuiCommandBuffer;
+                        pCommandBuffer = &m_uiCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT];
+                        break;
+                }
+        }
+
+        VK_VALIDATE(vkResetCommandBuffer(buffer, 0));
+
+        VkCommandBufferBeginInfo beginInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .pNext = nullptr,
+            .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+            .pInheritanceInfo = nullptr
+        };
+
+        VK_VALIDATE(vkBeginCommandBuffer(buffer, &beginInfo));
+
+        return pCommandBuffer;
+    }
 
     void VulkanRenderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func)
     {
@@ -301,7 +343,7 @@ namespace Engine
             m_uiCommandBuffer[i] = GfxVkCommandBuffer({
                 .type = CommandBufferType::UI,
                 .commandBuffer = m_frameData[i].GuiCommandBuffer,
-                .fence = VK_NULL_HANDLE,
+                .fence = m_frameData[i].flightFence,
                 .waitSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
                 .signalSemaphore = m_frameData[i].GuiRenderFinishedSemaphore,
             });
@@ -434,6 +476,21 @@ namespace Engine
 
             return actualExtent;
         }
+    }
+
+    Frame& VulkanRenderer::GetCurrentFrame()
+    {
+        return m_frameData[m_frameIndex % FRAMES_IN_FLIGHT];
+    }
+
+    VkQueue& VulkanRenderer::GetGraphicsQueue()
+    {
+        return m_graphicsQueue;
+    }
+
+    VkQueue& VulkanRenderer::GetPresentQueue()
+    {
+        return m_presentQueue;
     }
 }
 

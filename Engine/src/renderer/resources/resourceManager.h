@@ -38,7 +38,7 @@ namespace Engine
 
 		virtual void destroyShader(Handle<Shader> handle) = 0; 
 		virtual void destroyBindgroup(Handle<BindGroup> handle) = 0; 
-		virtual void destroyBindgroupLaout(Handle<BindGroupLayout> handle) = 0; 
+		virtual void destroyBindgroupLayout(Handle<BindGroupLayout> handle) = 0;
 		virtual void destroyTexture(Handle<Texture> handle) = 0; 
 		virtual void destroySampler(Handle<Sampler> handle) = 0; 
 		virtual void destroyBuffer(Handle<Buffer> handle) = 0;  

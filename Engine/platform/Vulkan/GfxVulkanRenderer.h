@@ -2,7 +2,7 @@
 
 #include "platform/Vulkan/GfxVulkanCore.h" 
 #include "platform/Vulkan/GfxVulkanDevice.h" 
-#include "platform/Vulkan/GfxVulkanWindow.h"
+#include "platform/Vulkan/resources/GfxVkEnums.h"
 #include "platform/Vulkan/GfxVkCommandBuffers.h"
 
 #include "src/renderer/renderer.h"  
@@ -38,6 +38,12 @@ namespace Engine
 		virtual void Present() override {}; 
 
 		void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func);
+		GfxVkCommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type);
+
+		Frame& GetCurrentFrame();
+
+		VkQueue& GetGraphicsQueue();
+		VkQueue& GetPresentQueue();
 
 	private: 
 		void createSwapChain();   
@@ -83,5 +89,9 @@ namespace Engine
 
 		//Descriptor pools 
 		VkDescriptorPool m_descriptorPool;
+
+		//Frame indexes
+		uint64_t m_frameIndex = 0;
+		uint64_t m_swapChainImageIndex = 0;
 	};
 }

@@ -37,7 +37,7 @@ namespace Engine
 
 		virtual void destroyShader(Handle<Shader> handle) override{}
 		virtual void destroyBindgroup(Handle<BindGroup> handle)override{}
-		virtual void destroyBindgroupLaout(Handle<BindGroupLayout> handle) override{}
+		virtual void destroyBindgroupLayout(Handle<BindGroupLayout> handle) override{}
 		virtual void destroyTexture(Handle<Texture> handle) override{}
 		virtual void destroySampler(Handle<Sampler> handle) override{}
 		virtual void destroyBuffer(Handle<Buffer> handle) override{}
@@ -46,7 +46,18 @@ namespace Engine
 		virtual void destroyRenderPass(Handle<RenderPass> handle) override{}
 		virtual void destroyFrameBuffer(Handle<FrameBuffer> handle) override{} 
 
-		VmaAllocator& GetVmaAllocator() { return m_allocator; } 
+		GfxVkShader* getShader(Handle<Shader> handle) { return nullptr; }
+		GfxVkBindGroup* getBindgroup(Handle<BindGroup> handle) { return nullptr; }
+		GfxVkBindGroupLayout* getBindgroupLayout(Handle<BindGroupLayout> handle) { return nullptr; }
+		GfxVkTexture* getTexture(Handle<Texture> handle) { return nullptr; }
+		GfxVkSampler* getSampler(Handle<Sampler> handle) { return nullptr; }
+		GfxVkBuffer* getBuffer(Handle<Buffer> handle) { return nullptr; }
+		GfxVkMesh* getMesh(Handle<Mesh> handle) { return nullptr; }
+		GfxVkRenderPass* getRenderPassLayout(Handle<RenderPassLayout> handle) { return nullptr; }
+		GfxVkRenderPass* getRenderPass(Handle<RenderPass> handle) { return nullptr; }
+		GfxVkFrameBuffer* getFrameBuffer(Handle<FrameBuffer> handle) { return nullptr; }
+
+		VmaAllocator& GetVmaAllocator() { return m_allocator; }
 
 	private:
 		void CreateMemoryAllocator();

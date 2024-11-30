@@ -1,9 +1,24 @@
 #pragma once
 
 #include "src/renderer/renderPassRenderer.h"
-
-#include "platform/Vulkan/GfxVulkanCore.h"
+#include "platform/Vulkan/GfxVkCommandBuffers.h"
 
 namespace Engine
 {
+    class GfxVkRenderPassRenderer final : public RenderPassRenderer
+    {
+    public:
+        GfxVkRenderPassRenderer(const RenderPassStage stage, const CommandBufferType type)
+            : RenderPassRenderer(stage, type)
+        {
+        }
+
+        virtual void BeginRenderPass(Handle<RenderPass> renderPass, Handle<FrameBuffer> frameBuffer) override;
+        virtual void EndRenderPass() override;
+        virtual void Submit() override;
+        virtual void Draw() override;
+
+    private:
+        GfxVkCommandBuffer* m_commandBuffer;
+    };
 }

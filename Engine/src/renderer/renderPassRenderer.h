@@ -7,24 +7,22 @@
 
 namespace Engine
 {
-    struct RenderPassDesc
-    {
-        RenderPassStage stage;
-        CommandBufferType type;
-    };
-
     class RenderPassRenderer
     {
     public:
+        RenderPassRenderer(const RenderPassStage stage, const CommandBufferType type)
+            : m_stage(stage), m_type(type)
+        {
+        }
+
         virtual ~RenderPassRenderer() = default;
 
         virtual void BeginRenderPass(Handle<RenderPass> renderPass, Handle<FrameBuffer> frameBuffer) = 0;
         virtual void EndRenderPass() = 0;
         virtual void Submit() = 0;
         virtual void Draw() = 0;
-        virtual void DrawIndexed() = 0;
 
-    private:
+    protected:
         RenderPassStage m_stage;
         CommandBufferType m_type;
     };
