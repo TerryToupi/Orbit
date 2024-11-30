@@ -110,6 +110,12 @@ elseif(PRODUCTION AND APPLE)
 	# setup the ASSETS_PATH macro to be in the root folder of your exe
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC ASSETS_PATH="./Assets/") 
 
+	# Set the application as a macOS bundle
+	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES MACOSX_BUNDLE TRUE)
+
+	# Optional: Add linker flags for a custom entry point
+	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "-Wl,-e,_main")
+
 	# remove the option to debug asserts.
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION)
 
