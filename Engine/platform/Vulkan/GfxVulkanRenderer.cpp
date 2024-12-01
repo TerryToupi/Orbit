@@ -6,8 +6,19 @@ namespace Engine
     { 
         VulkanDevice* device = (VulkanDevice*)Device::instance;
 
-        vkGetDeviceQueue(device->GetVkDevice(), device->GetVkQueueFamilyIndices().graphicsFamily.value(), 0, &m_graphicsQueue);
-        vkGetDeviceQueue(device->GetVkDevice(), device->GetVkQueueFamilyIndices().presentFamily.value(), 0, &m_presentQueue); 
+        vkGetDeviceQueue(
+            device->GetVkDevice(),
+            device->GetVkQueueFamilyIndices().graphicsFamily.value(),
+            0,
+            &m_graphicsQueue
+        );
+
+        vkGetDeviceQueue(
+            device->GetVkDevice(),
+            device->GetVkQueueFamilyIndices().presentFamily.value(),
+            0,
+            &m_presentQueue
+        );
 
         createSwapChain();
         createImageViews(); 
@@ -349,7 +360,7 @@ namespace Engine
             });
         }
 
-        //TODO: change to streaming like above
+        //TODO: change to streaming command buffer like above
         VkCommandPoolCreateInfo uploadCommandPoolInfo =
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
