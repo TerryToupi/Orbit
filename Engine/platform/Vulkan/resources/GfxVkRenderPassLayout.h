@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "src/renderer/resources/renderPassLayouts.h"
+#include <vector>
 
 namespace Engine
 {

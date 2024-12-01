@@ -13,6 +13,10 @@ namespace Engine
         }
     }
 
+    void GfxVkRenderPassLayout::destroy()
+    {
+    }
+
     const char* GfxVkRenderPassLayout::getDebugName() const
     {
         return m_debugName;
