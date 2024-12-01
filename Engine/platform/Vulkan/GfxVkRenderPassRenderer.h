@@ -9,7 +9,7 @@ namespace Engine
     {
     public:
         GfxVkRenderPassRenderer(const RenderPassStage stage, const CommandBufferType type)
-            : RenderPassRenderer(stage, type)
+            : RenderPassRenderer(stage, type), m_commandBuffer(VK_NULL_HANDLE)
         {
         }
 

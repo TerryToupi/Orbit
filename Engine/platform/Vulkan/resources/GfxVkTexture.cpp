@@ -36,10 +36,11 @@ namespace Engine
 			.imageType = VkEnums::TextureTypeToVkImageType(desc.type),
 			.format = VkEnums::TextureFormatToVkFormat(desc.format),
 			.extent = m_extent,
-			.mipLevels = desc.mipLevels,
+			.mipLevels = desc.mipLevels, 
+			.arrayLayers = desc.arrayLayers,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
 			.tiling = VK_IMAGE_TILING_OPTIMAL,
-			.usage = usage
+			.usage = usage,
 		};
 
 		VmaAllocationCreateInfo allocationInfo =
@@ -82,7 +83,7 @@ namespace Engine
 				.baseMipLevel = 0, 
 				.levelCount = desc.mipLevels,
 				.baseArrayLayer = 0,
-				.layerCount = 1,
+				.layerCount = desc.arrayLayers,
 			}
 		}; 
 
@@ -166,7 +167,7 @@ namespace Engine
 					.baseMipLevel = 0,
 					.levelCount = desc.mipLevels,
 					.baseArrayLayer = 0,
-					.layerCount = 1,
+					.layerCount = desc.arrayLayers,
 				};
 
 				VkImageMemoryBarrier imageBarrierToTransfer =
@@ -203,7 +204,7 @@ namespace Engine
 						.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 						.mipLevel = desc.mipLevels,
 						.baseArrayLayer = 0,
-						.layerCount = 1,
+						.layerCount = desc.arrayLayers,
 					},
 					.imageExtent = m_extent,
 				};

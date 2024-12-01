@@ -12,7 +12,8 @@ namespace Engine
 	{ 
 		const char* debugName;
 		glm::u32vec3 dimensions;
-		uint32_t mipLevels = 1;
+		uint32_t mipLevels = 1; 
+		uint32_t arrayLayers = 1;
 		TextureFormat format = TextureFormat::RGBA8_UNORM;
 		TextureFormat internalFormat = TextureFormat::RGBA8_UNORM;
 		TextureUsage usage = TextureUsage::TEXTURE_BINDING;
