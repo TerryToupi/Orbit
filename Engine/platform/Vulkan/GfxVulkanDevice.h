@@ -49,8 +49,9 @@ namespace Engine
 		void SetupLogicalDevice();
 
 	private:
-		bool CheckValidationLayerSupport();  
-		//int rateDeviceSuitability(VkPhysicalDevice device); 
+		bool CheckValidationLayerSupport();
+		VkSampleCountFlagBits getMaxUsableSampleCount();
+		int rateDeviceSuitability(VkPhysicalDevice device); 
 		bool CheckInstanceExtensionSupport(const std::vector<const char*>& glfwExtensionNames);
 		std::vector<const char*> GetRequiredExtensions(); 
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
@@ -64,7 +65,8 @@ namespace Engine
 		VkSurfaceKHR m_surface;
 		VkPhysicalDevice m_physicalDevice;
 		VkPhysicalDeviceProperties m_vkGPUProperties;
-		VkPhysicalDeviceFeatures m_vkGPUFeatures; 
+		VkPhysicalDeviceFeatures m_vkGPUFeatures;  
+		VkSampleCountFlagBits m_maxMSAAsamples;
 
 		QueueFamilyIndices m_queueFamilyIndices{};
 		SwapChainSupportDetails m_swapChainSupportDetails{};

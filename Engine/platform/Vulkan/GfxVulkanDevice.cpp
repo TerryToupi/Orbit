@@ -207,23 +207,60 @@ namespace Engine
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
 
-		m_physicalDevice = VK_NULL_HANDLE;
+		std::multimap<int, VkPhysicalDevice> candidates;
 
-		for (const auto& device : devices)
-		{
-			if (IsDeviceSuitable(device))
-			{
-				m_physicalDevice = device;
-				break;
-			}
+		for (const auto& device : devices) {
+			int score = rateDeviceSuitability(device);
+			candidates.insert(std::make_pair(score, device));
 		}
 
-		if (m_physicalDevice == VK_NULL_HANDLE)
+		// Check if the best candidate is suitable at all
+		if (candidates.rbegin()->first > 0) 
 		{
-			ENGINE_ASSERT(false, "Failed to find a suitable GPU!");
+			m_physicalDevice = candidates.rbegin()->second; 
+			m_maxMSAAsamples = getMaxUsableSampleCount();
+		}  
+		else  
+		{  
+			ENGINE_ASSERT(false, "No GPU was suitable for usage!");
 		}
 
 		vkGetPhysicalDeviceProperties(m_physicalDevice, &m_vkGPUProperties);
+	} 
+
+	VkSampleCountFlagBits VulkanDevice::getMaxUsableSampleCount() {
+		VkPhysicalDeviceProperties physicalDeviceProperties;
+		vkGetPhysicalDeviceProperties(m_physicalDevice, &physicalDeviceProperties);
+
+		VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+		if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+		if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+		if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+		if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
+		if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
+		if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+
+		return VK_SAMPLE_COUNT_1_BIT;
+	}
+
+	int VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
+	{
+		VkPhysicalDeviceProperties deviceProperties;
+		VkPhysicalDeviceFeatures deviceFeatures;
+		vkGetPhysicalDeviceProperties(device, &deviceProperties);
+		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+		int score = 0; 
+
+		if (!IsDeviceSuitable(device))
+			return score; 
+
+		if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+			score += 1000; 
+
+		score += deviceProperties.limits.maxImageDimension2D;
+		
+		return score;
 	}
 
 	void VulkanDevice::SetupLogicalDevice()
