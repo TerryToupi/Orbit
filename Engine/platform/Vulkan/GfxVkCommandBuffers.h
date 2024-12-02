@@ -27,7 +27,7 @@ namespace Engine
         VkSemaphore& GetSignalSemaphore();
 
     private:
-        CommandBufferType m_type;
+        CommandBufferType m_type = CommandBufferType::MAIN;
         VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;
         VkFence m_fence = VK_NULL_HANDLE;
         VkSemaphore m_waitSemaphore = VK_NULL_HANDLE;

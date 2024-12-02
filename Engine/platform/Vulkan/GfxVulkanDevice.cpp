@@ -545,5 +545,10 @@ namespace Engine
 	const SwapChainSupportDetails& VulkanDevice::GetVkSwapChainSupportDetails()
 	{ 
 		return m_swapChainSupportDetails;
+	} 
+
+	const VkSampleCountFlagBits& VulkanDevice::GetMaxUsableSampleCount()
+	{ 
+		return m_maxMSAAsamples;
 	}
 }

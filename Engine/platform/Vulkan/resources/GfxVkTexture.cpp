@@ -49,7 +49,14 @@ namespace Engine
 			.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 		};
 
-		VK_VALIDATE(vmaCreateImage(rm->GetVmaAllocator(), &imageInfo, &allocationInfo, &m_image, &m_allocation, nullptr));
+		VK_VALIDATE(vmaCreateImage(
+			rm->GetVmaAllocator(), 
+			&imageInfo, 
+			&allocationInfo, 
+			&m_image, 
+			&m_allocation, 
+			nullptr
+		));
 
 		if (desc.data != nullptr)
 		{

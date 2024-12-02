@@ -221,5 +221,56 @@ namespace Engine
 		}
 
 		return VMA_MEMORY_USAGE_MAX_ENUM;
+	} 
+
+	VkAttachmentLoadOp VkEnums::LoadOperationToVkAttachmentLoadOp(LoadOperation op)
+	{
+		switch (op)
+		{
+		case LoadOperation::CLEAR:
+			return VK_ATTACHMENT_LOAD_OP_CLEAR;
+		case LoadOperation::LOAD:
+			return VK_ATTACHMENT_LOAD_OP_LOAD;
+		case LoadOperation::DONT_CARE:
+			return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		}
+
+		return VK_ATTACHMENT_LOAD_OP_MAX_ENUM;
+	} 
+
+	VkAttachmentStoreOp VkEnums::StoreOperationVkAttachmentStoreOp(StoreOperation op)
+	{ 
+		switch (op)
+		{
+		case StoreOperation::STORE:
+			return VK_ATTACHMENT_STORE_OP_STORE;
+		case StoreOperation::DONT_CARE:
+			return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		}
+
+		return VK_ATTACHMENT_STORE_OP_MAX_ENUM;
+	} 
+
+	VkImageLayout VkEnums::TextureLayoutToVkImageLayout(TextureLayout layout)
+	{
+		switch (layout)
+		{
+		case TextureLayout::UNDEFINED:
+			return VK_IMAGE_LAYOUT_UNDEFINED;
+		case TextureLayout::COPY_SRC:
+			return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		case TextureLayout::COPY_DST:
+			return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		case TextureLayout::RENDER_ATTACHMENT:
+			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		case TextureLayout::SHADER_READ_ONLY:
+			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		case TextureLayout::DEPTH_STENCIL:
+			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		case TextureLayout::PRESENT:
+			return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		}
+
+		return VK_IMAGE_LAYOUT_MAX_ENUM;;
 	}
 }

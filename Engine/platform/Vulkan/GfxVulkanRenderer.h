@@ -43,7 +43,8 @@ namespace Engine
 		Frame& GetCurrentFrame();
 
 		VkQueue& GetGraphicsQueue();
-		VkQueue& GetPresentQueue();
+		VkQueue& GetPresentQueue(); 
+		VkFormat& GetSwaipChainImageFormat();
 
 	private: 
 		void createSwapChain();   

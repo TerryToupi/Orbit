@@ -91,6 +91,7 @@ namespace Engine
 
 	enum class TextureFormat
 	{
+		BACKBUFFER = 0x0,
 		RGB32_FLOAT = 0x1,
 		D32_FLOAT = 0x2,
 		RGBA16_FLOAT = 0x3,
@@ -163,9 +164,10 @@ namespace Engine
 		UNDEFINED = 0x0,
 		COPY_SRC = 0x1,
 		COPY_DST = 0x2,
-		RENDER_ATTACHMENT = 0x3,
-		DEPTH_STENCIL = 0x4,
-		PRESENT = 0x5,
+		RENDER_ATTACHMENT = 0x3, 
+		SHADER_READ_ONLY = 0x4,
+		DEPTH_STENCIL = 0x5,
+		PRESENT = 0x6,
 	};
 
 	enum class BlendOperation

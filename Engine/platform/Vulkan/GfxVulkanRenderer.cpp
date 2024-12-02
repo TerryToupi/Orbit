@@ -502,6 +502,11 @@ namespace Engine
     VkQueue& VulkanRenderer::GetPresentQueue()
     {
         return m_presentQueue;
+    } 
+
+    VkFormat& VulkanRenderer::GetSwaipChainImageFormat()
+    { 
+        return m_swapChainImageFormat;
     }
 }
 

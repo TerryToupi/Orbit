@@ -53,7 +53,7 @@ namespace Engine
 		GfxVkSampler* getSampler(Handle<Sampler> handle) { return nullptr; }
 		GfxVkBuffer* getBuffer(Handle<Buffer> handle) { return nullptr; }
 		GfxVkMesh* getMesh(Handle<Mesh> handle) { return nullptr; }
-		GfxVkRenderPass* getRenderPassLayout(Handle<RenderPassLayout> handle) { return nullptr; }
+		GfxVkRenderPassLayout* getRenderPassLayout(Handle<RenderPassLayout> handle) { return nullptr; }
 		GfxVkRenderPass* getRenderPass(Handle<RenderPass> handle) { return nullptr; }
 		GfxVkFrameBuffer* getFrameBuffer(Handle<FrameBuffer> handle) { return nullptr; }
 

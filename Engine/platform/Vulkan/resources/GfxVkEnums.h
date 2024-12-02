@@ -17,6 +17,9 @@ namespace Engine
 		VkSamplerAddressMode WrapToVkSamplerAddressMode(Wrap wrap); 
 		VkCompareOp CompareToVkCompareOp(Compare compare);
 		VkBufferUsageFlags BufferUsageToVkBufferUsageFlags(BufferUsage bufferUsage); 
-		VmaMemoryUsage MemoryUsageToVmaMemoryUsage(MemoryUsage memoryUsage);
+		VmaMemoryUsage MemoryUsageToVmaMemoryUsage(MemoryUsage memoryUsage); 
+		VkAttachmentLoadOp LoadOperationToVkAttachmentLoadOp(LoadOperation op); 
+		VkAttachmentStoreOp StoreOperationVkAttachmentStoreOp(StoreOperation op); 
+		VkImageLayout TextureLayoutToVkImageLayout(TextureLayout layout);
 	}
 }

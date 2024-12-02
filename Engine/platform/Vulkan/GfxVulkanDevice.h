@@ -36,7 +36,8 @@ namespace Engine
 		const VkPhysicalDeviceProperties& GetVkPhysicalProperties(); 
 		const VkPhysicalDeviceFeatures& GetVkPhysicaFeatures(); 
 		const QueueFamilyIndices& GetVkQueueFamilyIndices();
-		const SwapChainSupportDetails& GetVkSwapChainSupportDetails();
+		const SwapChainSupportDetails& GetVkSwapChainSupportDetails(); 
+		const VkSampleCountFlagBits& GetMaxUsableSampleCount();
 
 		virtual void Init() override;
 		virtual void ShutDown() override;  
