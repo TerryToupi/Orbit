@@ -255,12 +255,12 @@ namespace Engine
 
         for (int i = 0; i < FRAMES_IN_FLIGHT; i++)
         {
-            VK_VALIDATE(vkCreateFence(device->GetVkDevice(), &fenceCreateInfo, nullptr, &m_frameData[i].flightFence));
+            VK_VALIDATE(vkCreateFence(device->GetVkDevice(), &fenceCreateInfo, nullptr, &m_frameData[i].graphicsFence));
 
             //enqueue the destruction of the fence
             m_cleanup.appendFunction([=]()
                 {
-                    vkDestroyFence(device->GetVkDevice(), m_frameData[i].flightFence, nullptr);
+                    vkDestroyFence(device->GetVkDevice(), m_frameData[i].graphicsFence, nullptr);
                 });
 
             VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].ImageAvailableSemaphore));
@@ -354,7 +354,7 @@ namespace Engine
             m_uiCommandBuffer[i] = GfxVkCommandBuffer({
                 .type = CommandBufferType::UI,
                 .commandBuffer = m_frameData[i].GuiCommandBuffer,
-                .fence = m_frameData[i].flightFence,
+                .fence = m_frameData[i].graphicsFence,
                 .waitSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
                 .signalSemaphore = m_frameData[i].GuiRenderFinishedSemaphore,
             });

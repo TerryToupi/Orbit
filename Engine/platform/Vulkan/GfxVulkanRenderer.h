@@ -18,7 +18,7 @@ namespace Engine
 		VkSemaphore PresentRenderFinishedSemaphore;
 		VkSemaphore GuiRenderFinishedSemaphore; // Signal that UI render is done.
 
-		VkFence flightFence;
+		VkFence graphicsFence;
 
 		VkCommandPool CommandPool;
 		VkCommandBuffer MainCommandBuffer;

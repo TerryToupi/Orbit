@@ -20,7 +20,6 @@ namespace Engine
 
 	void VulkanWindow::ShutDown()
 	{
-		ENGINE_CORE_INFO("Terminating window API!");
 		glfwDestroyWindow(m_nativeWindow);
 		glfwTerminate();
 	}

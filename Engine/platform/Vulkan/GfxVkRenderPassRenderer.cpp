@@ -15,8 +15,44 @@ namespace Engine
         GfxVkRenderPass* vkRenderPass = rm->getRenderPass(renderPass);
         GfxVkFrameBuffer* vkFramebuffer = rm->getFrameBuffer(frameBuffer);
 
-        std::vector<VkClearValue> clearValues;
+        std::vector<VkClearValue> clearValues; 
 
+        for (auto clVlaue : vkRenderPass->GetColorClearValues())
+        {
+            if (clVlaue)
+            {
+                VkClearValue vkCl = {
+                    .color = { { 0.1f, 0.1f, 0.1f, 1.0f } }
+                }; 
+
+                clearValues.push_back(vkCl);
+            }
+        } 
+
+        if (vkRenderPass->GetDepthClearValue())
+        {
+            VkClearValue vkCl;
+            vkCl.depthStencil.depth = 1.0f; 
+            clearValues.push_back(vkCl);
+        } 
+
+        VkRenderPassBeginInfo rpInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            .pNext = nullptr,
+            .renderPass = vkRenderPass->GetRenderPass(),
+            .framebuffer = vkFramebuffer->GetFrameBuffer(),
+            .renderArea =
+            {
+                .offset = {0, 0},
+                .extent = { vkFramebuffer->GetWidth(), vkFramebuffer->GetHeight() },
+            },
+            .clearValueCount = (uint32_t)clearValues.size(),
+            .pClearValues = clearValues.data(),
+        }; 
+
+
+        vkCmdBeginRenderPass(m_commandBuffer->GetCommandBuffer(), &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     void GfxVkRenderPassRenderer::EndRenderPass()
