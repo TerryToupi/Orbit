@@ -5,7 +5,12 @@
 namespace Engine
 {
 	class GfxVkMesh
-	{
-		int data;
+	{ 
+	public: 
+		GfxVkMesh() = default; 
+		GfxVkMesh(const MeshDesc&& desc) {} 
+
+		void destroy() {}
+	private:
 	};
 }

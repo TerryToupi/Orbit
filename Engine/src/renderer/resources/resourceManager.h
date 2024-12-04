@@ -25,16 +25,16 @@ namespace Engine
 		virtual void Init() = 0;
 		virtual void ShutDown() = 0;
 
-		virtual Handle<Shader> createShader(ShaderDesc desc) = 0; 
-		virtual Handle<BindGroup> createBindgroup(BindGroupDesc desc) = 0; 
-		virtual Handle<BindGroupLayout> createBindgroupLayout(BindGroupLayoutDesc desc) = 0;
-		virtual Handle<Texture> createTexture(TextureDesc desc) = 0; 
-		virtual Handle<Sampler> createSampler(SamplerDesc) = 0; 
-		virtual Handle<Buffer> createBuffer(BufferDesc desc) = 0;  
-		virtual Handle<Mesh> createMesh(MeshDesc desc) = 0; 
-		virtual Handle<RenderPassLayout> createRenderPassLayout(RenderPassLayoutDesc desc) = 0; 
-		virtual Handle<RenderPass> createRenderPass(RenderPassDesc desc) = 0;
-		virtual Handle<FrameBuffer> createFrameBuffer(FrameBufferDesc desc) = 0;
+		virtual Handle<Shader> createShader(const ShaderDesc&& desc) = 0; 
+		virtual Handle<BindGroup> createBindgroup(const BindGroupDesc&& desc) = 0; 
+		virtual Handle<BindGroupLayout> createBindgroupLayout(const BindGroupLayoutDesc&& desc) = 0;
+		virtual Handle<Texture> createTexture(const TextureDesc&& desc) = 0; 
+		virtual Handle<Sampler> createSampler(const SamplerDesc&& desc) = 0; 
+		virtual Handle<Buffer> createBuffer(const BufferDesc&& desc) = 0;  
+		virtual Handle<Mesh> createMesh(const MeshDesc&& desc) = 0; 
+		virtual Handle<RenderPassLayout> createRenderPassLayout(const RenderPassLayoutDesc&& desc) = 0; 
+		virtual Handle<RenderPass> createRenderPass(const RenderPassDesc&& desc) = 0;
+		virtual Handle<FrameBuffer> createFrameBuffer(const FrameBufferDesc&& desc) = 0;
 
 		virtual void destroyShader(Handle<Shader> handle) = 0; 
 		virtual void destroyBindgroup(Handle<BindGroup> handle) = 0; 

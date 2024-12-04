@@ -5,7 +5,12 @@
 namespace Engine
 {
 	class GfxVkBindGroupLayout
-	{ 
-		int data;
+	{  
+	public:  
+		GfxVkBindGroupLayout() = default; 
+		GfxVkBindGroupLayout(const BindGroupLayoutDesc&& desc) {} 
+
+		void destroy() {}
+	private:
 	};
 }

@@ -6,8 +6,10 @@ namespace Engine
 {
 	class GfxVkShader
 	{ 
-	public:
-		
+	public: 
+		GfxVkShader() = default;
+		GfxVkShader(const ShaderDesc&& desc) {} 
+		void destroy() {}
 	private:
 	};
 }

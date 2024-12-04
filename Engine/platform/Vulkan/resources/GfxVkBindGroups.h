@@ -5,7 +5,12 @@
 namespace Engine
 {
 	class GfxVkBindGroup
-	{ 
-		int data;
+	{  
+	public:  
+		GfxVkBindGroup() = default; 
+		GfxVkBindGroup(const BindGroupDesc&& desc) {} 
+		void destroy() {}
+	private: 
+
 	};
 }
