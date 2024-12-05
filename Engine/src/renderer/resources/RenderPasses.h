@@ -1,11 +1,11 @@
 #pragma once 
 
-#include<span>
-#include<glm/glm.hpp>  
+#include<glm/glm.hpp>
 
 #include "src/renderer/resources/Enums.h"
 #include "src/renderer/resources/RenderPassLayouts.h" 
 #include "src/utilities/handles.h"
+#include "src/utilities/span.h"
 
 namespace Engine
 {
@@ -38,6 +38,6 @@ namespace Engine
 		const char* debugName;
 		Handle<RenderPassLayout> layout;
 		DepthTarget depthTarget;
-		std::span<const ColorTarget> colorTargets;
+		Span<const ColorTarget> colorTargets;
 	};
 }

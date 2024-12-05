@@ -98,10 +98,12 @@ namespace Engine
 		Renderer::instance->Init();
 		JobManager::instance->Init();
  
-		for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+		for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
 		{
 			(*layer)->OnStart();
 		}
+
+		Renderer::instance->SetUp();
 
 		while (m_running)
 		{ 
@@ -109,12 +111,27 @@ namespace Engine
 			uint64_t timestep = time - m_time_elapsed;
 			m_time_elapsed = time; 
 
-			Window::instance->Update(timestep); 
+			Window::instance->Update(timestep);
 
-			for (auto layer = m_layers.begin(); layer != m_layers.end(); layer++)
+			// Renderer::instance->BeginFrame();
 			{
-				(*layer)->OnUpdate();
+				for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
+				{
+					(*layer)->OnUpdate(timestep);
+				}
 			}
+			// Renderer::instance->EndFrame();
+			//
+			// Renderer::instance->BeginFrame();
+			{
+				for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
+				{
+					(*layer)->OnUIUpdate(timestep);
+				}
+			}
+			// Renderer::instance->EndFrame();
+			//
+			// Renderer::instance->Present();
 		}
 	}
 
@@ -130,14 +147,13 @@ namespace Engine
 		return true;
 	}
 
-
 	void Application::OnEvent(Event& e)
 	{ 
 		EventDispatcher dispatcher(e); 
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize)); 
 
-		for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); layer++)
+		for (auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer)
 		{
 			if (e.Handled) 
 				break;  

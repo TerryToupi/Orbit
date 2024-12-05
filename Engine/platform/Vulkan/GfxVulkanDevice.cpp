@@ -190,8 +190,7 @@ namespace Engine
 			wm->GetNativeWindow(),
 			nullptr,
 			&m_surface
-		)
-		);
+		));
 	}
 
 	void VulkanDevice::SetupPhysicalDevice()

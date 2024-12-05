@@ -33,9 +33,9 @@ namespace Engine
 		virtual void Init() override;
 		virtual void ShutDown() override;
 
-		virtual void BeginFrame() override {};
-		virtual void EndFrame() override {};
-		virtual void Present() override {}; 
+		virtual void BeginFrame() override;
+		virtual void EndFrame() override;
+		virtual void Present() override;
 
 		void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func);
 		GfxVkCommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type);
@@ -93,6 +93,6 @@ namespace Engine
 
 		//Frame indexes
 		uint64_t m_frameIndex = 0;
-		uint64_t m_swapChainImageIndex = 0;
+		uint32_t m_swapChainImageIndex = 0;
 	};
 }

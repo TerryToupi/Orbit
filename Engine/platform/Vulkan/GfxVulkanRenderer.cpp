@@ -38,6 +38,53 @@ namespace Engine
         m_cleanup.Flush();
     }
 
+    void VulkanRenderer::BeginFrame()
+    {
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        VK_VALIDATE(vkWaitForFences(
+            device->GetVkDevice(),
+            1,
+            &GetCurrentFrame().graphicsFence,
+            true,
+            1000000000
+        ));
+        VK_VALIDATE(vkResetFences(
+            device->GetVkDevice(),
+            1,
+            &GetCurrentFrame().graphicsFence
+        ));
+        VK_VALIDATE(vkAcquireNextImageKHR(
+            device->GetVkDevice(),
+            m_swapChain,
+            1000000000,
+            GetCurrentFrame().ImageAvailableSemaphore,
+            nullptr,
+            &m_swapChainImageIndex
+        ));
+    }
+
+    void VulkanRenderer::EndFrame()
+    {
+    }
+
+    void VulkanRenderer::Present()
+    {
+        VkPresentInfoKHR presentInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+            .pNext = nullptr,
+            .waitSemaphoreCount = 1,
+            .pWaitSemaphores = &GetCurrentFrame().GuiRenderFinishedSemaphore,
+            .swapchainCount = 1,
+            .pSwapchains = &m_swapChain,
+            .pImageIndices = &m_swapChainImageIndex,
+        };
+
+        VK_VALIDATE(vkQueuePresentKHR(m_presentQueue, &presentInfo));
+        m_frameIndex++;
+    }
+
     GfxVkCommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
     {
         GfxVkCommandBuffer* pCommandBuffer = nullptr;
@@ -431,10 +478,12 @@ namespace Engine
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM 
                 && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) 
             {
+                ENGINE_CORE_INFO("Preferred format found");
                 return availableFormat;
             }
         }
 
+        ENGINE_CORE_INFO("Available formats range: {}", availableFormats.size());
         return availableFormats[0];
     }
 

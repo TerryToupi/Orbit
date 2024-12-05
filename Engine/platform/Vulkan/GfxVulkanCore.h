@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "src/core/logs.h"
 #include "src/core/assert.h" 
 
 #define VK_ENABLE_BETA_EXTENSIONS

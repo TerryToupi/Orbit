@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "src/renderer/resources/Enums.h"
-#include <span>
+#include "src/utilities/span.h"
 
 namespace Engine
 {
@@ -18,6 +18,6 @@ namespace Engine
 		const char* debugName;
 		TextureFormat depthTargetFormat = TextureFormat::D32_FLOAT;
 
-		std::span<const SubPass> subPasses;
+		Span<const SubPass> subPasses;
 	};
 }
