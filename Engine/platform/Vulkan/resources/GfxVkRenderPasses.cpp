@@ -17,9 +17,7 @@ namespace Engine
 		GfxVkRenderPassLayout* layout = rm->getRenderPassLayout(desc.layout);
 
 		std::vector<VkAttachmentDescription> attachments;
-		attachments.reserve(desc.colorTargets.size());
 		std::vector<VkAttachmentReference> colorAttachmentRefs;
-		colorAttachmentRefs.reserve(desc.colorTargets.size());
 
 		uint32_t index = 0;
 
@@ -80,7 +78,7 @@ namespace Engine
 				};
 			}
 		}
- 
+
 		//TODO: refuctor to accept multiple subpasses
 		VkSubpassDescription subpass =
 		{

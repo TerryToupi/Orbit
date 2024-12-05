@@ -104,7 +104,6 @@ namespace Engine
 		}
 
 		Renderer::instance->SetUp();
-
 		while (m_running)
 		{ 
 			uint64_t time = SystemClock::instance->GetTime();
@@ -133,6 +132,7 @@ namespace Engine
 			//
 			// Renderer::instance->Present();
 		}
+		Renderer::instance->CleanUp();
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)

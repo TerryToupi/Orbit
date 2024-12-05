@@ -4,6 +4,8 @@ namespace Engine
 {
 	void Renderer::SetUp()
     {
+
+		// Main pass
 		m_mainPassLayout = ResourceManager::instance->createRenderPassLayout({
 			.debugName = "main-renderpass-layout",
 			.depthTargetFormat = TextureFormat::D32_FLOAT,
@@ -11,7 +13,6 @@ namespace Engine
 				{ .depthTarget = true, .colorTargets = 1, },
 			},
 		});
-
 		m_mainPass = ResourceManager::instance->createRenderPass({
 			.debugName = "main-renderpass",
 			.layout = m_mainPassLayout,
@@ -33,4 +34,10 @@ namespace Engine
 			},
 		});
     }
+
+	void Renderer::CleanUp()
+    {
+		ResourceManager::instance->destroyRenderPass(m_mainPass);
+		ResourceManager::instance->destroyRenderPassLayout(m_mainPassLayout);
+	}
 }

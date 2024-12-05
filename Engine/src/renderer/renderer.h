@@ -19,7 +19,10 @@ namespace Engine
 		virtual void EndFrame() = 0;
 		virtual void Present() = 0;
 
+		virtual void OnResize() = 0;
+
 		void SetUp();
+		void CleanUp();
 		void Render() {}
 
 	private:
