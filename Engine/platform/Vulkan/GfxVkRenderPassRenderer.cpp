@@ -11,6 +11,7 @@ namespace Engine
         VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
         m_commandBuffer = renderer->BeginCommandRecording(m_stage, m_type);
+        ENGINE_ASSERT(m_commandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_RECORDING);
 
         GfxVkRenderPass* vkRenderPass = rm->getRenderPass(renderPass);
         GfxVkFrameBuffer* vkFramebuffer = rm->getFrameBuffer(frameBuffer);
@@ -51,19 +52,23 @@ namespace Engine
             .pClearValues = clearValues.data(),
         }; 
 
-
         vkCmdBeginRenderPass(m_commandBuffer->GetCommandBuffer(), &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
+        m_commandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_IN_RENDER_PASS);
     }
 
     void GfxVkRenderPassRenderer::EndRenderPass()
     {
+        ENGINE_ASSERT(m_commandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_IN_RENDER_PASS);
         vkCmdEndRenderPass(m_commandBuffer->GetCommandBuffer());
         VK_VALIDATE(vkEndCommandBuffer(m_commandBuffer->GetCommandBuffer()));
+        m_commandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_RECORDING_ENDED);
     }
 
     void GfxVkRenderPassRenderer::Submit()
     {
         VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance; 
+
+        ENGINE_ASSERT(m_commandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_RECORDING_ENDED);
 
         VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
@@ -81,6 +86,7 @@ namespace Engine
         };
 
         VK_VALIDATE(vkQueueSubmit(renderer->GetGraphicsQueue(), 1, &submitInfo, m_commandBuffer->GetFence()));
+        m_commandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_SUBMITTED);
     }
 
     void GfxVkRenderPassRenderer::Draw()

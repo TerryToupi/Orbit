@@ -40,7 +40,6 @@ namespace Engine
 
     GfxVkCommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
     {
-        VkCommandBuffer buffer = VK_NULL_HANDLE;
         GfxVkCommandBuffer* pCommandBuffer = nullptr;
 
         switch (type)
@@ -49,7 +48,6 @@ namespace Engine
                 switch (stage)
                 {
                     case RenderPassStage::MAIN:
-                        buffer = GetCurrentFrame().MainCommandBuffer;
                         pCommandBuffer = &m_mainCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT];
                         break;
                 }
@@ -59,13 +57,13 @@ namespace Engine
                 switch (stage)
                 {
                     case RenderPassStage::IMGUI:
-                        buffer = GetCurrentFrame().GuiCommandBuffer;
                         pCommandBuffer = &m_uiCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT];
                         break;
                 }
         }
 
-        VK_VALIDATE(vkResetCommandBuffer(buffer, 0));
+        ENGINE_CORE_INFO(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_SUBMITTED);
+        VK_VALIDATE(vkResetCommandBuffer(pCommandBuffer->GetCommandBuffer(), 0));
 
         VkCommandBufferBeginInfo beginInfo =
         {
@@ -75,7 +73,8 @@ namespace Engine
             .pInheritanceInfo = nullptr
         };
 
-        VK_VALIDATE(vkBeginCommandBuffer(buffer, &beginInfo));
+        VK_VALIDATE(vkBeginCommandBuffer(pCommandBuffer->GetCommandBuffer(), &beginInfo));
+        pCommandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_RECORDING);
 
         return pCommandBuffer;
     }
@@ -312,14 +311,6 @@ namespace Engine
             .queueFamilyIndex = indices.graphicsFamily.value(),
         };
 
-        // VkCommandPoolCreateInfo secondaryCommandPoolInfo =
-        // {
-        //     .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-        //     .pNext = nullptr,
-        //     .flags = 0,
-        //     .queueFamilyIndex = indices.graphicsFamily.value(),
-        // };
-
         for (int i = 0; i < FRAMES_IN_FLIGHT; i++)
         {
             VK_VALIDATE(vkCreateCommandPool(device->GetVkDevice(), &commandPoolInfo, nullptr, &m_frameData[i].CommandPool));
@@ -346,6 +337,7 @@ namespace Engine
 
             m_mainCommandBuffer[i] = GfxVkCommandBuffer({
                 .type = CommandBufferType::MAIN,
+                .state = CommandBufferState::COMMAND_BUFFER_STATE_READY,
                 .commandBuffer = m_frameData[i].MainCommandBuffer,
                 .fence = VK_NULL_HANDLE,
                 .waitSemaphore = m_frameData[i].ImageAvailableSemaphore,
@@ -353,6 +345,7 @@ namespace Engine
             });
             m_uiCommandBuffer[i] = GfxVkCommandBuffer({
                 .type = CommandBufferType::UI,
+                .state = CommandBufferState::COMMAND_BUFFER_STATE_READY,
                 .commandBuffer = m_frameData[i].GuiCommandBuffer,
                 .fence = m_frameData[i].graphicsFence,
                 .waitSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
