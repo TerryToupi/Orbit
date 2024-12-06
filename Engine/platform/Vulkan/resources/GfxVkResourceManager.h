@@ -55,7 +55,18 @@ namespace Engine
 		GfxVkMesh* getMesh(Handle<Mesh> handle);
 		GfxVkRenderPassLayout* getRenderPassLayout(Handle<RenderPassLayout> handle);
 		GfxVkRenderPass* getRenderPass(Handle<RenderPass> handle);
-		GfxVkFrameBuffer* getFrameBuffer(Handle<FrameBuffer> handle);
+		GfxVkFrameBuffer* getFrameBuffer(Handle<FrameBuffer> handle); 
+
+		Handle<Shader> appendShader(const GfxVkShader& shader);
+		Handle<BindGroup> appendBindgroup(const GfxVkBindGroup& bindGroup);
+		Handle<BindGroupLayout> appendBindgroupLayout(const GfxVkBindGroupLayout& bindGroupLayout);
+		Handle<Texture> appendTexture(const GfxVkTexture& texture);
+		Handle<Sampler> appendSampler(const GfxVkSampler& sampler);
+		Handle<Buffer> appendBuffer(const GfxVkBuffer& buffer);
+		Handle<Mesh> appendMesh(const GfxVkMesh& mesh);
+		Handle<RenderPassLayout> appendRenderPassLayout(const GfxVkRenderPassLayout& renderPassLayout);
+		Handle<RenderPass> appendRenderPass(const GfxVkRenderPass& renderPass);
+		Handle<FrameBuffer> appendFrameBuffer(const GfxVkFrameBuffer& frameBuffer);
 
 		VmaAllocator& GetVmaAllocator() { return m_allocator; }
 

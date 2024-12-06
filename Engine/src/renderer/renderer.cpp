@@ -4,7 +4,6 @@ namespace Engine
 {
 	void Renderer::SetUp()
     {
-
 		// Main pass
 		m_mainPassLayout = ResourceManager::instance->createRenderPassLayout({
 			.debugName = "main-renderpass-layout",

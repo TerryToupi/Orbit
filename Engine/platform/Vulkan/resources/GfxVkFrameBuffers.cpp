@@ -17,7 +17,10 @@ namespace Engine
 	} 
 
 	void GfxVkFrameBuffer::resize(uint32_t width, uint32_t height)
-	{ 
+	{
+		if (!m_resizable)
+			return; 
+
 		if (width == m_width && height == m_height)
 			return; 
 

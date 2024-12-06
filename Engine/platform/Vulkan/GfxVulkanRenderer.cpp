@@ -1,4 +1,5 @@
 #include "platform/Vulkan/GfxVulkanRenderer.h"   
+#include "platform/Vulkan/resources/GfxVkResourceManager.h"
 
 namespace Engine
 {
@@ -20,8 +21,8 @@ namespace Engine
             &m_presentQueue
         );
 
-        createSwapChain();
-        createImageViews(); 
+        createSwapChain(); 
+        //createImageViews(); 
         createCommands();
         createSyncStructures(); 
         createDescriptorPool();
@@ -109,7 +110,7 @@ namespace Engine
                 }
         }
 
-        ENGINE_CORE_INFO(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_SUBMITTED);
+        ENGINE_ASSERT(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_SUBMITTED); 
         VK_VALIDATE(vkResetCommandBuffer(pCommandBuffer->GetCommandBuffer(), 0));
 
         VkCommandBufferBeginInfo beginInfo =
@@ -173,6 +174,7 @@ namespace Engine
     void VulkanRenderer::createSwapChain()
     { 
         VulkanDevice* device = (VulkanDevice*)Device::instance;
+        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
         SwapChainSupportDetails swapChainSupport = device->GetVkSwapChainSupportDetails();
 
@@ -238,28 +240,23 @@ namespace Engine
         m_cleanup.appendFunction([=]()
             {
                 vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
-            });
-    }
-
-    void VulkanRenderer::createImageViews()
-    {  
-        VulkanDevice* device = (VulkanDevice*)Device::instance; 
+            }); 
 
         m_swapChainImageViews.resize(m_swapChainImages.size());
 
-        for (size_t i = 0; i < m_swapChainImages.size(); i++) 
+        for (size_t i = 0; i < m_swapChainImages.size(); i++)
         {
             VkImageViewCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = m_swapChainImages[i]; 
+            createInfo.image = m_swapChainImages[i];
 
             createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = m_swapChainImageFormat; 
+            createInfo.format = m_swapChainImageFormat;
 
             createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY; 
+            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
             createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             createInfo.subresourceRange.baseMipLevel = 0;
@@ -267,8 +264,28 @@ namespace Engine
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));
-        } 
+            VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));   
+            
+            m_backBuffers.clear();
+
+            GfxVkTexture swapImage;
+            swapImage.SetDebugName(std::string("Swap image").c_str()); 
+            swapImage.SetImageView(m_swapChainImageViews[i]); 
+            swapImage.SetVkImage(m_swapChainImages[i]); 
+            swapImage.SetExtent({ m_swapChainExtent.width, m_swapChainExtent.height, 1 }); 
+            
+            Handle<Texture> swapTexture = rm->appendTexture(swapImage);
+            
+            Handle<FrameBuffer> fb = rm->createFrameBuffer({
+                .debugName = "swapchain-framebuffer",
+                .width = m_swapChainExtent.width,
+                .height = m_swapChainExtent.height,
+                .renderPass = m_mainPass,
+                .colorTargets = { swapTexture }
+            });  
+
+            m_backBuffers.push_back(fb);
+        }
 
         m_cleanup.appendFunction([=]()
             {
@@ -276,7 +293,48 @@ namespace Engine
                     vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
                 }
             });
+    } 
+
+    void VulkanRenderer::destroySwapChain()
+    {
     }
+
+    //void VulkanRenderer::createImageViews()
+    //{  
+    //    VulkanDevice* device = (VulkanDevice*)Device::instance; 
+
+    //    m_swapChainImageViews.resize(m_swapChainImages.size());
+
+    //    for (size_t i = 0; i < m_swapChainImages.size(); i++) 
+    //    {
+    //        VkImageViewCreateInfo createInfo{};
+    //        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    //        createInfo.image = m_swapChainImages[i]; 
+
+    //        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    //        createInfo.format = m_swapChainImageFormat; 
+
+    //        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    //        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY; 
+
+    //        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    //        createInfo.subresourceRange.baseMipLevel = 0;
+    //        createInfo.subresourceRange.levelCount = 1;
+    //        createInfo.subresourceRange.baseArrayLayer = 0;
+    //        createInfo.subresourceRange.layerCount = 1;
+
+    //        VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));
+    //    } 
+
+    //    m_cleanup.appendFunction([=]()
+    //        {
+    //            for (auto imageView : m_swapChainImageViews) {
+    //                vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
+    //            }
+    //        });
+    //}
 
     void VulkanRenderer::createSyncStructures()
     { 

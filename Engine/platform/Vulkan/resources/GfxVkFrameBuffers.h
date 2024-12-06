@@ -29,7 +29,8 @@ namespace Engine
 		Handle<RenderPass>& GetRenderPass();
 
 	private: 
-		const char* m_debugName = "";
+		const char* m_debugName = ""; 
+		bool m_resizable = false;
 		VkFramebuffer m_frameBuffer = VK_NULL_HANDLE;
 		uint32_t m_width = 0;
 		uint32_t m_height = 0;

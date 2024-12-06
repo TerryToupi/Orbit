@@ -235,5 +235,55 @@ namespace Engine
 	GfxVkFrameBuffer* VkResourceManager::getFrameBuffer(Handle<FrameBuffer> handle)
 	{
 		return m_frameBuffers.Get(handle);
+	} 
+
+	Handle<Shader> VkResourceManager::appendShader(const GfxVkShader& shader)
+	{
+		return m_shaders.Insert(shader);
+	} 
+
+	Handle<BindGroup> VkResourceManager::appendBindgroup(const GfxVkBindGroup& bindGroup)
+	{
+		return m_bindGroups.Insert(bindGroup);
+	} 
+
+	Handle<BindGroupLayout> VkResourceManager::appendBindgroupLayout(const GfxVkBindGroupLayout& bindGroupLayout)
+	{
+		return m_bindGroupLayouts.Insert(bindGroupLayout);
+	} 
+
+	Handle<Texture> VkResourceManager::appendTexture(const GfxVkTexture& texture)
+	{
+		return m_textures.Insert(texture);
+	} 
+
+	Handle<Sampler> VkResourceManager::appendSampler(const GfxVkSampler& sampler)
+	{
+		return m_samplers.Insert(sampler);
+	} 
+
+	Handle<Buffer> VkResourceManager::appendBuffer(const GfxVkBuffer& buffer)
+	{
+		return m_buffers.Insert(buffer);
+	} 
+
+	Handle<Mesh> VkResourceManager::appendMesh(const GfxVkMesh& mesh)
+	{
+		return m_meshes.Insert(mesh);
+	} 
+
+	Handle<RenderPassLayout> VkResourceManager::appendRenderPassLayout(const GfxVkRenderPassLayout& renderPassLayout)
+	{
+		return m_renderPassLayouts.Insert(renderPassLayout);
+	} 
+
+	Handle<RenderPass> VkResourceManager::appendRenderPass(const GfxVkRenderPass& renderPass)
+	{
+		return m_renderPasses.Insert(renderPass);
+	} 
+
+	Handle<FrameBuffer> VkResourceManager::appendFrameBuffer(const GfxVkFrameBuffer& frameBuffer)
+	{
+		return m_frameBuffers.Insert(frameBuffer);
 	}
 }

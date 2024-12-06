@@ -131,6 +131,31 @@ namespace Engine
 		return m_extent;
 	}
 
+	void GfxVkTexture::SetDebugName(const char* debugName)
+	{ 
+		m_debugName = debugName;
+	}
+
+	void GfxVkTexture::SetVkImage(const VkImage& vkImage)
+	{ 
+		m_image = vkImage;
+	}
+
+	void GfxVkTexture::SetImageView(const VkImageView& imageView)
+	{ 
+		m_imageView = imageView;
+	}
+
+	void GfxVkTexture::SetAllocation(const VmaAllocation& allocation)
+	{ 
+		m_allocation = allocation;
+	}
+
+	void GfxVkTexture::SetExtent(const VkExtent3D& extent)
+	{ 
+		m_extent = extent;
+	}
+
 	void GfxVkTexture::CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation)
 	{ 
 		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance; 

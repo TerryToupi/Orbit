@@ -25,12 +25,13 @@ namespace Engine
 		void CleanUp();
 		void Render() {}
 
-	private:
+
+	protected: 
+		// Active buckbuffers / swapchain images
+		std::vector<Handle<FrameBuffer>> m_backBuffers; 
+
 		// in actions render passes / layouts
 		Handle<RenderPass> m_mainPass;
 		Handle<RenderPassLayout> m_mainPassLayout;
-
-		// Active buckbuffers / swapchain images
-		std::vector<Handle<FrameBuffer>> m_backBuffers;
 	};
 }
