@@ -36,7 +36,9 @@ namespace Engine
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
 		virtual void Present() override; 
-		virtual void OnResize() override {}
+
+		virtual void OnResize(WindowResizeEvent& e) override;
+		virtual void SetUpFrameBuffers();
 
 		void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func);
 		GfxVkCommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type);
@@ -49,11 +51,12 @@ namespace Engine
 
 	private: 
 		void createSwapChain();   
-		//void createImageViews();  
 		void createSyncStructures();
 		void createCommands();  
 		void createDescriptorPool(); 
 
+		void recreateSwapChain();
+		void createSwapChainFrameBuffers();  
 		void destroySwapChain();
 
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
@@ -96,6 +99,9 @@ namespace Engine
 
 		//Frame indexes
 		uint64_t m_frameIndex = 0;
-		uint32_t m_swapChainImageIndex = 0;
+		uint32_t m_swapChainImageIndex = 0; 
+
+		//Should recreate swapchain
+		bool m_framebufferResized = false;
 	};
 }

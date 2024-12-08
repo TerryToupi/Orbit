@@ -35,7 +35,7 @@ namespace Engine
 		vma_vulkan_func.vkBindImageMemory2KHR = vkBindImageMemory2KHR;
 		vma_vulkan_func.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
 		vma_vulkan_func.vkGetDeviceBufferMemoryRequirements = vkGetDeviceBufferMemoryRequirements;
-		vma_vulkan_func.vkGetDeviceImageMemoryRequirements = vkGetDeviceImageMemoryRequirements;
+		vma_vulkan_func.vkGetDeviceImageMemoryRequirements = vkGetDeviceImageMemoryRequirements;  
 
 		VmaAllocatorCreateInfo allocatorInfo{};
 		allocatorInfo.device = device->GetVkDevice();

@@ -31,12 +31,34 @@ namespace Engine
 					.nextUsage = TextureLayout::RENDER_ATTACHMENT,
 				},
 			},
+		});  
+
+		m_mainColor = ResourceManager::instance->createTexture({
+			.debugName = "main-color",
+			.dimensions = { 1920, 1080, 1 },
+			.format = TextureFormat::BGRA8_UNORM,
+			.internalFormat = TextureFormat::BGRA8_UNORM,
+			.usage = TextureUsage::RENDER_ATTACHMENT,
+			.aspect = TextureAspect::COLOR,
 		});
+		
+		m_mainDepth = ResourceManager::instance->createTexture({
+			.debugName = "main-depth",
+			.dimensions = { m_backBufferWidth, m_backBufferHeight, 1 },
+			.format = TextureFormat::D32_FLOAT,
+			.internalFormat = TextureFormat::D32_FLOAT,
+			.usage = TextureUsage::DEPTH_STENCIL,
+			.aspect = TextureAspect::DEPTH
+		});
+
+		SetUpFrameBuffers();
     }
 
 	void Renderer::CleanUp()
     {
 		ResourceManager::instance->destroyRenderPass(m_mainPass);
-		ResourceManager::instance->destroyRenderPassLayout(m_mainPassLayout);
+		ResourceManager::instance->destroyRenderPassLayout(m_mainPassLayout); 
+		ResourceManager::instance->destroyTexture(m_mainColor); 
+		ResourceManager::instance->destroyTexture(m_mainDepth);
 	}
 }

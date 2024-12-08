@@ -16,7 +16,9 @@ namespace Engine
 		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
 		m_debugName = desc.debugName;
-		m_extent = { desc.dimensions.x, desc.dimensions.y, desc.dimensions.z };
+		m_extent = { desc.dimensions.x, desc.dimensions.y, desc.dimensions.z }; 
+
+		ENGINE_CORE_TRACE(m_debugName);
 
 		VkImageUsageFlags usage = VkEnums::TextureUsageToVkVkImageUsageFlags(desc.usage); 
 		
@@ -101,9 +103,12 @@ namespace Engine
 	{ 
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
 		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance; 
-
+		
+		ENGINE_CORE_INFO("Desrtoying, {}", m_debugName);
+		
 		vkDestroyImageView(device->GetVkDevice(), m_imageView, nullptr);
-		vmaDestroyImage(rm->GetVmaAllocator(), m_image, m_allocation);
+		if (m_allocation)
+			vmaDestroyImage(rm->GetVmaAllocator(), m_image, m_allocation);
 	}
 
 	const char* GfxVkTexture::GetDebugName()

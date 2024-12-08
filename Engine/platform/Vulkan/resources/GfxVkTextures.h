@@ -18,20 +18,23 @@ namespace Engine
 		VkImage& GetVkImage(); 
 		VkImageView& GetImageView();
 		VmaAllocation& GetAllocation();
-		VkExtent3D& GetExtent(); 
+		VkExtent3D& GetExtent();
+		bool& isSwapChainImage();
 
 		void SetDebugName(const char* debugName);
 		void SetVkImage(const VkImage& vkImage);
 		void SetImageView(const VkImageView& imageView);
 		void SetAllocation(const VmaAllocation& allocation);
-		void SetExtent(const VkExtent3D& extent);
+		void SetExtent(const VkExtent3D& extent); 
+		void SetIsSwapChainImage(const bool& value);
 
 	private: 
 		void CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation);
 		void CopyBufferToTexture(VkBuffer stagingBuffer, const TextureDesc& desc);
 
 	private: 
-		const char* m_debugName; 
+		const char* m_debugName;  
+		bool m_isSwapChainImage = false;
 		VkImage m_image = VK_NULL_HANDLE;
 		VkImageView m_imageView = VK_NULL_HANDLE;
 		VmaAllocation m_allocation = VK_NULL_HANDLE;

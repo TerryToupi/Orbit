@@ -24,7 +24,7 @@ namespace Engine
 		VkFramebuffer& GetFrameBuffer();
 		uint32_t& GetWidth();
 		uint32_t& GetHeight();
-		std::initializer_list<Handle<Texture>>& GetColorTargets();
+		std::vector<Handle<Texture>>& GetColorTargets();
 		Handle<Texture>& GetDepthTarget();
 		Handle<RenderPass>& GetRenderPass();
 
@@ -34,7 +34,7 @@ namespace Engine
 		VkFramebuffer m_frameBuffer = VK_NULL_HANDLE;
 		uint32_t m_width = 0;
 		uint32_t m_height = 0;
-		std::initializer_list<Handle<Texture>> m_colorTargets;
+		std::vector<Handle<Texture>> m_colorTargets;
 		Handle<Texture> m_depthTarget;
 		Handle<RenderPass> m_renderPass;
 	};

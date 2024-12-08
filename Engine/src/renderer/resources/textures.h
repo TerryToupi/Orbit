@@ -10,7 +10,7 @@ namespace Engine
 
 	struct TextureDesc
 	{ 
-		const char* debugName;
+		const char* debugName; 
 		glm::u32vec3 dimensions;
 		uint32_t mipLevels = 1; 
 		uint32_t arrayLayers = 1;

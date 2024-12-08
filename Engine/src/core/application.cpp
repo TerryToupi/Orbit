@@ -112,25 +112,25 @@ namespace Engine
 
 			Window::instance->Update(timestep);
 
-			// Renderer::instance->BeginFrame();
+			//Renderer::instance->BeginFrame();
 			{
 				for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
 				{
 					(*layer)->OnUpdate(timestep);
 				}
 			}
-			// Renderer::instance->EndFrame();
+			//Renderer::instance->EndFrame();
 			//
-			// Renderer::instance->BeginFrame();
+			//Renderer::instance->BeginFrame();
 			{
 				for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
 				{
 					(*layer)->OnUIUpdate(timestep);
 				}
 			}
-			// Renderer::instance->EndFrame();
+			//Renderer::instance->EndFrame();
 			//
-			// Renderer::instance->Present();
+			//Renderer::instance->Present();
 		}
 		Renderer::instance->CleanUp();
 	}
@@ -143,7 +143,8 @@ namespace Engine
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{  
-		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", Window::instance->GetWidth(), Window::instance->GetHeight());
+		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", Window::instance->GetWidth(), Window::instance->GetHeight()); 
+		Renderer::instance->OnResize(e);
 		return true;
 	}
 

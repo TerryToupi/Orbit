@@ -47,7 +47,8 @@ namespace Engine
 			uint32_t index = m_freeList.back();
 			m_freeList.pop_back(); 
 			
-			memmove(&m_data[index], &data, sizeof(U));
+			//memcpy(&m_data[index], &data, sizeof(U)); 
+			m_data[index] = data;
 
 			return { index, m_generation[index] };
 		} 

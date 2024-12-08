@@ -358,7 +358,9 @@ namespace Engine
 		{
 			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 		}
-		#endif 
+		#endif
+
+		extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 		if (m_enableValidationLayers)
 		{

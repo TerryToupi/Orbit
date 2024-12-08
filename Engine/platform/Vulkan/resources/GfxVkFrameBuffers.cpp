@@ -13,7 +13,8 @@ namespace Engine
 			m_colorTargets(desc.colorTargets), 
 			m_depthTarget(desc.depthTarget),
 			m_renderPass(desc.renderPass)
-	{
+	{ 
+		validate();
 	} 
 
 	void GfxVkFrameBuffer::resize(uint32_t width, uint32_t height)
@@ -99,7 +100,7 @@ namespace Engine
 		return m_height;
 	} 
 
-	std::initializer_list<Handle<Texture>>& GfxVkFrameBuffer::GetColorTargets()
+	std::vector<Handle<Texture>>& GfxVkFrameBuffer::GetColorTargets()
 	{
 		return m_colorTargets;
 	} 

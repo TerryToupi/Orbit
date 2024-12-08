@@ -22,7 +22,6 @@ namespace Engine
         );
 
         createSwapChain(); 
-        //createImageViews(); 
         createCommands();
         createSyncStructures(); 
         createDescriptorPool();
@@ -35,7 +34,8 @@ namespace Engine
         VulkanDevice* device = (VulkanDevice*)Device::instance; 
 
         vkDeviceWaitIdle(device->GetVkDevice()); 
-
+        
+        destroySwapChain();
         m_cleanup.Flush();
     }
 
@@ -47,21 +47,32 @@ namespace Engine
             device->GetVkDevice(),
             1,
             &GetCurrentFrame().graphicsFence,
-            true,
-            1000000000
-        ));
+            VK_TRUE,
+            UINT64_MAX
+        )); 
+
+        VkResult result = vkAcquireNextImageKHR(
+            device->GetVkDevice(),
+            m_swapChain,
+            UINT64_MAX,
+            GetCurrentFrame().ImageAvailableSemaphore,
+            nullptr,
+            &m_swapChainImageIndex
+        ); 
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_framebufferResized) {
+            m_framebufferResized = false;
+            recreateSwapChain();
+        }
+        else if (result != VK_SUCCESS) 
+        { 
+            ENGINE_ASSERT(false, "Failed to aquire new swap chain image!");
+        }
+
         VK_VALIDATE(vkResetFences(
             device->GetVkDevice(),
             1,
             &GetCurrentFrame().graphicsFence
-        ));
-        VK_VALIDATE(vkAcquireNextImageKHR(
-            device->GetVkDevice(),
-            m_swapChain,
-            1000000000,
-            GetCurrentFrame().ImageAvailableSemaphore,
-            nullptr,
-            &m_swapChainImageIndex
         ));
     }
 
@@ -125,6 +136,16 @@ namespace Engine
         pCommandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_RECORDING);
 
         return pCommandBuffer;
+    }
+
+    void VulkanRenderer::OnResize(WindowResizeEvent& e)
+    { 
+        m_framebufferResized = true;
+    }
+
+    void VulkanRenderer::SetUpFrameBuffers()
+    { 
+        createSwapChainFrameBuffers();
     }
 
     void VulkanRenderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func)
@@ -236,27 +257,77 @@ namespace Engine
 
         m_swapChainImageFormat = surfaceFormat.format;
         m_swapChainExtent = extent; 
+        m_backBufferWidth = extent.width; 
+        m_backBufferHeight = extent.height; 
 
-        m_cleanup.appendFunction([=]()
-            {
-                vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
-            }); 
+        m_backBuffers.clear();
+    } 
+
+    void VulkanRenderer::destroySwapChain()
+    {  
+        VulkanDevice* device = (VulkanDevice*)Device::instance; 
+        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+
+        for (Handle<FrameBuffer> hFrameBuffer : m_backBuffers)
+        {   
+            if (hFrameBuffer.IsValid())
+            { 
+				GfxVkFrameBuffer* fb = rm->getFrameBuffer(hFrameBuffer); 
+
+				for (Handle<Texture> hTexture : fb->GetColorTargets())
+				{  
+					if (hTexture.IsValid())
+					    rm->destroyTexture(hTexture);
+				} 
+
+				rm->destroyTexture(fb->GetDepthTarget()); 
+				rm->destroyFrameBuffer(hFrameBuffer);
+            }
+        }  
+
+        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
+    }
+
+    void VulkanRenderer::recreateSwapChain()
+    {
+        VulkanWindow* wm = (VulkanWindow*)Window::instance; 
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(wm->GetNativeWindow(), &width, &height);
+        while (width == 0 || height == 0) 
+        {
+            glfwGetFramebufferSize(wm->GetNativeWindow(), &width, &height);
+            glfwWaitEvents();
+        }
+
+        vkDeviceWaitIdle(device->GetVkDevice()); 
+
+        destroySwapChain(); 
+        createSwapChain();
+        createSwapChainFrameBuffers();
+    } 
+
+    void VulkanRenderer::createSwapChainFrameBuffers()
+    {  
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
+        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
         m_swapChainImageViews.resize(m_swapChainImages.size());
 
-        for (size_t i = 0; i < m_swapChainImages.size(); i++)
+        for (size_t i = 0; i < m_swapChainImages.size(); i++) 
         {
             VkImageViewCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = m_swapChainImages[i];
+            createInfo.image = m_swapChainImages[i]; 
 
             createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = m_swapChainImageFormat;
+            createInfo.format = m_swapChainImageFormat; 
 
             createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY; 
 
             createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             createInfo.subresourceRange.baseMipLevel = 0;
@@ -264,77 +335,28 @@ namespace Engine
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));   
-            
-            m_backBuffers.clear();
+            VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i])); 
 
             GfxVkTexture swapImage;
-            swapImage.SetDebugName(std::string("Swap image").c_str()); 
-            swapImage.SetImageView(m_swapChainImageViews[i]); 
+            swapImage.SetDebugName("swapchain image");
+            swapImage.SetImageView(m_swapChainImageViews[i]);
             swapImage.SetVkImage(m_swapChainImages[i]); 
-            swapImage.SetExtent({ m_swapChainExtent.width, m_swapChainExtent.height, 1 }); 
-            
+            swapImage.SetAllocation(nullptr); 
+            swapImage.SetExtent({ m_swapChainExtent.width, m_swapChainExtent.height, 1 });
+
             Handle<Texture> swapTexture = rm->appendTexture(swapImage);
-            
+
             Handle<FrameBuffer> fb = rm->createFrameBuffer({
                 .debugName = "swapchain-framebuffer",
                 .width = m_swapChainExtent.width,
                 .height = m_swapChainExtent.height,
                 .renderPass = m_mainPass,
-                .colorTargets = { swapTexture }
-            });  
+                .colorTargets = { swapTexture, m_mainDepth }
+            });
 
             m_backBuffers.push_back(fb);
         }
-
-        m_cleanup.appendFunction([=]()
-            {
-                for (auto imageView : m_swapChainImageViews) {
-                    vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
-                }
-            });
-    } 
-
-    void VulkanRenderer::destroySwapChain()
-    {
     }
-
-    //void VulkanRenderer::createImageViews()
-    //{  
-    //    VulkanDevice* device = (VulkanDevice*)Device::instance; 
-
-    //    m_swapChainImageViews.resize(m_swapChainImages.size());
-
-    //    for (size_t i = 0; i < m_swapChainImages.size(); i++) 
-    //    {
-    //        VkImageViewCreateInfo createInfo{};
-    //        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    //        createInfo.image = m_swapChainImages[i]; 
-
-    //        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    //        createInfo.format = m_swapChainImageFormat; 
-
-    //        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-    //        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-    //        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-    //        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY; 
-
-    //        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    //        createInfo.subresourceRange.baseMipLevel = 0;
-    //        createInfo.subresourceRange.levelCount = 1;
-    //        createInfo.subresourceRange.baseArrayLayer = 0;
-    //        createInfo.subresourceRange.layerCount = 1;
-
-    //        VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));
-    //    } 
-
-    //    m_cleanup.appendFunction([=]()
-    //        {
-    //            for (auto imageView : m_swapChainImageViews) {
-    //                vkDestroyImageView(device->GetVkDevice(), imageView, nullptr);
-    //            }
-    //        });
-    //}
 
     void VulkanRenderer::createSyncStructures()
     { 
@@ -514,8 +536,7 @@ namespace Engine
             .pPoolSizes = poolSizes,
         };
 
-        VK_VALIDATE(vkCreateDescriptorPool
-        (
+        VK_VALIDATE(vkCreateDescriptorPool(
             device->GetVkDevice(), 
             &tDescriptorPoolInfo, 
             nullptr,
