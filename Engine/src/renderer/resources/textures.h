@@ -1,8 +1,11 @@
 #pragma once 
 
+#include "src/utilities/handles.h"
 #include "glm/glm.hpp"  
 #include "stb_image.h"
-#include "src/renderer/resources/enums.h"
+#include "src/renderer/resources/enums.h" 
+
+#define TEXTURE Handle<Texture>
 
 namespace Engine
 {

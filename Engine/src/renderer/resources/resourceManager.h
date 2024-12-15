@@ -25,26 +25,26 @@ namespace Engine
 		virtual void Init() = 0;
 		virtual void ShutDown() = 0;
 
-		virtual Handle<Shader> createShader(const ShaderDesc&& desc) = 0; 
-		virtual Handle<BindGroup> createBindgroup(const BindGroupDesc&& desc) = 0; 
-		virtual Handle<BindGroupLayout> createBindgroupLayout(const BindGroupLayoutDesc&& desc) = 0;
-		virtual Handle<Texture> createTexture(const TextureDesc&& desc) = 0; 
-		virtual Handle<Sampler> createSampler(const SamplerDesc&& desc) = 0; 
-		virtual Handle<Buffer> createBuffer(const BufferDesc&& desc) = 0;  
-		virtual Handle<Mesh> createMesh(const MeshDesc&& desc) = 0; 
-		virtual Handle<RenderPassLayout> createRenderPassLayout(const RenderPassLayoutDesc&& desc) = 0; 
-		virtual Handle<RenderPass> createRenderPass(const RenderPassDesc&& desc) = 0;
-		virtual Handle<FrameBuffer> createFrameBuffer(const FrameBufferDesc&& desc) = 0;
+		virtual SHADER createShader(const ShaderDesc&& desc) = 0;
+		virtual BINDGROUP createBindgroup(const BindGroupDesc&& desc) = 0;
+		virtual BINDGROUPLAYOUT createBindgroupLayout(const BindGroupLayoutDesc&& desc) = 0;
+		virtual TEXTURE createTexture(const TextureDesc&& desc) = 0;
+		virtual SAMPLER createSampler(const SamplerDesc&& desc) = 0;
+		virtual BUFFER createBuffer(const BufferDesc&& desc) = 0;
+		virtual MESH createMesh(const MeshDesc&& desc) = 0;
+		virtual RENDERPASSLAYOUT createRenderPassLayout(const RenderPassLayoutDesc&& desc) = 0;
+		virtual RENDERPASS createRenderPass(const RenderPassDesc&& desc) = 0;
+		virtual FRAMEBUFFER createFrameBuffer(const FrameBufferDesc&& desc) = 0;
 
-		virtual void destroyShader(Handle<Shader> handle) = 0; 
-		virtual void destroyBindgroup(Handle<BindGroup> handle) = 0; 
-		virtual void destroyBindgroupLayout(Handle<BindGroupLayout> handle) = 0;
-		virtual void destroyTexture(Handle<Texture> handle) = 0; 
-		virtual void destroySampler(Handle<Sampler> handle) = 0; 
-		virtual void destroyBuffer(Handle<Buffer> handle) = 0;  
-		virtual void destroyMesh(Handle<Mesh> handle) = 0; 
-		virtual void destroyRenderPassLayout(Handle<RenderPassLayout> handle) = 0;
-		virtual void destroyRenderPass(Handle<RenderPass> handle) = 0;  
-		virtual void destroyFrameBuffer(Handle<FrameBuffer> handle) = 0;
+		virtual void destroyShader(SHADER handle) = 0;
+		virtual void destroyBindgroup(BINDGROUP handle) = 0;
+		virtual void destroyBindgroupLayout(BINDGROUPLAYOUT handle) = 0;
+		virtual void destroyTexture(TEXTURE handle) = 0;
+		virtual void destroySampler(SAMPLER handle) = 0;
+		virtual void destroyBuffer(BUFFER handle) = 0;
+		virtual void destroyMesh(MESH handle) = 0;
+		virtual void destroyRenderPassLayout(RENDERPASSLAYOUT handle) = 0;
+		virtual void destroyRenderPass(RENDERPASS handle) = 0;
+		virtual void destroyFrameBuffer(FRAMEBUFFER handle) = 0;
 	};
 }

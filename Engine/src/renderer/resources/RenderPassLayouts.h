@@ -1,7 +1,10 @@
 #pragma once 
 
+#include "src/utilities/handles.h"
 #include "src/renderer/resources/Enums.h"
 #include "src/utilities/span.h"
+
+#define RENDERPASSLAYOUT Handle<RenderPassLayout>
 
 namespace Engine
 {

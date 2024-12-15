@@ -31,16 +31,16 @@ namespace Engine
 
 	protected: 
 		// Active buckbuffers / swapchain images
-		std::vector<Handle<FrameBuffer>> m_backBuffers;
+		std::vector<FRAMEBUFFER> m_backBuffers;
 		uint32_t m_backBufferWidth; 
 		uint32_t m_backBufferHeight;
 
 		// in actions render passes / layouts
-		Handle<RenderPass> m_mainPass;
-		Handle<RenderPassLayout> m_mainPassLayout; 
+		RENDERPASS m_mainPass;
+		RENDERPASSLAYOUT m_mainPassLayout; 
 
 		// in action textures
-		Handle<Texture> m_mainColor; 
-		Handle<Texture> m_mainDepth;
+		TEXTURE m_mainColor; 
+		TEXTURE m_mainDepth;
 	};
 }

@@ -100,17 +100,17 @@ namespace Engine
 		return m_height;
 	} 
 
-	std::vector<Handle<Texture>>& GfxVkFrameBuffer::GetColorTargets()
+	std::vector<TEXTURE>& GfxVkFrameBuffer::GetColorTargets()
 	{
 		return m_colorTargets;
 	} 
 
-	Handle<Texture>& GfxVkFrameBuffer::GetDepthTarget()
+	TEXTURE& GfxVkFrameBuffer::GetDepthTarget()
 	{ 
 		return m_depthTarget;
 	} 
 
-	Handle<RenderPass>& GfxVkFrameBuffer::GetRenderPass()
+	RENDERPASS& GfxVkFrameBuffer::GetRenderPass()
 	{ 
 		return m_renderPass;
 	}

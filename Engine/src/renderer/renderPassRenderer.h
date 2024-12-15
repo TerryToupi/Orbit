@@ -17,7 +17,7 @@ namespace Engine
 
         virtual ~RenderPassRenderer() = default;
 
-        virtual void BeginRenderPass(Handle<RenderPass> renderPass, Handle<FrameBuffer> frameBuffer) = 0;
+        virtual void BeginRenderPass(RENDERPASS renderPass, FRAMEBUFFER frameBuffer) = 0;
         virtual void EndRenderPass() = 0;
         virtual void Submit() = 0;
         virtual void Draw() = 0;

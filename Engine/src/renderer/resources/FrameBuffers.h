@@ -1,9 +1,13 @@
 #pragma once 
 
+#include "src/utilities/handles.h"
 #include "src/renderer/resources/Enums.h"
 #include "src/renderer/resources/Textures.h"
-#include "src/renderer/resources/RenderPasses.h"
+#include "src/renderer/resources/RenderPasses.h" 
+
 #include <initializer_list>
+
+#define FRAMEBUFFER Handle<FrameBuffer>
 
 namespace Engine
 {
@@ -15,8 +19,8 @@ namespace Engine
 		bool resizable = true;
 		uint32_t width = 0;
 		uint32_t height = 0;
-		Handle<RenderPass> renderPass;
-		Handle<Texture> depthTarget;
-		std::initializer_list<Handle<Texture>> colorTargets;
+		RENDERPASS renderPass;
+		TEXTURE depthTarget;
+		std::initializer_list<TEXTURE> colorTargets;
 	};
 }

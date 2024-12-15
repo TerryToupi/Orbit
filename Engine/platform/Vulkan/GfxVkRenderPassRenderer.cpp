@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-    void GfxVkRenderPassRenderer::BeginRenderPass(Handle<RenderPass> renderPass, Handle<FrameBuffer> frameBuffer)
+    void GfxVkRenderPassRenderer::BeginRenderPass(RENDERPASS renderPass, FRAMEBUFFER frameBuffer)
     {
         VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
         VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;

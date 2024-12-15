@@ -268,13 +268,13 @@ namespace Engine
         VulkanDevice* device = (VulkanDevice*)Device::instance; 
         VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
-        for (Handle<FrameBuffer> hFrameBuffer : m_backBuffers)
+        for (FRAMEBUFFER hFrameBuffer : m_backBuffers)
         {   
             if (hFrameBuffer.IsValid())
             { 
 				GfxVkFrameBuffer* fb = rm->getFrameBuffer(hFrameBuffer); 
 
-				for (Handle<Texture> hTexture : fb->GetColorTargets())
+				for (TEXTURE hTexture : fb->GetColorTargets())
 				{  
 					if (hTexture.IsValid())
 					    rm->destroyTexture(hTexture);
@@ -344,9 +344,9 @@ namespace Engine
             swapImage.SetAllocation(nullptr); 
             swapImage.SetExtent({ m_swapChainExtent.width, m_swapChainExtent.height, 1 });
 
-            Handle<Texture> swapTexture = rm->appendTexture(swapImage);
+            TEXTURE swapTexture = rm->appendTexture(swapImage);
 
-            Handle<FrameBuffer> fb = rm->createFrameBuffer({
+            FRAMEBUFFER fb = rm->createFrameBuffer({
                 .debugName = "swapchain-framebuffer",
                 .width = m_swapChainExtent.width,
                 .height = m_swapChainExtent.height,

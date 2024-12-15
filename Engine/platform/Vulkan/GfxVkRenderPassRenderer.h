@@ -13,7 +13,7 @@ namespace Engine
         {
         }
 
-        virtual void BeginRenderPass(Handle<RenderPass> renderPass, Handle<FrameBuffer> frameBuffer) override;
+        virtual void BeginRenderPass(RENDERPASS renderPass, FRAMEBUFFER frameBuffer) override;
         virtual void EndRenderPass() override;
         virtual void Submit() override;
         virtual void Draw() override;

@@ -2,10 +2,13 @@
 
 #include<glm/glm.hpp>
 
+#include "src/utilities/handles.h"
 #include "src/renderer/resources/Enums.h"
 #include "src/renderer/resources/RenderPassLayouts.h" 
 #include "src/utilities/handles.h"
-#include "src/utilities/span.h"
+#include "src/utilities/span.h" 
+
+#define RENDERPASS Handle<RenderPass>
 
 namespace Engine
 {

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "src/utilities/handles.h"
 #include "src/renderer/resources/enums.h" 
 #include "float.h"
+
+#define SAMPLER Handle<Sampler>
 
 namespace Engine
 {
