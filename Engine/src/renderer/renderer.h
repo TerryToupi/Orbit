@@ -2,7 +2,8 @@
 
 #include "src/utilities/handles.h"
 #include "src/renderer/resources/resourceManager.h" 
-#include "src/events/appEvents.h"
+#include "src/events/appEvents.h" 
+#include "src/renderer/commandBuffer.h"
 
 namespace Engine
 { 
@@ -18,7 +19,9 @@ namespace Engine
 
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
-		virtual void Present() = 0;
+		virtual void Present() = 0; 
+
+		virtual CommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type) = 0;
 
 		virtual void OnResize(WindowResizeEvent& e) = 0; 
 
@@ -31,13 +34,17 @@ namespace Engine
 
 	protected: 
 		// Active buckbuffers / swapchain images
-		std::vector<FRAMEBUFFER> m_backBuffers;
+		std::vector<FRAMEBUFFER> m_backBuffers; 
+		uint32_t m_swapChainImageIndex = 0;
 		uint32_t m_backBufferWidth; 
 		uint32_t m_backBufferHeight;
 
 		// in actions render passes / layouts
 		RENDERPASS m_mainPass;
-		RENDERPASSLAYOUT m_mainPassLayout; 
+		RENDERPASSLAYOUT m_mainPassLayout;  
+
+		RENDERPASS m_uiPass; 
+		RENDERPASSLAYOUT m_uiPassLayout;
 
 		// in action textures
 		TEXTURE m_mainColor; 

@@ -37,11 +37,15 @@ namespace Engine
 		virtual void EndFrame() override;
 		virtual void Present() override; 
 
-		virtual void OnResize(WindowResizeEvent& e) override;
-		virtual void SetUpFrameBuffers();
+		virtual void OnResize(WindowResizeEvent& e) override; 
 
-		void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func);
-		GfxVkCommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type);
+		virtual void SetUpFrameBuffers() override; 
+
+		CommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type) override;
+
+		void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func); 
+
+		void StubRenderPass();
 
 		Frame& GetCurrentFrame();
 
@@ -99,7 +103,6 @@ namespace Engine
 
 		//Frame indexes
 		uint64_t m_frameIndex = 0;
-		uint32_t m_swapChainImageIndex = 0; 
 
 		//Should recreate swapchain
 		bool m_framebufferResized = false;

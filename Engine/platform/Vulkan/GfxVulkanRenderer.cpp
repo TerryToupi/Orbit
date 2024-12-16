@@ -22,8 +22,8 @@ namespace Engine
         );
 
         createSwapChain(); 
-        createCommands();
         createSyncStructures(); 
+        createCommands();
         createDescriptorPool();
 
         ENGINE_CORE_INFO("[VULKAN] Vulkan Renderer initialized!");
@@ -37,6 +37,23 @@ namespace Engine
         
         destroySwapChain();
         m_cleanup.Flush();
+    } 
+
+    void VulkanRenderer::StubRenderPass()
+    {
+        {
+            CommandBuffer* commandBuffer = Renderer::instance->BeginCommandRecording(RenderPassStage::MAIN, CommandBufferType::MAIN);
+            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_mainPass, m_backBuffers[m_swapChainImageIndex]);
+            commandBuffer->EndRenderPass(passRenderer);
+            commandBuffer->Submit();
+        }
+
+        {
+            CommandBuffer* commandBuffer = Renderer::instance->BeginCommandRecording(RenderPassStage::IMGUI, CommandBufferType::UI);
+            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_uiPass, m_backBuffers[m_swapChainImageIndex]);
+            commandBuffer->EndRenderPass(passRenderer);
+            commandBuffer->Submit();
+        }
     }
 
     void VulkanRenderer::BeginFrame()
@@ -77,7 +94,8 @@ namespace Engine
     }
 
     void VulkanRenderer::EndFrame()
-    {
+    { 
+        StubRenderPass();
     }
 
     void VulkanRenderer::Present()
@@ -97,7 +115,7 @@ namespace Engine
         m_frameIndex++;
     }
 
-    GfxVkCommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
+    CommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
     {
         GfxVkCommandBuffer* pCommandBuffer = nullptr;
 
@@ -121,7 +139,7 @@ namespace Engine
                 }
         }
 
-        ENGINE_ASSERT(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_SUBMITTED); 
+        ENGINE_ASSERT(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_READY);
         VK_VALIDATE(vkResetCommandBuffer(pCommandBuffer->GetCommandBuffer(), 0));
 
         VkCommandBufferBeginInfo beginInfo =

@@ -112,14 +112,14 @@ namespace Engine
 
 			Window::instance->Update(timestep);
 
-			//Renderer::instance->BeginFrame();
+			Renderer::instance->BeginFrame();
 			{
 				for (auto layer = m_layers.begin(); layer != m_layers.end(); ++layer)
 				{
 					(*layer)->OnUpdate(timestep);
 				}
 			}
-			//Renderer::instance->EndFrame();
+			Renderer::instance->EndFrame();
 			//
 			//Renderer::instance->BeginFrame();
 			{
@@ -130,7 +130,7 @@ namespace Engine
 			}
 			//Renderer::instance->EndFrame();
 			//
-			//Renderer::instance->Present();
+			Renderer::instance->Present();
 		}
 		Renderer::instance->CleanUp();
 	}
