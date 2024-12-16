@@ -303,13 +303,17 @@ namespace Engine
             }
         }  
 
-        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr);
+        vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr); 
+        m_swapChainImages.clear(); 
+        m_swapChainImageViews.clear();
     }
 
     void VulkanRenderer::recreateSwapChain()
     {
         VulkanWindow* wm = (VulkanWindow*)Window::instance; 
-        VulkanDevice* device = (VulkanDevice*)Device::instance;
+        VulkanDevice* device = (VulkanDevice*)Device::instance; 
+
+        ENGINE_CORE_TRACE("[BACKBUFFER] rezise operation");
 
         int width = 0, height = 0;
         glfwGetFramebufferSize(wm->GetNativeWindow(), &width, &height);

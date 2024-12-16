@@ -70,15 +70,18 @@ namespace Engine
 
 		void Remove(Handle<V> handle)
 		{
-			m_generation[handle.m_index]++; 
+			m_generation[handle.m_index]++;
+
+			if (m_freeList.size() == m_size)
+				ENGINE_ASSERT(false, "Trying to overfree");
 			m_freeList.emplace_back(handle.m_index);
 		}
 
 	private:
 		U* m_data;   
 		std::string m_debugName;
-		std::vector<uint32_t> m_generation;
-		std::vector<uint32_t> m_freeList;
+		std::vector<uint16_t> m_generation;
+		std::vector<uint16_t> m_freeList;
 		uint32_t m_size;
 	};
 }

@@ -108,82 +108,132 @@ namespace Engine
 	} 
 
 	void VkResourceManager::destroyShader(SHADER handle)
-	{
+	{ 
+		if (!handle.IsValid())
+			return; 
+		
 		GfxVkShader* shader = m_shaders.Get(handle);  
-		if (shader)
-			shader->destroy();
+		if (shader == nullptr)
+			return; 
+
+		shader->destroy();
 		m_shaders.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyBindgroup(BINDGROUP handle)
-	{
+	{ 
+		if (!handle.IsValid())
+			return; 
+		
 		GfxVkBindGroup* bg = m_bindGroups.Get(handle);
-		if (bg)
-			bg->destroy(); 
+		if (bg == nullptr)
+			return; 
+
+		bg->destroy(); 
 		m_bindGroups.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyBindgroupLayout(BINDGROUPLAYOUT handle)
 	{
+		if (!handle.IsValid())
+			return;  
+
 		GfxVkBindGroupLayout* bgl = m_bindGroupLayouts.Get(handle);
-		if (bgl)
-			bgl->destroy(); 
+		if (bgl == nullptr)
+			return;
+
+		bgl->destroy(); 
 		m_bindGroupLayouts.Remove(handle);
 	}
 
 	void VkResourceManager::destroyTexture(TEXTURE handle)
 	{
+		if (!handle.IsValid())
+			return;   
+
 		GfxVkTexture* texture = m_textures.Get(handle); 
-		if (texture)
-			texture->destroy(); 
+		if (texture == nullptr)
+			return; 
+
+		texture->destroy(); 
 		m_textures.Remove(handle);
 	} 
 
 	void VkResourceManager::destroySampler(SAMPLER handle)
 	{ 
+		if (!handle.IsValid())
+			return;    
+
 		GfxVkSampler* sampler = m_samplers.Get(handle); 
-		if (sampler)
-			sampler->destroy(); 
+		if (sampler == nullptr)
+			return;
+
+		sampler->destroy();  
 		m_samplers.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyBuffer(BUFFER handle)
 	{ 
+		if (!handle.IsValid())
+			return;    
+
 		GfxVkBuffer* buffer = m_buffers.Get(handle); 
-		if (buffer)
-			buffer->destroy(); 
+		if (buffer == nullptr)
+			return;
+
+		buffer->destroy(); 
 		m_buffers.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyMesh(MESH handle)
 	{
+		if (!handle.IsValid())
+			return;     
+
 		GfxVkMesh* mesh = m_meshes.Get(handle); 
-		if (mesh)
-			mesh->destroy(); 
+		if (mesh == nullptr)
+			return;
+
+		mesh->destroy();  
 		m_meshes.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyRenderPassLayout(RENDERPASSLAYOUT handle)
 	{
+		if (!handle.IsValid())
+			return; 
+
 		GfxVkRenderPassLayout* rpl = m_renderPassLayouts.Get(handle); 
-		if (rpl)
-			rpl->destroy();
+		if (rpl == nullptr)
+			return; 
+
+		rpl->destroy();
 		m_renderPassLayouts.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyRenderPass(RENDERPASS handle)
 	{
+		if (!handle.IsValid())
+			return;  
+
 		GfxVkRenderPass* rp = m_renderPasses.Get(handle); 
-		if (rp)
-			rp->destroy(); 
+		if (rp == nullptr)
+			return;
+
+		rp->destroy(); 
 		m_renderPasses.Remove(handle);
 	} 
 
 	void VkResourceManager::destroyFrameBuffer(FRAMEBUFFER handle)
-	{
+	{ 
+		if (!handle.IsValid())
+			return;   
+
 		GfxVkFrameBuffer* fb = m_frameBuffers.Get(handle); 
-		if (fb)
-			fb->destroy(); 
+		if (fb == nullptr)
+			return; 
+
+		fb->destroy(); 
 		m_frameBuffers.Remove(handle);
 	} 
 

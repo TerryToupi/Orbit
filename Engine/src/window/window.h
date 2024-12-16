@@ -11,8 +11,8 @@ namespace Engine
 		uint32_t Height; 
 
 		WindowConfig(const std::string& title = "Orbit",
-				uint32_t Width = 1024,
-				uint32_t Height = 720
+				uint32_t Width = 1600,
+				uint32_t Height = 900 
 			) : WindowName(title), Width(Width), Height(Height)
 		{
 		}

@@ -143,7 +143,7 @@ namespace Engine
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{  
-		ENGINE_CORE_TRACE("Width: {0}, Height: {1}", Window::instance->GetWidth(), Window::instance->GetHeight()); 
+		//ENGINE_CORE_TRACE("Width: {0}, Height: {1}", Window::instance->GetWidth(), Window::instance->GetHeight()); 
 		Renderer::instance->OnResize(e);
 		return true;
 	}

@@ -45,21 +45,24 @@ namespace Engine
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
 		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
 
-		std::vector<VkImageView> attachments;
+		std::vector<VkImageView> attachments; 
+		attachments.reserve(m_colorTargets.size());
 
-		for (const auto& colorTarget : m_colorTargets)
+		for (const TEXTURE& colorTarget : m_colorTargets)
 		{
 			if (colorTarget.IsValid())
 			{
-				GfxVkTexture* colorTexture = rm->getTexture(colorTarget);
-				attachments.push_back(colorTexture->GetImageView());
+				GfxVkTexture* colorTexture = rm->getTexture(colorTarget);  
+				if (colorTexture != nullptr)
+					attachments.push_back(colorTexture->GetImageView());
 			}
 		}
 
 		if (m_depthTarget.IsValid())
 		{
-			GfxVkTexture* depthTexture = rm->getTexture(m_depthTarget);
-			attachments.push_back(depthTexture->GetImageView());
+			GfxVkTexture* depthTexture = rm->getTexture(m_depthTarget); 
+			if (depthTexture != nullptr)
+				attachments.push_back(depthTexture->GetImageView());
 		}
 
 		ENGINE_ASSERT(m_renderPass.IsValid(), "Render pass was invalid");
