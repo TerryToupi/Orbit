@@ -9,13 +9,14 @@ namespace Engine
 			.debugName = "main-renderpass-layout",
 			.depthTargetFormat = TextureFormat::D32_FLOAT,
 			.subPasses = {
-				{ .depthTarget = true, .colorTargets = 1, },
+				{ .depthTarget = false, .colorTargets = 1, },
 			},
 		});
 		m_mainPass = ResourceManager::instance->createRenderPass({
 			.debugName = "main-renderpass",
 			.layout = m_mainPassLayout,
-			.depthTarget = {
+			.depthTarget = 
+			{
 				.loadOp = LoadOperation::CLEAR,
 				.storeOp = StoreOperation::STORE,
 				.stencilLoadOp = LoadOperation::DONT_CARE,
@@ -38,7 +39,7 @@ namespace Engine
 			.debugName = "imgui-renderpass-layout",
 			.depthTargetFormat = TextureFormat::D32_FLOAT,
 			.subPasses = {
-				{.depthTarget = true, .colorTargets = 1, },
+				{.depthTarget = false, .colorTargets = 1, },
 			},
 		});
 		m_uiPass = ResourceManager::instance->createRenderPass({

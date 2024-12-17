@@ -51,6 +51,7 @@ namespace Engine
 		}
 
 		VkAttachmentReference depthAttachmentRef;
+		VkAttachmentReference* pDepthAttachmentRef = VK_NULL_HANDLE;
 
 		for (const auto& subpass : layout->getSubPasses())
 		{
@@ -59,23 +60,25 @@ namespace Engine
 				m_depthClearValue = (desc.depthTarget.loadOp == LoadOperation::CLEAR);
 
 				attachments.push_back(VkAttachmentDescription
-					{
-						.flags = 0,
-						.format = VkEnums::TextureFormatToVkFormat(layout->getDepthStencilFormat()),
-						.samples = VK_SAMPLE_COUNT_1_BIT,
-						.loadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(desc.depthTarget.loadOp),
-						.storeOp = VkEnums::StoreOperationVkAttachmentStoreOp(desc.depthTarget.storeOp),
-						.stencilLoadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(desc.depthTarget.stencilLoadOp),
-						.stencilStoreOp = VkEnums::StoreOperationVkAttachmentStoreOp(desc.depthTarget.stencilStoreOp),
-						.initialLayout = VkEnums::TextureLayoutToVkImageLayout(desc.depthTarget.prevUsage),
-						.finalLayout = VkEnums::TextureLayoutToVkImageLayout(desc.depthTarget.nextUsage),
-					});
+				{
+					.flags = 0,
+					.format = VkEnums::TextureFormatToVkFormat(layout->getDepthStencilFormat()),
+					.samples = VK_SAMPLE_COUNT_1_BIT,
+					.loadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(desc.depthTarget.loadOp),
+					.storeOp = VkEnums::StoreOperationVkAttachmentStoreOp(desc.depthTarget.storeOp),
+					.stencilLoadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(desc.depthTarget.stencilLoadOp),
+					.stencilStoreOp = VkEnums::StoreOperationVkAttachmentStoreOp(desc.depthTarget.stencilStoreOp),
+					.initialLayout = VkEnums::TextureLayoutToVkImageLayout(desc.depthTarget.prevUsage),
+					.finalLayout = VkEnums::TextureLayoutToVkImageLayout(desc.depthTarget.nextUsage),
+				});
 
 				depthAttachmentRef =
 				{
 					.attachment = index++,
 					.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-				};
+				}; 
+
+				pDepthAttachmentRef = &depthAttachmentRef;
 			}
 		}
 
@@ -83,9 +86,9 @@ namespace Engine
 		VkSubpassDescription subpass =
 		{
 			.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-			.colorAttachmentCount = 1,
+			.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentRefs.size()),
 			.pColorAttachments = colorAttachmentRefs.data(),
-			.pDepthStencilAttachment = &depthAttachmentRef,
+			.pDepthStencilAttachment = pDepthAttachmentRef,
 		};
 
 		VkSubpassDependency dependency =
@@ -113,7 +116,7 @@ namespace Engine
 		VkRenderPassCreateInfo renderPassInfo =
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-			.attachmentCount = 2,
+			.attachmentCount = static_cast<uint32_t>(attachments.size()),
 			.pAttachments = attachments.data(),
 			.subpassCount = 1,
 			.pSubpasses = &subpass,

@@ -373,7 +373,7 @@ namespace Engine
                 .width = m_swapChainExtent.width,
                 .height = m_swapChainExtent.height,
                 .renderPass = m_mainPass,
-                .colorTargets = { swapTexture, m_mainDepth }
+                .colorTargets = { swapTexture }
             });
 
             m_backBuffers.push_back(fb);
