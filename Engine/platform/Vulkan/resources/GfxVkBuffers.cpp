@@ -97,37 +97,37 @@ namespace Engine
 		vmaDestroyBuffer(rm->GetVmaAllocator(), m_buffer, m_allocation);
 	} 
 
-	VkBuffer& GfxVkBuffer::GetVkBuffer()
+	const VkBuffer& GfxVkBuffer::GetVkBuffer()
 	{ 
 		return m_buffer;
 	} 
 
-	VmaAllocation& GfxVkBuffer::GetVmaAllocation()
+	const VmaAllocation& GfxVkBuffer::GetVmaAllocation()
 	{ 
 		return m_allocation;
 	} 
 
-	uint32_t& GfxVkBuffer::GetByteOffset()
+	const uint32_t& GfxVkBuffer::GetByteOffset()
 	{ 
 		return m_byteOffset;
 	} 
 
-	uint32_t& GfxVkBuffer::GetByteSize()
+	const uint32_t& GfxVkBuffer::GetByteSize()
 	{ 
 		return m_byteSize;
 	} 
 
-	VkBufferUsageFlags& GfxVkBuffer::GetBufferUsageFlags()
+	const VkBufferUsageFlags& GfxVkBuffer::GetBufferUsageFlags()
 	{ 
 		return m_bufferUsageFlags;
 	}  
 
-	VmaMemoryUsage& GfxVkBuffer::GetMemoryUsage()
+	const VmaMemoryUsage& GfxVkBuffer::GetMemoryUsage()
 	{ 
 		return m_memoryUsage;
 	} 
 
-	void* Engine::GfxVkBuffer::GetData()
+	const void* Engine::GfxVkBuffer::GetData()
 	{
 		return m_data;
 	}

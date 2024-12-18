@@ -88,32 +88,32 @@ namespace Engine
 		return m_debugName;
 	} 
 
-	VkFramebuffer& GfxVkFrameBuffer::GetFrameBuffer()
+	const VkFramebuffer& GfxVkFrameBuffer::GetFrameBuffer()
 	{ 
 		return m_frameBuffer;
 	} 
 
-	uint32_t& GfxVkFrameBuffer::GetWidth()
+	const uint32_t& GfxVkFrameBuffer::GetWidth()
 	{ 
 		return m_width;
 	} 
 
-	uint32_t& GfxVkFrameBuffer::GetHeight()
+	const uint32_t& GfxVkFrameBuffer::GetHeight()
 	{ 
 		return m_height;
 	} 
 
-	std::vector<TEXTURE>& GfxVkFrameBuffer::GetColorTargets()
+	const std::vector<TEXTURE>& GfxVkFrameBuffer::GetColorTargets()
 	{
 		return m_colorTargets;
 	} 
 
-	TEXTURE& GfxVkFrameBuffer::GetDepthTarget()
+	const TEXTURE& GfxVkFrameBuffer::GetDepthTarget()
 	{ 
 		return m_depthTarget;
 	} 
 
-	RENDERPASS& GfxVkFrameBuffer::GetRenderPass()
+	const RENDERPASS& GfxVkFrameBuffer::GetRenderPass()
 	{ 
 		return m_renderPass;
 	}

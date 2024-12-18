@@ -13,7 +13,7 @@ namespace Engine
 
 		void destroy();   
 
-		VkSampler& GetVkSampler(); 
+		const VkSampler& GetVkSampler(); 
 
 	private:  
 		VkSampler m_sampler;

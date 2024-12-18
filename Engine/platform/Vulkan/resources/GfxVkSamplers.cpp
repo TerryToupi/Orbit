@@ -33,7 +33,7 @@ namespace Engine
 		vkDestroySampler(device->GetVkDevice(), m_sampler, nullptr);
 	} 
 
-	VkSampler& GfxVkSampler::GetVkSampler()
+	const VkSampler& GfxVkSampler::GetVkSampler()
 	{ 
 		return m_sampler;
 	}

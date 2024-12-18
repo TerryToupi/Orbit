@@ -21,12 +21,12 @@ namespace Engine
 		void validate();
 	
 		const char* GetDebugName();
-		VkFramebuffer& GetFrameBuffer();
-		uint32_t& GetWidth();
-		uint32_t& GetHeight();
-		std::vector<TEXTURE>& GetColorTargets();
-		TEXTURE& GetDepthTarget();
-		RENDERPASS& GetRenderPass();
+		const VkFramebuffer& GetFrameBuffer();
+		const uint32_t& GetWidth();
+		const uint32_t& GetHeight();
+		const std::vector<TEXTURE>& GetColorTargets();
+		const TEXTURE& GetDepthTarget();
+		const RENDERPASS& GetRenderPass();
 
 	private: 
 		const char* m_debugName = ""; 

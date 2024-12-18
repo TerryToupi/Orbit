@@ -139,17 +139,17 @@ namespace Engine
 		return m_debugName;
 	} 
 
-	VkRenderPass& GfxVkRenderPass::GetRenderPass()
+	const VkRenderPass& GfxVkRenderPass::GetRenderPass()
 	{ 
 		return m_renderPass;
 	} 
 
-	std::vector<bool>& GfxVkRenderPass::GetColorClearValues()
+	const std::vector<bool>& GfxVkRenderPass::GetColorClearValues()
 	{ 
 		return m_colorClearValues;
 	} 
 
-	bool& GfxVkRenderPass::GetDepthClearValue()
+	const bool& GfxVkRenderPass::GetDepthClearValue()
 	{ 
 		return m_depthClearValue;
 	}

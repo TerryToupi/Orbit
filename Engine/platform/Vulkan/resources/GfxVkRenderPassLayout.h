@@ -13,8 +13,8 @@ namespace Engine
 		void destroy();
 
 		const char* getDebugName() const;
-		TextureFormat& getDepthStencilFormat();
-		std::vector<SubPass>& getSubPasses();
+		const TextureFormat& getDepthStencilFormat();
+		const std::vector<SubPass>& getSubPasses();
 
 	private:
 		const char* m_debugName;

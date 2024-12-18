@@ -15,18 +15,16 @@ namespace Engine
 		void destroy();
 
 		const char* GetDebugName();
-		VkImage& GetVkImage(); 
-		VkImageView& GetImageView();
-		VmaAllocation& GetAllocation();
-		VkExtent3D& GetExtent();
-		bool& isSwapChainImage();
+		const VkImage& GetVkImage(); 
+		const VkImageView& GetImageView();
+		const VmaAllocation& GetAllocation();
+		const VkExtent3D& GetExtent();
 
 		void SetDebugName(const char* debugName);
 		void SetVkImage(const VkImage& vkImage);
 		void SetImageView(const VkImageView& imageView);
 		void SetAllocation(const VmaAllocation& allocation);
 		void SetExtent(const VkExtent3D& extent); 
-		void SetIsSwapChainImage(const bool& value);
 
 	private: 
 		void CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation);

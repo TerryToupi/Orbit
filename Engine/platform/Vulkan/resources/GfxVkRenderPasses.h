@@ -15,9 +15,9 @@ namespace Engine
 		void destroy(); 
 
 		const char* GetDebugName();
-		VkRenderPass& GetRenderPass();
-		std::vector<bool>& GetColorClearValues();
-		bool& GetDepthClearValue();
+		const VkRenderPass& GetRenderPass();
+		const std::vector<bool>& GetColorClearValues();
+		const bool& GetDepthClearValue();
 
 	private: 
 		const char* m_debugName = nullptr; 

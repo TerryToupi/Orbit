@@ -12,13 +12,13 @@ namespace Engine
 
 		void destroy(); 
 
-		VkBuffer& GetVkBuffer();
-		VmaAllocation& GetVmaAllocation();
-		uint32_t& GetByteOffset();
-		uint32_t& GetByteSize();
-		VkBufferUsageFlags& GetBufferUsageFlags();
-		VmaMemoryUsage& GetMemoryUsage();
-		void* GetData(); 
+		const VkBuffer& GetVkBuffer();
+		const VmaAllocation& GetVmaAllocation();
+		const uint32_t& GetByteOffset();
+		const uint32_t& GetByteSize();
+		const VkBufferUsageFlags& GetBufferUsageFlags();
+		const VmaMemoryUsage& GetMemoryUsage();
+		const void* GetData(); 
 
 	private: 
 		const char* m_debugName; 

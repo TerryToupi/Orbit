@@ -106,7 +106,7 @@ namespace Engine
         m_state = CommandBufferState::COMMAND_BUFFER_STATE_READY;
     }
 
-    CommandBufferState GfxVkCommandBuffer::GetState() const
+    const CommandBufferState GfxVkCommandBuffer::GetState() const
     {
         return m_state;
     }
@@ -116,27 +116,27 @@ namespace Engine
         m_state = state;
     }
 
-    CommandBufferType& GfxVkCommandBuffer::GetType()
+    const CommandBufferType& GfxVkCommandBuffer::GetType() 
     {
         return m_type;
     }
 
-    VkCommandBuffer& GfxVkCommandBuffer::GetCommandBuffer()
+    const VkCommandBuffer& GfxVkCommandBuffer::GetCommandBuffer()
     {
         return m_commandBuffer;
     }
 
-    VkFence& GfxVkCommandBuffer::GetFence()
+    const VkFence& GfxVkCommandBuffer::GetFence()
     {
        return m_fence;
     }
 
-    VkSemaphore& GfxVkCommandBuffer::GetWaitSemaphore()
+    const VkSemaphore& GfxVkCommandBuffer::GetWaitSemaphore()
     {
         return m_waitSemaphore;
     }
 
-    VkSemaphore& GfxVkCommandBuffer::GetSignalSemaphore()
+   const VkSemaphore& GfxVkCommandBuffer::GetSignalSemaphore()
     {
         return m_signalSemaphore;
     }

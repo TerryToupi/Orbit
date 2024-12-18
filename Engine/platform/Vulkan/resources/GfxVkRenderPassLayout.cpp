@@ -22,12 +22,12 @@ namespace Engine
         return m_debugName;
     }
 
-    TextureFormat& GfxVkRenderPassLayout::getDepthStencilFormat()
+    const TextureFormat& GfxVkRenderPassLayout::getDepthStencilFormat()
     {
         return m_depthFormat;
     }
 
-    std::vector<SubPass>& GfxVkRenderPassLayout::getSubPasses()
+    const std::vector<SubPass>& GfxVkRenderPassLayout::getSubPasses()
     {
        return m_subPasses;
     }
