@@ -31,23 +31,23 @@ namespace Engine
 			else
 				format = VkEnums::TextureFormatToVkFormat(colorTarget.format);
 			
-			attachments.push_back(VkAttachmentDescription
-				{
-					.format = format,
-					.samples = VK_SAMPLE_COUNT_1_BIT,
-					.loadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(colorTarget.loadOp),
-					.storeOp = VkEnums::StoreOperationVkAttachmentStoreOp(colorTarget.storeOp),
-					.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-					.initialLayout = VkEnums::TextureLayoutToVkImageLayout(colorTarget.prevUsage),
-					.finalLayout = VkEnums::TextureLayoutToVkImageLayout(colorTarget.nextUsage),
-				});
+			attachments.emplace_back(VkAttachmentDescription
+			{
+				.format = format,
+				.samples = VK_SAMPLE_COUNT_1_BIT,
+				.loadOp = VkEnums::LoadOperationToVkAttachmentLoadOp(colorTarget.loadOp),
+				.storeOp = VkEnums::StoreOperationVkAttachmentStoreOp(colorTarget.storeOp),
+				.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+				.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				.initialLayout = VkEnums::TextureLayoutToVkImageLayout(colorTarget.prevUsage),
+				.finalLayout = VkEnums::TextureLayoutToVkImageLayout(colorTarget.nextUsage),
+			});
 
-			colorAttachmentRefs.push_back(VkAttachmentReference
-				{
-					.attachment = index++,
-					.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-				});
+			colorAttachmentRefs.emplace_back(VkAttachmentReference
+			{
+				.attachment = index++,
+				.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			});
 		}
 
 		VkAttachmentReference depthAttachmentRef;
@@ -89,29 +89,30 @@ namespace Engine
 			.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentRefs.size()),
 			.pColorAttachments = colorAttachmentRefs.data(),
 			.pDepthStencilAttachment = pDepthAttachmentRef,
-		};
+		}; 
 
-		VkSubpassDependency dependency =
-		{
+		std::vector<VkSubpassDependency> dependencies;
+
+		dependencies.emplace_back(VkSubpassDependency{
 			.srcSubpass = VK_SUBPASS_EXTERNAL,
 			.dstSubpass = 0,
 			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			.srcAccessMask = 0,
 			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-		};
+		}); 
 
-		VkSubpassDependency depthDependency =
+		if (pDepthAttachmentRef != nullptr)
 		{
-			.srcSubpass = VK_SUBPASS_EXTERNAL,
-			.dstSubpass = 0,
-			.srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-			.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-			.srcAccessMask = 0,
-			.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-		};
-
-		VkSubpassDependency dependencies[2] = { dependency, depthDependency };
+			dependencies.emplace_back(VkSubpassDependency{
+				.srcSubpass = VK_SUBPASS_EXTERNAL,
+				.dstSubpass = 0,
+				.srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+				.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+				.srcAccessMask = 0,
+				.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+			});
+		}
 
 		VkRenderPassCreateInfo renderPassInfo =
 		{
@@ -120,8 +121,8 @@ namespace Engine
 			.pAttachments = attachments.data(),
 			.subpassCount = 1,
 			.pSubpasses = &subpass,
-			.dependencyCount = 2,
-			.pDependencies = &dependencies[0],
+			.dependencyCount = static_cast<uint32_t>(dependencies.size()),
+			.pDependencies = dependencies.data(),
 		};
 
 		VK_VALIDATE(vkCreateRenderPass(device->GetVkDevice(), &renderPassInfo, nullptr, &m_renderPass));
