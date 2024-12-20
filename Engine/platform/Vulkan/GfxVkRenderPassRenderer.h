@@ -12,7 +12,7 @@ namespace Engine
 
         virtual void Draw() override {};
 
-        void SetActiveBuffer(VkCommandBuffer _activeBuffer);
+        void SetActiveBuffer(const VkCommandBuffer& _activeBuffer);
 
     private:
         VkCommandBuffer m_activeBuffer = VK_NULL_HANDLE;

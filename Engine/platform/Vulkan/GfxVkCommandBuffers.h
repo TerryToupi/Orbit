@@ -39,6 +39,7 @@ namespace Engine
     private:
         //TODO: possibly we have to change renderpass renderer to be MT and request one from the renerer if state ready
         GfxVkRenderPassRenderer m_renderPassRenderer;
+
         CommandBufferType m_type = CommandBufferType::MAIN;
         CommandBufferState m_state = CommandBufferState::COMMAND_BUFFER_STATE_NOT_ALLOCATED;
         VkCommandBuffer m_commandBuffer = VK_NULL_HANDLE;

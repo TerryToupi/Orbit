@@ -153,7 +153,7 @@ namespace Engine
         VK_VALIDATE(vkBeginCommandBuffer(pCommandBuffer->GetCommandBuffer(), &beginInfo));
         pCommandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_RECORDING);
 
-        return pCommandBuffer;
+        return (CommandBuffer*)pCommandBuffer;
     }
 
     void VulkanRenderer::OnResize(WindowResizeEvent& e)

@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-    void GfxVkRenderPassRenderer::SetActiveBuffer(VkCommandBuffer _activeBuffer)
+    void GfxVkRenderPassRenderer::SetActiveBuffer(const VkCommandBuffer& _activeBuffer)
     { 
         ENGINE_ASSERT(_activeBuffer != VK_NULL_HANDLE);  
         
