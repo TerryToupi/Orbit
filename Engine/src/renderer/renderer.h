@@ -19,13 +19,13 @@ namespace Engine
 
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
-		virtual void Present() = 0; 
+		virtual void Present() = 0;  
+
+		virtual void BlitToSwapChain(TEXTURE texture) = 0;
 
 		virtual CommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type) = 0;
 
 		virtual void OnResize(WindowResizeEvent& e) = 0; 
-
-		virtual void SetUpFrameBuffers() = 0;
 
 		void SetUp();
 		void CleanUp();
@@ -33,12 +33,6 @@ namespace Engine
 
 
 	protected: 
-		// Active buckbuffers / swapchain images
-		std::vector<FRAMEBUFFER> m_backBuffers; 
-		uint32_t m_swapChainImageIndex = 0;
-		uint32_t m_backBufferWidth; 
-		uint32_t m_backBufferHeight;
-
 		// in actions render passes / layouts
 		RENDERPASS m_mainPass;
 		RENDERPASSLAYOUT m_mainPassLayout;  
@@ -48,6 +42,7 @@ namespace Engine
 
 		// in action textures
 		TEXTURE m_mainColor; 
-		TEXTURE m_mainDepth;
+		TEXTURE m_mainDepth; 
+		FRAMEBUFFER m_mainFrameBuffer;
 	};
 }

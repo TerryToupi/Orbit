@@ -43,7 +43,7 @@ namespace Engine
 			destroy();
 
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
-		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+		VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
 		std::vector<VkImageView> attachments; 
 		attachments.reserve(m_colorTargets.size());

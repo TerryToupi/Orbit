@@ -203,13 +203,15 @@ namespace Engine
 	enum class CommandBufferType
 	{
 		MAIN = 0x0,
-		UI = 0x1
+		UI = 0x1,
+		PRESENT = 0x2
 	};
 
 	enum class RenderPassStage
 	{
 		MAIN = 0x0,
-		IMGUI = 0x1
+		IMGUI = 0x1, 
+		PRESENT = 0x2
 	};
 
 	enum class CommandBufferState

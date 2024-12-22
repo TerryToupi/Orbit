@@ -16,10 +16,10 @@
 
 namespace Engine
 {
-	class VkResourceManager final : public ResourceManager
+	class VulkanResourceManager final : public ResourceManager
 	{ 
 	public: 
-		virtual ~VkResourceManager() = default;
+		virtual ~VulkanResourceManager() = default;
 
 		virtual void Init() override;
 		virtual void ShutDown() override;

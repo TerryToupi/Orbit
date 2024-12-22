@@ -24,7 +24,7 @@ namespace Engine
 			Window::instance = new VulkanWindow(WindowConfig());
 			Device::instance = new VulkanDevice(); 
 			Renderer::instance = new VulkanRenderer(); 
-			ResourceManager::instance = new VkResourceManager();
+			ResourceManager::instance = new VulkanResourceManager();
 		}
 		#else  
 		ENGINE_ASSERT(false, "Chose an apropriate backend for the engine in the build system!");

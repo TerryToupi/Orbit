@@ -17,12 +17,14 @@ namespace Engine
 		VkSemaphore ImageAvailableSemaphore; // Signal from swapchain. 
 		VkSemaphore PresentRenderFinishedSemaphore;
 		VkSemaphore GuiRenderFinishedSemaphore; // Signal that UI render is done.
+		VkSemaphore BlitToSwapChainSemaphore;
 
 		VkFence graphicsFence;
 
 		VkCommandPool CommandPool;
 		VkCommandBuffer MainCommandBuffer;
-		VkCommandBuffer GuiCommandBuffer;
+		VkCommandBuffer GuiCommandBuffer; 
+		VkCommandBuffer BlitToSwapChainCommandBuffer;
 	};
 
 	class VulkanRenderer final : public Renderer
@@ -35,11 +37,11 @@ namespace Engine
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
-		virtual void Present() override; 
+		virtual void Present() override;  
+
+		virtual void BlitToSwapChain(TEXTURE texture) override;
 
 		virtual void OnResize(WindowResizeEvent& e) override; 
-
-		virtual void SetUpFrameBuffers() override; 
 
 		CommandBuffer* BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type) override;
 
@@ -54,14 +56,16 @@ namespace Engine
 		VkFormat& GetSwaipChainImageFormat();
 
 	private: 
-		void createSwapChain();   
 		void createSyncStructures();
 		void createCommands();  
 		void createDescriptorPool(); 
 
+		void createSwapChain(); 
 		void recreateSwapChain();
-		void createSwapChainFrameBuffers();  
+		void createSwapChainImageViews();
 		void destroySwapChain();
+		void createSwapChainFrameBuffers(); 
+		void createBlitToSwapChainRenderPass();
 
 		VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -80,7 +84,10 @@ namespace Engine
 		VkFormat m_swapChainImageFormat;
 		VkExtent2D m_swapChainExtent;
 		std::vector<VkImage> m_swapChainImages;
-		std::vector<VkImageView> m_swapChainImageViews;
+		std::vector<VkImageView> m_swapChainImageViews; 
+		std::vector<VkFramebuffer> m_swapChainFramebuffers; 
+		RENDERPASS m_blitToSwapChainRenderpass; 
+		RENDERPASSLAYOUT m_blitToSwapChainRenderpassLayout;
 
 		//immediate submit data
 		//TODO: replace this with a streaming commandBuffer running in parallel with frame
@@ -97,6 +104,7 @@ namespace Engine
 		//Active Command buffers
 		GfxVkCommandBuffer m_mainCommandBuffer[FRAMES_IN_FLIGHT];
 		GfxVkCommandBuffer m_uiCommandBuffer[FRAMES_IN_FLIGHT];
+		GfxVkCommandBuffer m_blitToSwapChainCommandBuffer[FRAMES_IN_FLIGHT];
 
 		//Descriptor pools 
 		VkDescriptorPool m_descriptorPool;
@@ -105,6 +113,7 @@ namespace Engine
 		uint64_t m_frameIndex = 0;
 
 		//Should recreate swapchain
-		bool m_framebufferResized = false;
+		bool m_framebufferResized = false; 
+		uint32_t m_swapChainImageIndex = 0;
 	};
 }

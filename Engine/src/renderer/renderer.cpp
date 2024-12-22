@@ -9,7 +9,7 @@ namespace Engine
 			.debugName = "main-renderpass-layout",
 			.depthTargetFormat = TextureFormat::D32_FLOAT,
 			.subPasses = {
-				{ .depthTarget = false, .colorTargets = 1, },
+				{ .depthTarget = true, .colorTargets = 1, },
 			},
 		});
 		m_mainPass = ResourceManager::instance->createRenderPass({
@@ -39,26 +39,26 @@ namespace Engine
 			.debugName = "imgui-renderpass-layout",
 			.depthTargetFormat = TextureFormat::D32_FLOAT,
 			.subPasses = {
-				{.depthTarget = false, .colorTargets = 1, },
+				{.depthTarget = true, .colorTargets = 1, },
 			},
 		});
 		m_uiPass = ResourceManager::instance->createRenderPass({
 			.debugName = "imgui-renderpass",
 			.layout = m_uiPassLayout,
 			.depthTarget = {
-				.loadOp = LoadOperation::LOAD,
+				.loadOp = LoadOperation::CLEAR,
 				.storeOp = StoreOperation::STORE,
 				.stencilLoadOp = LoadOperation::DONT_CARE,
 				.stencilStoreOp = StoreOperation::DONT_CARE,
-				.prevUsage = TextureLayout::DEPTH_STENCIL,
+				.prevUsage = TextureLayout::UNDEFINED,
 				.nextUsage = TextureLayout::DEPTH_STENCIL,
 			},
 			.colorTargets = {
 				{
-					.loadOp = LoadOperation::LOAD,
+					.loadOp = LoadOperation::CLEAR,
 					.storeOp = StoreOperation::STORE,
-					.prevUsage = TextureLayout::RENDER_ATTACHMENT,
-					.nextUsage = TextureLayout::PRESENT,
+					.prevUsage = TextureLayout::UNDEFINED,
+					.nextUsage = TextureLayout::RENDER_ATTACHMENT,
 				},
 			},
 		});
@@ -74,14 +74,20 @@ namespace Engine
 		
 		m_mainDepth = ResourceManager::instance->createTexture({
 			.debugName = "main-depth",
-			.dimensions = { m_backBufferWidth, m_backBufferHeight, 1 },
+			.dimensions = { 2048, 2048, 1 },
 			.format = TextureFormat::D32_FLOAT,
 			.internalFormat = TextureFormat::D32_FLOAT,
 			.usage = TextureUsage::DEPTH_STENCIL,
 			.aspect = TextureAspect::DEPTH
-		});
+		}); 
 
-		SetUpFrameBuffers();
+		m_mainFrameBuffer = ResourceManager::instance->createFrameBuffer({
+			.debugName = "main-frame-buffer",
+			.width = 1920,
+			.height = 1080,
+			.renderPass = m_mainPass,
+			.colorTargets = { m_mainColor, m_mainDepth }
+		});
     }
 
 	void Renderer::CleanUp()
@@ -91,6 +97,7 @@ namespace Engine
 		ResourceManager::instance->destroyRenderPass(m_uiPass);
 		ResourceManager::instance->destroyRenderPassLayout(m_uiPassLayout); 
 		ResourceManager::instance->destroyTexture(m_mainColor); 
-		ResourceManager::instance->destroyTexture(m_mainDepth);
+		ResourceManager::instance->destroyTexture(m_mainDepth); 
+		ResourceManager::instance->destroyFrameBuffer(m_mainFrameBuffer);
 	}
 }

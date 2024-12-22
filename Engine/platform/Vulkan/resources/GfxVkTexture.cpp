@@ -13,7 +13,7 @@ namespace Engine
 	{ 
 		VulkanDevice* device = (VulkanDevice*)Device::instance; 
 		VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
-		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+		VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
 		m_debugName = desc.debugName;
 		m_extent = { desc.dimensions.x, desc.dimensions.y, desc.dimensions.z }; 
@@ -102,7 +102,7 @@ namespace Engine
 	void GfxVkTexture::destroy()
 	{ 
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
-		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance; 
+		VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance; 
 		
 		ENGINE_CORE_INFO("Desrtoying, {}", m_debugName);
 		
@@ -163,7 +163,7 @@ namespace Engine
 
 	void GfxVkTexture::CreateStagingBuffer(VkBuffer* stagingBuffer, VmaAllocation* stagingAllocation)
 	{ 
-		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance; 
+		VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance; 
 
 		VkDeviceSize imageSize = m_extent.width * m_extent.height * 4;
 

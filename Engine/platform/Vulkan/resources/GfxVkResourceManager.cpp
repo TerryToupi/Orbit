@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-	void VkResourceManager::CreateMemoryAllocator()
+	void VulkanResourceManager::CreateMemoryAllocator()
 	{
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
 
@@ -47,67 +47,67 @@ namespace Engine
 		VK_VALIDATE(vmaCreateAllocator(&allocatorInfo, &m_allocator));
 	}
 
-	void VkResourceManager::Init()
+	void VulkanResourceManager::Init()
 	{
 		CreateMemoryAllocator();
 	}
 
-	void VkResourceManager::ShutDown()
+	void VulkanResourceManager::ShutDown()
 	{
 		vmaDestroyAllocator(m_allocator);
 	}
 
-	SHADER VkResourceManager::createShader(const ShaderDesc&& desc)
+	SHADER VulkanResourceManager::createShader(const ShaderDesc&& desc)
 	{
 		return m_shaders.Insert(GfxVkShader(std::forward<const ShaderDesc>(desc)));
 	}
 
-	BINDGROUP VkResourceManager::createBindgroup(const BindGroupDesc&& desc)
+	BINDGROUP VulkanResourceManager::createBindgroup(const BindGroupDesc&& desc)
 	{
 		return m_bindGroups.Insert(GfxVkBindGroup(std::forward<const BindGroupDesc>(desc)));
 	}
 
-	BINDGROUPLAYOUT VkResourceManager::createBindgroupLayout(const BindGroupLayoutDesc&& desc)
+	BINDGROUPLAYOUT VulkanResourceManager::createBindgroupLayout(const BindGroupLayoutDesc&& desc)
 	{
 		return m_bindGroupLayouts.Insert(GfxVkBindGroupLayout(std::forward<const BindGroupLayoutDesc>(desc)));
 	}
 
-	TEXTURE VkResourceManager::createTexture(const TextureDesc&& desc)
+	TEXTURE VulkanResourceManager::createTexture(const TextureDesc&& desc)
 	{
 		return m_textures.Insert(GfxVkTexture(std::forward<const TextureDesc>(desc)));
 	}
 
-	SAMPLER VkResourceManager::createSampler(const SamplerDesc&& desc)
+	SAMPLER VulkanResourceManager::createSampler(const SamplerDesc&& desc)
 	{
 		return m_samplers.Insert(GfxVkSampler(std::forward<const SamplerDesc>(desc)));
 	}
 
-	BUFFER VkResourceManager::createBuffer(const BufferDesc&& desc)
+	BUFFER VulkanResourceManager::createBuffer(const BufferDesc&& desc)
 	{
 		return m_buffers.Insert(GfxVkBuffer(std::forward<const BufferDesc>(desc)));
 	}
 
-	MESH VkResourceManager::createMesh(const MeshDesc&& desc)
+	MESH VulkanResourceManager::createMesh(const MeshDesc&& desc)
 	{
 		return m_meshes.Insert(GfxVkMesh(std::forward<const MeshDesc>(desc)));
 	}
 
-	RENDERPASSLAYOUT VkResourceManager::createRenderPassLayout(const RenderPassLayoutDesc&& desc)
+	RENDERPASSLAYOUT VulkanResourceManager::createRenderPassLayout(const RenderPassLayoutDesc&& desc)
 	{
 		return m_renderPassLayouts.Insert(GfxVkRenderPassLayout(std::forward<const RenderPassLayoutDesc>(desc)));
 	}
 
-	RENDERPASS VkResourceManager::createRenderPass(const RenderPassDesc&& desc)
+	RENDERPASS VulkanResourceManager::createRenderPass(const RenderPassDesc&& desc)
 	{
 		return m_renderPasses.Insert(GfxVkRenderPass(std::forward<const RenderPassDesc>(desc)));
 	}
 
-	FRAMEBUFFER VkResourceManager::createFrameBuffer(const FrameBufferDesc&& desc)
+	FRAMEBUFFER VulkanResourceManager::createFrameBuffer(const FrameBufferDesc&& desc)
 	{
 		return m_frameBuffers.Insert(GfxVkFrameBuffer(std::forward<const FrameBufferDesc>(desc)));
 	} 
 
-	void VkResourceManager::destroyShader(SHADER handle)
+	void VulkanResourceManager::destroyShader(SHADER handle)
 	{ 
 		if (!handle.IsValid())
 			return; 
@@ -120,7 +120,7 @@ namespace Engine
 		m_shaders.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyBindgroup(BINDGROUP handle)
+	void VulkanResourceManager::destroyBindgroup(BINDGROUP handle)
 	{ 
 		if (!handle.IsValid())
 			return; 
@@ -133,7 +133,7 @@ namespace Engine
 		m_bindGroups.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyBindgroupLayout(BINDGROUPLAYOUT handle)
+	void VulkanResourceManager::destroyBindgroupLayout(BINDGROUPLAYOUT handle)
 	{
 		if (!handle.IsValid())
 			return;  
@@ -146,7 +146,7 @@ namespace Engine
 		m_bindGroupLayouts.Remove(handle);
 	}
 
-	void VkResourceManager::destroyTexture(TEXTURE handle)
+	void VulkanResourceManager::destroyTexture(TEXTURE handle)
 	{
 		if (!handle.IsValid())
 			return;   
@@ -159,7 +159,7 @@ namespace Engine
 		m_textures.Remove(handle);
 	} 
 
-	void VkResourceManager::destroySampler(SAMPLER handle)
+	void VulkanResourceManager::destroySampler(SAMPLER handle)
 	{ 
 		if (!handle.IsValid())
 			return;    
@@ -172,7 +172,7 @@ namespace Engine
 		m_samplers.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyBuffer(BUFFER handle)
+	void VulkanResourceManager::destroyBuffer(BUFFER handle)
 	{ 
 		if (!handle.IsValid())
 			return;    
@@ -185,7 +185,7 @@ namespace Engine
 		m_buffers.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyMesh(MESH handle)
+	void VulkanResourceManager::destroyMesh(MESH handle)
 	{
 		if (!handle.IsValid())
 			return;     
@@ -198,7 +198,7 @@ namespace Engine
 		m_meshes.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyRenderPassLayout(RENDERPASSLAYOUT handle)
+	void VulkanResourceManager::destroyRenderPassLayout(RENDERPASSLAYOUT handle)
 	{
 		if (!handle.IsValid())
 			return; 
@@ -211,7 +211,7 @@ namespace Engine
 		m_renderPassLayouts.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyRenderPass(RENDERPASS handle)
+	void VulkanResourceManager::destroyRenderPass(RENDERPASS handle)
 	{
 		if (!handle.IsValid())
 			return;  
@@ -224,7 +224,7 @@ namespace Engine
 		m_renderPasses.Remove(handle);
 	} 
 
-	void VkResourceManager::destroyFrameBuffer(FRAMEBUFFER handle)
+	void VulkanResourceManager::destroyFrameBuffer(FRAMEBUFFER handle)
 	{ 
 		if (!handle.IsValid())
 			return;   
@@ -237,102 +237,102 @@ namespace Engine
 		m_frameBuffers.Remove(handle);
 	} 
 
-	GfxVkShader* VkResourceManager::getShader(SHADER handle)
+	GfxVkShader* VulkanResourceManager::getShader(SHADER handle)
 	{
 		return m_shaders.Get(handle);
 	} 
 
-	GfxVkBindGroup* VkResourceManager::getBindgroup(BINDGROUP handle)
+	GfxVkBindGroup* VulkanResourceManager::getBindgroup(BINDGROUP handle)
 	{
 		return m_bindGroups.Get(handle);
 	} 
 
-	GfxVkBindGroupLayout* VkResourceManager::getBindgroupLayout(BINDGROUPLAYOUT handle)
+	GfxVkBindGroupLayout* VulkanResourceManager::getBindgroupLayout(BINDGROUPLAYOUT handle)
 	{
 		return m_bindGroupLayouts.Get(handle);
 	} 
 
-	GfxVkTexture* VkResourceManager::getTexture(TEXTURE handle)
+	GfxVkTexture* VulkanResourceManager::getTexture(TEXTURE handle)
 	{
 		return m_textures.Get(handle);
 	} 
 
-	GfxVkSampler* VkResourceManager::getSampler(SAMPLER handle)
+	GfxVkSampler* VulkanResourceManager::getSampler(SAMPLER handle)
 	{
 		return m_samplers.Get(handle);
 	} 
 
-	GfxVkBuffer* VkResourceManager::getBuffer(BUFFER handle)
+	GfxVkBuffer* VulkanResourceManager::getBuffer(BUFFER handle)
 	{
 		return m_buffers.Get(handle);
 	} 
 
-	GfxVkMesh* VkResourceManager::getMesh(MESH handle)
+	GfxVkMesh* VulkanResourceManager::getMesh(MESH handle)
 	{
 		return m_meshes.Get(handle);
 	} 
 
-	GfxVkRenderPassLayout* VkResourceManager::getRenderPassLayout(RENDERPASSLAYOUT handle)
+	GfxVkRenderPassLayout* VulkanResourceManager::getRenderPassLayout(RENDERPASSLAYOUT handle)
 	{
 		return m_renderPassLayouts.Get(handle);
 	} 
 
-	GfxVkRenderPass* VkResourceManager::getRenderPass(RENDERPASS handle)
+	GfxVkRenderPass* VulkanResourceManager::getRenderPass(RENDERPASS handle)
 	{
 		return m_renderPasses.Get(handle);
 	} 
 
-	GfxVkFrameBuffer* VkResourceManager::getFrameBuffer(FRAMEBUFFER handle)
+	GfxVkFrameBuffer* VulkanResourceManager::getFrameBuffer(FRAMEBUFFER handle)
 	{
 		return m_frameBuffers.Get(handle);
 	} 
 
-	SHADER VkResourceManager::appendShader(const GfxVkShader& shader)
+	SHADER VulkanResourceManager::appendShader(const GfxVkShader& shader)
 	{
 		return m_shaders.Insert(shader);
 	} 
 
-	BINDGROUP VkResourceManager::appendBindgroup(const GfxVkBindGroup& bindGroup)
+	BINDGROUP VulkanResourceManager::appendBindgroup(const GfxVkBindGroup& bindGroup)
 	{
 		return m_bindGroups.Insert(bindGroup);
 	} 
 
-	BINDGROUPLAYOUT VkResourceManager::appendBindgroupLayout(const GfxVkBindGroupLayout& bindGroupLayout)
+	BINDGROUPLAYOUT VulkanResourceManager::appendBindgroupLayout(const GfxVkBindGroupLayout& bindGroupLayout)
 	{
 		return m_bindGroupLayouts.Insert(bindGroupLayout);
 	} 
 
-	TEXTURE VkResourceManager::appendTexture(const GfxVkTexture& texture)
+	TEXTURE VulkanResourceManager::appendTexture(const GfxVkTexture& texture)
 	{
 		return m_textures.Insert(texture);
 	} 
 
-	SAMPLER VkResourceManager::appendSampler(const GfxVkSampler& sampler)
+	SAMPLER VulkanResourceManager::appendSampler(const GfxVkSampler& sampler)
 	{
 		return m_samplers.Insert(sampler);
 	} 
 
-	BUFFER VkResourceManager::appendBuffer(const GfxVkBuffer& buffer)
+	BUFFER VulkanResourceManager::appendBuffer(const GfxVkBuffer& buffer)
 	{
 		return m_buffers.Insert(buffer);
 	} 
 
-	MESH VkResourceManager::appendMesh(const GfxVkMesh& mesh)
+	MESH VulkanResourceManager::appendMesh(const GfxVkMesh& mesh)
 	{
 		return m_meshes.Insert(mesh);
 	} 
 
-	RENDERPASSLAYOUT VkResourceManager::appendRenderPassLayout(const GfxVkRenderPassLayout& renderPassLayout)
+	RENDERPASSLAYOUT VulkanResourceManager::appendRenderPassLayout(const GfxVkRenderPassLayout& renderPassLayout)
 	{
 		return m_renderPassLayouts.Insert(renderPassLayout);
 	} 
 
-	RENDERPASS VkResourceManager::appendRenderPass(const GfxVkRenderPass& renderPass)
+	RENDERPASS VulkanResourceManager::appendRenderPass(const GfxVkRenderPass& renderPass)
 	{
 		return m_renderPasses.Insert(renderPass);
 	} 
 
-	FRAMEBUFFER VkResourceManager::appendFrameBuffer(const GfxVkFrameBuffer& frameBuffer)
+	FRAMEBUFFER VulkanResourceManager::appendFrameBuffer(const GfxVkFrameBuffer& frameBuffer)
 	{
 		return m_frameBuffers.Insert(frameBuffer);
 	}

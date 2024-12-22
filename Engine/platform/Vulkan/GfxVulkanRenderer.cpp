@@ -21,7 +21,10 @@ namespace Engine
             &m_presentQueue
         );
 
-        createSwapChain(); 
+        createSwapChain();
+        createSwapChainImageViews();
+        createBlitToSwapChainRenderPass();
+        createSwapChainFrameBuffers();
         createSyncStructures(); 
         createCommands();
         createDescriptorPool();
@@ -34,26 +37,31 @@ namespace Engine
         VulkanDevice* device = (VulkanDevice*)Device::instance; 
 
         vkDeviceWaitIdle(device->GetVkDevice()); 
-        
+         
         destroySwapChain();
-        m_cleanup.Flush();
+		m_cleanup.Flush(); 
+
+		ResourceManager::instance->destroyRenderPass(m_blitToSwapChainRenderpass);
+        ResourceManager::instance->destroyRenderPassLayout(m_blitToSwapChainRenderpassLayout);
     } 
 
     void VulkanRenderer::StubRenderPass()
     {
         {
             CommandBuffer* commandBuffer = Renderer::instance->BeginCommandRecording(RenderPassStage::MAIN, CommandBufferType::MAIN);
-            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_mainPass, m_backBuffers[m_swapChainImageIndex]);
+            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_mainPass, m_mainFrameBuffer);
             commandBuffer->EndRenderPass(passRenderer);
             commandBuffer->Submit();
         }
 
         {
             CommandBuffer* commandBuffer = Renderer::instance->BeginCommandRecording(RenderPassStage::IMGUI, CommandBufferType::UI);
-            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_uiPass, m_backBuffers[m_swapChainImageIndex]);
+            RenderPassRenderer* passRenderer = commandBuffer->BeginRenderPass(m_uiPass, m_mainFrameBuffer);
             commandBuffer->EndRenderPass(passRenderer);
             commandBuffer->Submit();
-        }
+        } 
+
+        BlitToSwapChain(m_mainColor);
     }
 
     void VulkanRenderer::BeginFrame()
@@ -99,13 +107,13 @@ namespace Engine
     }
 
     void VulkanRenderer::Present()
-    {
+    { 
         VkPresentInfoKHR presentInfo =
         {
             .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
             .pNext = nullptr,
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores = &GetCurrentFrame().GuiRenderFinishedSemaphore,
+            .pWaitSemaphores = &GetCurrentFrame().BlitToSwapChainSemaphore,
             .swapchainCount = 1,
             .pSwapchains = &m_swapChain,
             .pImageIndices = &m_swapChainImageIndex,
@@ -113,6 +121,65 @@ namespace Engine
 
         VK_VALIDATE(vkQueuePresentKHR(m_presentQueue, &presentInfo));
         m_frameIndex++;
+    }
+
+    void VulkanRenderer::BlitToSwapChain(TEXTURE texture)
+    { 
+        VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
+        VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance; 
+
+        GfxVkCommandBuffer* commandBuffer = (GfxVkCommandBuffer*)Renderer::instance->BeginCommandRecording(RenderPassStage::PRESENT, CommandBufferType::PRESENT); 
+
+        ENGINE_ASSERT(commandBuffer->GetState()  == CommandBufferState::COMMAND_BUFFER_STATE_RECORDING);
+
+        GfxVkRenderPass* vkRenderPass = rm->getRenderPass(m_blitToSwapChainRenderpass);
+
+        std::vector<VkClearValue> clearValues;
+
+        std::vector<bool> clValues = vkRenderPass->GetColorClearValues();
+        for (bool clVlaue : clValues)
+        {
+            if (clVlaue)
+            {
+                VkClearValue vkCl = {
+                    .color = { { 0.1f, 0.1f, 0.1f, 1.0f } }
+                };
+
+                clearValues.push_back(vkCl);
+            }
+        }
+
+        if (vkRenderPass->GetDepthClearValue())
+        {
+            VkClearValue vkCl;
+            vkCl.depthStencil.depth = 1.0f;
+            clearValues.push_back(vkCl);
+        }
+
+        // BEGIN PASS
+        VkRenderPassBeginInfo rpInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            .pNext = nullptr,
+            .renderPass = vkRenderPass->GetRenderPass(),
+            .framebuffer = m_swapChainFramebuffers[m_swapChainImageIndex],
+            .renderArea =
+            {
+                .offset = {0, 0},
+                .extent = { m_swapChainExtent.width, m_swapChainExtent.height },
+            },
+            .clearValueCount = (uint32_t)clearValues.size(),
+            .pClearValues = clearValues.data(),
+        };
+        vkCmdBeginRenderPass(commandBuffer->GetCommandBuffer(), &rpInfo, VK_SUBPASS_CONTENTS_INLINE); 
+        
+        // END PASS
+        vkCmdEndRenderPass(commandBuffer->GetCommandBuffer());
+        VK_VALIDATE(vkEndCommandBuffer(commandBuffer->GetCommandBuffer())); 
+
+        commandBuffer->SetState(CommandBufferState::COMMAND_BUFFER_STATE_RECORDING_ENDED);
+
+        commandBuffer->Submit();
     }
 
     CommandBuffer* VulkanRenderer::BeginCommandRecording(const RenderPassStage stage, const CommandBufferType type)
@@ -137,6 +204,20 @@ namespace Engine
                         pCommandBuffer = &m_uiCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT];
                         break;
                 }
+                break;
+
+            case CommandBufferType::PRESENT:
+                switch (stage)
+                { 
+					case RenderPassStage::PRESENT:
+						pCommandBuffer = &m_blitToSwapChainCommandBuffer[m_frameIndex % FRAMES_IN_FLIGHT]; 
+                        break;
+                }  
+                break;
+
+            default:
+                ENGINE_ASSERT(false, "Command Buffer with this specifications not found!"); 
+                break;
         }
 
         ENGINE_ASSERT(pCommandBuffer->GetState() == CommandBufferState::COMMAND_BUFFER_STATE_READY);
@@ -159,11 +240,6 @@ namespace Engine
     void VulkanRenderer::OnResize(WindowResizeEvent& e)
     { 
         m_framebufferResized = true;
-    }
-
-    void VulkanRenderer::SetUpFrameBuffers()
-    { 
-        createSwapChainFrameBuffers();
     }
 
     void VulkanRenderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& func)
@@ -213,7 +289,7 @@ namespace Engine
     void VulkanRenderer::createSwapChain()
     { 
         VulkanDevice* device = (VulkanDevice*)Device::instance;
-        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+        VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
         SwapChainSupportDetails swapChainSupport = device->GetVkSwapChainSupportDetails();
 
@@ -275,37 +351,75 @@ namespace Engine
 
         m_swapChainImageFormat = surfaceFormat.format;
         m_swapChainExtent = extent; 
-        m_backBufferWidth = extent.width; 
-        m_backBufferHeight = extent.height; 
-
-        m_backBuffers.clear();
     } 
 
     void VulkanRenderer::destroySwapChain()
-    {  
-        VulkanDevice* device = (VulkanDevice*)Device::instance; 
-        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+    {   
+        VulkanDevice* device = (VulkanDevice*)Device::instance;
 
-        for (FRAMEBUFFER hFrameBuffer : m_backBuffers)
-        {   
-            if (hFrameBuffer.IsValid())
-            { 
-				GfxVkFrameBuffer* fb = rm->getFrameBuffer(hFrameBuffer); 
+        for (size_t i = 0; i < m_swapChainFramebuffers.size(); i++) {
+            vkDestroyFramebuffer(device->GetVkDevice(), m_swapChainFramebuffers[i], nullptr);
+        }
 
-				for (TEXTURE hTexture : fb->GetColorTargets())
-				{  
-					if (hTexture.IsValid())
-					    rm->destroyTexture(hTexture);
-				} 
-
-				rm->destroyTexture(fb->GetDepthTarget()); 
-				rm->destroyFrameBuffer(hFrameBuffer);
-            }
-        }  
+        for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
+            vkDestroyImageView(device->GetVkDevice(), m_swapChainImageViews[i], nullptr);
+        }
 
         vkDestroySwapchainKHR(device->GetVkDevice(), m_swapChain, nullptr); 
-        m_swapChainImages.clear(); 
+
+        m_swapChainImages.clear();
         m_swapChainImageViews.clear();
+        m_swapChainFramebuffers.clear();
+    }
+
+    void VulkanRenderer::createSwapChainFrameBuffers()
+    { 
+        VulkanDevice* device = (VulkanDevice*)Device::instance; 
+        VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
+
+        GfxVkRenderPass* renderpass = rm->getRenderPass(m_blitToSwapChainRenderpass); 
+
+        m_swapChainFramebuffers.resize(m_swapChainImageViews.size());
+
+        for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
+            VkImageView attachments[] = {
+                m_swapChainImageViews[i]
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = renderpass->GetRenderPass();
+            framebufferInfo.attachmentCount = 1;
+            framebufferInfo.pAttachments = attachments;
+            framebufferInfo.width = m_swapChainExtent.width;
+            framebufferInfo.height = m_swapChainExtent.height;
+            framebufferInfo.layers = 1;
+
+            VK_VALIDATE(vkCreateFramebuffer(device->GetVkDevice(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]));
+        }
+    }
+
+    void VulkanRenderer::createBlitToSwapChainRenderPass()
+    { 
+        m_blitToSwapChainRenderpassLayout = ResourceManager::instance->createRenderPassLayout({
+            .debugName = "blit-to-swapchain-layout",
+            .depthTargetFormat = TextureFormat::D32_FLOAT,
+            .subPasses = {
+                {.depthTarget = false, .colorTargets = 1, },
+            },
+		});
+        m_blitToSwapChainRenderpass = ResourceManager::instance->createRenderPass({
+            .debugName = "blit-to-swapchain-pass",
+            .layout = m_blitToSwapChainRenderpassLayout,
+            .colorTargets = {
+                {
+                    .loadOp = LoadOperation::CLEAR,
+                    .storeOp = StoreOperation::STORE,
+                    .prevUsage = TextureLayout::UNDEFINED,
+                    .nextUsage = TextureLayout::PRESENT,
+                },
+            },
+		});
     }
 
     void VulkanRenderer::recreateSwapChain()
@@ -327,13 +441,14 @@ namespace Engine
 
         destroySwapChain(); 
         createSwapChain();
+        createSwapChainImageViews(); 
         createSwapChainFrameBuffers();
     } 
 
-    void VulkanRenderer::createSwapChainFrameBuffers()
+    void VulkanRenderer::createSwapChainImageViews()
     {  
         VulkanDevice* device = (VulkanDevice*)Device::instance;
-        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+        VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
         m_swapChainImageViews.resize(m_swapChainImages.size());
 
@@ -358,25 +473,6 @@ namespace Engine
             createInfo.subresourceRange.layerCount = 1;
 
             VK_VALIDATE(vkCreateImageView(device->GetVkDevice(), &createInfo, nullptr, &m_swapChainImageViews[i])); 
-
-            GfxVkTexture swapImage;
-            swapImage.SetDebugName("swapchain image");
-            swapImage.SetImageView(m_swapChainImageViews[i]);
-            swapImage.SetVkImage(m_swapChainImages[i]); 
-            swapImage.SetAllocation(nullptr); 
-            swapImage.SetExtent({ m_swapChainExtent.width, m_swapChainExtent.height, 1 });
-
-            TEXTURE swapTexture = rm->appendTexture(swapImage);
-
-            FRAMEBUFFER fb = rm->createFrameBuffer({
-                .debugName = "swapchain-framebuffer",
-                .width = m_swapChainExtent.width,
-                .height = m_swapChainExtent.height,
-                .renderPass = m_mainPass,
-                .colorTargets = { swapTexture }
-            });
-
-            m_backBuffers.push_back(fb);
         }
     }
 
@@ -407,22 +503,23 @@ namespace Engine
 
             //enqueue the destruction of the fence
             m_cleanup.appendFunction([=]()
-                {
-                    vkDestroyFence(device->GetVkDevice(), m_frameData[i].graphicsFence, nullptr);
-                });
+			{
+				vkDestroyFence(device->GetVkDevice(), m_frameData[i].graphicsFence, nullptr);
+			});
 
             VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].ImageAvailableSemaphore));
             VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].PresentRenderFinishedSemaphore));
             VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].GuiRenderFinishedSemaphore));
+            VK_VALIDATE(vkCreateSemaphore(device->GetVkDevice(), &semaphoreCreateInfo, nullptr, &m_frameData[i].BlitToSwapChainSemaphore));
 
             //enqueue the destruction of semaphores
             m_cleanup.appendFunction([=]()
-                {
-                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].ImageAvailableSemaphore, nullptr);
-                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].PresentRenderFinishedSemaphore, nullptr);
-                    vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].GuiRenderFinishedSemaphore, nullptr);
-                }
-            );
+			{
+				vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].ImageAvailableSemaphore, nullptr);
+				vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].PresentRenderFinishedSemaphore, nullptr);
+				vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].GuiRenderFinishedSemaphore, nullptr);
+				vkDestroySemaphore(device->GetVkDevice(), m_frameData[i].BlitToSwapChainSemaphore, nullptr);
+			});
         }
 
         VkFenceCreateInfo uploadFenceCreateInfo =
@@ -464,20 +561,21 @@ namespace Engine
         {
             VK_VALIDATE(vkCreateCommandPool(device->GetVkDevice(), &commandPoolInfo, nullptr, &m_frameData[i].CommandPool));
 
-            VkCommandBuffer commandBuffers[2];
+            VkCommandBuffer commandBuffers[3];
             VkCommandBufferAllocateInfo commandBuffersAllocInfo =
             {
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
                 .pNext = nullptr,
                 .commandPool = m_frameData[i].CommandPool,
                 .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                .commandBufferCount = 2
+                .commandBufferCount = 3
             };
 
             VK_VALIDATE(vkAllocateCommandBuffers(device->GetVkDevice(), &commandBuffersAllocInfo, commandBuffers));
 
             m_frameData[i].MainCommandBuffer = commandBuffers[0];
-            m_frameData[i].GuiCommandBuffer = commandBuffers[1];
+            m_frameData[i].GuiCommandBuffer = commandBuffers[1]; 
+            m_frameData[i].BlitToSwapChainCommandBuffer = commandBuffers[2];
 
             m_cleanup.appendFunction([=]()
             {
@@ -496,9 +594,17 @@ namespace Engine
                 .type = CommandBufferType::UI,
                 .state = CommandBufferState::COMMAND_BUFFER_STATE_READY,
                 .commandBuffer = m_frameData[i].GuiCommandBuffer,
-                .fence = m_frameData[i].graphicsFence,
+                .fence = VK_NULL_HANDLE,
                 .waitSemaphore = m_frameData[i].PresentRenderFinishedSemaphore,
                 .signalSemaphore = m_frameData[i].GuiRenderFinishedSemaphore,
+            });
+            m_blitToSwapChainCommandBuffer[i] = GfxVkCommandBuffer({
+                .type = CommandBufferType::PRESENT,
+                .state = CommandBufferState::COMMAND_BUFFER_STATE_READY,
+                .commandBuffer = m_frameData[i].BlitToSwapChainCommandBuffer,
+                .fence = m_frameData[i].graphicsFence,
+                .waitSemaphore = m_frameData[i].GuiRenderFinishedSemaphore,
+                .signalSemaphore = m_frameData[i].BlitToSwapChainSemaphore,
             });
         }
 

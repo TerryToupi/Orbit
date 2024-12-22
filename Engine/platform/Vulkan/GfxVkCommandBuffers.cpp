@@ -19,7 +19,7 @@ namespace Engine
     RenderPassRenderer* GfxVkCommandBuffer::BeginRenderPass(RENDERPASS renderPass, FRAMEBUFFER frameBuffer)
     {
         VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
-        VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+        VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
         ENGINE_ASSERT(m_state == CommandBufferState::COMMAND_BUFFER_STATE_RECORDING); 
 

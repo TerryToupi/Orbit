@@ -10,7 +10,7 @@ namespace Engine
 	{ 
 		VulkanDevice* device = (VulkanDevice*)Device::instance;
 		VulkanRenderer* renderer = (VulkanRenderer*)Renderer::instance;
-		VkResourceManager* rm = (VkResourceManager*)ResourceManager::instance;
+		VulkanResourceManager* rm = (VulkanResourceManager*)ResourceManager::instance;
 
 		m_debugName = desc.debugName;
 
