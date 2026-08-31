@@ -3,6 +3,13 @@
 
 using namespace Orbit;
 
+int THREAD(void *)
+{
+    printf("Threading... ");
+    
+    return 0;
+}
+
 int main(void)
 {
     Platform::init();
@@ -12,6 +19,8 @@ int main(void)
     Handle<Platform::RWlock> rwlock = Platform::create_rwlock();
     
     Handle<Platform::Barrier> barrier = Platform::create_barrier(std::thread::hardware_concurrency());
+    
+    Handle<Platform::Thread> thread = Platform::create_thread({.name = "antonis", .funct = THREAD, .data = NULL});
 
     u8 running = 1;
     while (running)
@@ -31,6 +40,8 @@ int main(void)
                 break;
         }
     }
+    
+    Platform::wait_thread(thread);
     
     Platform::destroy();
     return 0;

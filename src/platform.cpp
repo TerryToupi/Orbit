@@ -66,6 +66,28 @@ static inline SDL_WindowFlags toSDL(WindowFlags flags)
     return result;
 }
 
+static inline SDL_ThreadPriority toSDL(ThreadPriority flag)
+{
+    switch (flag)
+    {
+        case ThreadPriority::LOW: return SDL_THREAD_PRIORITY_LOW;
+        case ThreadPriority::NORMAL: return SDL_THREAD_PRIORITY_NORMAL;
+        case ThreadPriority::HIGH: return SDL_THREAD_PRIORITY_HIGH;
+        case ThreadPriority::CRITICAL: return SDL_THREAD_PRIORITY_TIME_CRITICAL;
+    }
+}
+
+static inline ThreadState fromSDL(SDL_ThreadState flag)
+{
+    switch (flag)
+    {
+        case SDL_THREAD_UNKNOWN: return ThreadState::UNKNOWN;
+        case SDL_THREAD_ALIVE: return ThreadState::ALIVE;
+        case SDL_THREAD_DETACHED: return ThreadState::DETACHED;
+        case SDL_THREAD_COMPLETE: return ThreadState::COMPLETE;
+    }
+}
+
 void init()
 {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
@@ -85,26 +107,42 @@ void destroy()
         {
             switch (resource->kind) {
                 case PlatformResourceKind::WINDOW:
+                {
                     SDL_DestroyWindow(resource->window);
                     break;
+                }
                 case PlatformResourceKind::MUTEX:
+                {
                     SDL_DestroyMutex(resource->mutex);
                     break;
+                }
                 case PlatformResourceKind::RWLOCK:
+                {
                     SDL_DestroyRWLock(resource->rwlock);
                     break;
+                }
                 case PlatformResourceKind::SEMAPHORE:
+                {
                     SDL_DestroySemaphore(resource->semaphore);
                     break;
+                }
                 case PlatformResourceKind::CONDVAR:
+                {
                     SDL_DestroyCondition(resource->condvar);
                     break;
+                }
                 case PlatformResourceKind::BARRIER:
+                {
                     SDL_DestroyCondition(resource->barrier.cv);
                     SDL_DestroyMutex(resource->barrier.lock);
                     break;
+                }
                 case PlatformResourceKind::THREAD:
+                {
+                    if (SDL_GetThreadState(resource->thread) != SDL_THREAD_COMPLETE)
+                        SDL_Log("Thread <name>:%s <id>:%llu is still alive", SDL_GetThreadName(resource->thread), SDL_GetThreadID(resource->thread));
                     break;
+                }
                 case PlatformResourceKind::NONE:
                     break;
             }
@@ -372,14 +410,18 @@ void wait_barrier(Handle<Barrier> h)
     SDL_LockMutex(b.lock);
     u64 my_gen = b.gen;
 
-    if (++b.count == b.n) {
+    if (++b.count == b.n)
+    {
         b.count = 0;
         b.gen++;
         SDL_BroadcastCondition(b.cv);
-    } else {
+    }
+    else
+    {
         while (my_gen == b.gen)
             SDL_WaitCondition(b.cv, b.lock);
     }
+    
     SDL_UnlockMutex(b.lock);
 }
 
@@ -391,6 +433,87 @@ void destroy_barrier(Handle<Barrier> h)
     SDL_DestroyCondition(b.cv);
     SDL_DestroyMutex(b.lock);
     gResources.erase({h.idx(), h.gen()});
+}
+
+Handle<Thread> create_thread(ThreadDesc&& desc)
+{
+    SDL_ThreadFunction funct = reinterpret_cast<SDL_ThreadFunction>(desc.funct);
+    SDL_Thread* thread = SDL_CreateThread(funct, desc.name, desc.data);
+    auto h = gResources.emplace({.kind = PlatformResourceKind::THREAD, .thread = thread});
+    SDL_Log("<ORBIT> Thread spawn NAME: %s, ID: %llu", SDL_GetThreadName(thread), SDL_GetThreadID(thread));
+    return Handle<Thread>(h.idx, h.gen);
+}
+
+void wait_thread(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+   
+    int status = -1;
+    const char *name = SDL_GetThreadName(thread);
+    
+    SDL_WaitThread(thread, (int *)&status);
+    gResources.erase({h.idx(), h.gen()});
+
+    if (status == 0)
+        SDL_Log("<ORBIT> Thread NAME: %s exited gracefully!", name);
+    else
+        SDL_Log("<ORBIT> Thread NAME: %s exited with STATUS: %d!", name, status);
+}
+
+const char *get_thread_name(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    return SDL_GetThreadName(thread);
+}
+
+u64 get_thread_id(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    return (u64)SDL_GetThreadID(thread);
+}
+
+u64 get_current_thread_id(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    return (u64)SDL_GetCurrentThreadID();
+}
+
+void set_current_thread_priority(Handle<Thread> h, ThreadPriority p)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    SDL_SetCurrentThreadPriority(toSDL(p));
+}
+
+ThreadState get_thread_state(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    return fromSDL(SDL_GetThreadState(thread));
+}
+
+void detach_thread(Handle<Thread> h)
+{
+    auto resource = gResources.at({h.idx(), h.gen()});
+    assert(resource.kind == PlatformResourceKind::THREAD);
+    auto thread = resource.thread;
+    
+    SDL_DetachThread(thread);
 }
 
 }

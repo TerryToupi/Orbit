@@ -104,13 +104,35 @@ typedef int(*ThreadFn)(void *);
 
 struct ThreadDesc
 {
-    const char *name;
-    ThreadFn    funct;
-    void       *data;
+    const char *name = "Orbit Thread";
+    ThreadFn    funct = nullptr;
+    void       *data = nullptr;
 };
 
-Handle<Thread> create_thread(ThreadDesc&& desc);
-void           destroy_thread(Handle<Thread> h);
+enum class ThreadPriority : u64
+{
+    LOW,
+    NORMAL,
+    HIGH,
+    CRITICAL,
+};
+
+enum class ThreadState : u64
+{
+    UNKNOWN,
+    ALIVE,
+    DETACHED,
+    COMPLETE,
+};
+
+Handle<Thread>  create_thread(ThreadDesc&& desc);
+void            wait_thread(Handle<Thread> h);
+const char     *get_thread_name(Handle<Thread> h);
+u64             get_thread_id(Handle<Thread> h);
+u64             get_current_thread_id(Handle<Thread> h);
+void            set_current_thread_priority(Handle<Thread> h, ThreadPriority p);
+ThreadState     get_thread_state(Handle<Thread> h);
+void            detach_thread(Handle<Thread> h);
 
 };
 
