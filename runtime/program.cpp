@@ -1,5 +1,6 @@
+#include <platform/platform.hpp>
+
 #include <SDL3/SDL.h>
-#include <platform.hpp>
 
 using namespace Orbit;
 

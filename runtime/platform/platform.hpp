@@ -91,6 +91,7 @@ void            wait_condition(Handle<CondVar> cv, Handle<Mutex> m);
 b32             wait_condition_timeout(Handle<CondVar> cv, Handle<Mutex> m, s32 ms);
 void            destroy_condition(Handle<CondVar> h);
 
+/* Barrier */
 class Barrier;
 
 Handle<Barrier> create_barrier(u32 n);

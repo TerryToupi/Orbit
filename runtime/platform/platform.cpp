@@ -1,5 +1,6 @@
+#include <platform/platform.hpp>
+
 #include <SDL3/SDL.h>
-#include <platform.hpp>
 
 namespace Orbit::Platform
 {
@@ -140,7 +141,9 @@ void destroy()
                 case PlatformResourceKind::THREAD:
                 {
                     if (SDL_GetThreadState(resource->thread) != SDL_THREAD_COMPLETE)
-                        SDL_Log("Thread <name>:%s <id>:%llu is still alive", SDL_GetThreadName(resource->thread), SDL_GetThreadID(resource->thread));
+                        SDL_Log("Thread <name>:%s <id>:%llu is still alive",
+                                SDL_GetThreadName(resource->thread),
+                                SDL_GetThreadID(resource->thread));
                     break;
                 }
                 case PlatformResourceKind::NONE:
@@ -292,7 +295,7 @@ b32 try_wait_semaphore(Handle<Semaphore> h)
     assert(resource.kind == PlatformResourceKind::SEMAPHORE);
     auto semaphore = resource.semaphore;
         
-    SDL_TryWaitSemaphore(semaphore);
+    return (b32)SDL_TryWaitSemaphore(semaphore);
 }
 
 b32 wait_semaphore_timeout(Handle<Semaphore> h, s32 ms)
@@ -300,8 +303,8 @@ b32 wait_semaphore_timeout(Handle<Semaphore> h, s32 ms)
     auto resource = gResources.at({h.idx(), h.gen()});
     assert(resource.kind == PlatformResourceKind::SEMAPHORE);
     auto semaphore = resource.semaphore;
-        
-    SDL_WaitSemaphoreTimeout(semaphore, (Sint32)ms);
+
+    return (b32)SDL_WaitSemaphoreTimeout(semaphore, (Sint32)ms);
 }
 
 void signal_semaphore(Handle<Semaphore> h)

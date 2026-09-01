@@ -9,11 +9,15 @@
 #include <cstdint>
 #include <limits>
 #include <utility>
+#include <format>
 #include <type_traits>
+#include <source_location>
+#include <string_view>
 
 namespace Orbit
 {
 
+/* type system */
 typedef std::uint8_t 	u8;
 typedef std::uint16_t 	u16;
 typedef std::uint32_t 	u32;
@@ -29,6 +33,7 @@ typedef std::uint64_t 	b64;
 typedef float			f32;
 typedef double 			f64;
 
+/* containers */
 template<typename T>
 class Handle
 {
