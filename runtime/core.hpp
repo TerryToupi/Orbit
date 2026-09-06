@@ -1,6 +1,7 @@
 #ifndef __ORBIT_CORE__
 #define __ORBIT_CORE__
 
+// STL
 #include <bit>
 #include <new>
 #include <thread>
@@ -13,6 +14,10 @@
 #include <type_traits>
 #include <source_location>
 #include <string_view>
+
+// VENDOR
+#include <SDL3/SDL.h>
+#include <box3d/box3d.h>
 
 namespace Orbit
 {
@@ -79,8 +84,7 @@ public:
     Pool(const Pool&)            = delete;
     Pool& operator=(const Pool&) = delete;
     
-    void reset();
-    
+    void     reset();
     PoolMeta emplace(U&& val);
     void     erase(PoolMeta h);
     U&       at(PoolMeta h);
