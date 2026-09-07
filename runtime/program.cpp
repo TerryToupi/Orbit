@@ -1,10 +1,22 @@
-#include <base/base.hpp>
+#include <app/app.hpp>
 
 using namespace Orbit;
 
-int main(void)
+App::Status App::startup()
 {
-    Pool<u64> pool;
-    pool.emplace(43);
-    return 0;
+    return Status::CONTINUE;
+}
+
+App::Status App::event()
+{
+    return Status::CONTINUE;
+}
+
+App::Status App::update(u64 tick)
+{
+    return Status::CONTINUE;
+}
+
+void App::shutdown()
+{
 }

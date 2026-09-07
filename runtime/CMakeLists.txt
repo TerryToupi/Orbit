@@ -4,6 +4,11 @@ project(runtime)
 set(SOURCES
     base/base.hpp
     base/base.cpp
+    app/app.hpp
+    app/app.cpp
+    gpu/gpu.hpp
+    gpu/gpu.cpp
+    gpu/shaders/shader.h
     program.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})

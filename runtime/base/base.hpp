@@ -3,17 +3,13 @@
 
 // STL
 #include <bit>
+#include <atomic>
 #include <new>
-#include <thread>
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
-#include <limits>
 #include <utility>
-#include <format>
 #include <type_traits>
-#include <source_location>
-#include <string_view>
 
 namespace Orbit
 {
@@ -86,6 +82,7 @@ public:
     U&       at(PoolMeta h);
     U*       at(u32 idx);
     u32      count() const;
+    u32      capacity() const;
     
 private:
     static constexpr u32 kSmallSegmentsToSkip = 6;
@@ -114,7 +111,7 @@ private:
         u32 gen;
     };
     
-    void add_segment();
+    void   add_segment();
     Entry *get(u32 idx);
     Entry *get(u32 idx, u32 gen);
 
@@ -141,6 +138,8 @@ void Pool<U>::reset()
         pSegments[segment_idx] = nullptr;
     }
     pUsedSegments = 0;
+    pHead  = kEndOfList;
+    pCount = 0;
 }
 
 template <typename U>
@@ -160,7 +159,7 @@ Pool<U>::PoolMeta Pool<U>::emplace(U&& val)
     
     ++pCount;
     
-    return {idx, ++entry->gen};
+    return {idx, entry->gen};
 }
 
 template <typename U>
@@ -168,6 +167,7 @@ void Pool<U>::erase(Pool<U>::PoolMeta h)
 {
     Entry *entry = get(h.idx);
     assert(entry->gen == h.gen);
+    ++entry->gen;
     entry->next = pHead;
     pHead = h.idx;
     
@@ -231,6 +231,12 @@ template <typename U>
 u32 Pool<U>::count() const
 {
     return pCount;
+}
+
+template <typename U>
+u32 Pool<U>::capacity() const
+{
+    return capacity_for_segment_count(pUsedSegments);
 }
 
 }
