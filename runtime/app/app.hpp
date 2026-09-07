@@ -1,7 +1,7 @@
 #ifndef __ORBIT_APP__
 #define __ORBIT_APP__
 
-#include <base/base.hpp>
+#include <utils/types.hpp>
 
 namespace Orbit::App
 {
@@ -14,11 +14,8 @@ enum class Status : u32
 };
 
 Status startup();
-Status event();
 Status update(u64 tick);
 void   shutdown();
-
-void request_quit(Status status);
 
 }
 

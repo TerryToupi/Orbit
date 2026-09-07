@@ -7,10 +7,6 @@ App::Status App::startup()
     return Status::CONTINUE;
 }
 
-App::Status App::event()
-{
-    return Status::CONTINUE;
-}
 
 App::Status App::update(u64 tick)
 {
