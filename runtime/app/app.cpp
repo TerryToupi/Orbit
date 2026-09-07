@@ -6,13 +6,15 @@
 #include <SDL3/SDL_main.h>
 
 #include <utils/containers.hpp>
+#include <utils/fixed_function.hpp>
 
+#include <array>
 #include <atomic>
 
 namespace Orbit::App
 {
 
-std::atomic<u64> pTick(0);
+std::atomic<u64> gTick(0);
 
 static SDL_AppResult to_sdl(Status s)
 {
@@ -60,10 +62,10 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     (void)appstate;
 
-    u64 currTick = App::pTick;
-    App::pTick.fetch_add(1);
+    u64 currTick = App::gTick;
+    App::gTick.fetch_add(1);
 
-    return App::to_sdl(App::update(App::pTick - currTick));
+    return App::to_sdl(App::update(App::gTick - currTick));
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
