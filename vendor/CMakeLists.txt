@@ -13,8 +13,22 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL)
 
 FetchContent_Declare(
-	box3d	
+	box3d
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/box3d
 	OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(box3d)
+
+FetchContent_Declare(
+	lua
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua
+	OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(lua)
+
+FetchContent_Declare(
+	tlsf
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tlsf
+	OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(tlsf)

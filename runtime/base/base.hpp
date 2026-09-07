@@ -15,10 +15,6 @@
 #include <source_location>
 #include <string_view>
 
-// VENDOR
-#include <SDL3/SDL.h>
-#include <box3d/box3d.h>
-
 namespace Orbit
 {
 
@@ -129,7 +125,6 @@ private:
     
     U pStub = {};
 };
-
 template <typename U>
 Pool<U>::~Pool()
 {

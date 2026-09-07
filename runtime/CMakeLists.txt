@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.25)
 project(runtime)
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS 
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-)
+set(SOURCES
+    base/base.hpp
+    base/base.cpp
+    program.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -20,12 +20,6 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-find_package(SDL REQUIRED)
-find_package(box3d REQUIRED)
-
-target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3)
-target_link_libraries(${PROJECT_NAME} PUBLIC box3d)
-
 source_group(
     TREE 
         ${CMAKE_CURRENT_SOURCE_DIR} 
@@ -34,3 +28,14 @@ source_group(
     FILES 
         ${SOURCES}
 )
+
+find_package(SDL REQUIRED)
+find_package(box3d REQUIRED)
+find_package(lua REQUIRED)
+find_package(tlsf REQUIRED)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3)
+target_link_libraries(${PROJECT_NAME} PUBLIC box3d)
+target_link_libraries(${PROJECT_NAME} PUBLIC lua::lua)
+target_link_libraries(${PROJECT_NAME} PUBLIC tlsf::tlsf)
+
