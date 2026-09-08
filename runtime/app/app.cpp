@@ -1,20 +1,15 @@
-#include "SDL3/SDL_init.h"
+#include "SDL3/SDL_timer.h"
 #include <app/app.hpp>
 
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include <utils/containers.hpp>
-#include <utils/fixed_function.hpp>
-
-#include <array>
-#include <atomic>
+#include <window/window.hpp>
+#include <render/renderer.hpp>
 
 namespace Orbit::App
 {
-
-std::atomic<u64> gTick(0);
 
 static SDL_AppResult to_sdl(Status s)
 {
@@ -41,8 +36,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
+    Window::init();
+    GFX::init();
+
     status = App::startup();
-    if (status != App::Status::CONTINUE) return App::to_sdl(status);
+
+    if (status != App::Status::CONTINUE) 
+        return App::to_sdl(status);
 
 
     return SDL_APP_CONTINUE;
@@ -62,16 +62,16 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     (void)appstate;
 
-    u64 currTick = App::gTick;
-    App::gTick.fetch_add(1);
-
-    return App::to_sdl(App::update(App::gTick - currTick));
+    return App::to_sdl(App::update((u64)SDL_GetTicks()));
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
     (void)appstate;
     (void)result;
+
+    GFX::shutdown();
+    Window::shutdown();
 
     SDL_Quit();
 }
