@@ -20,15 +20,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(box3d)
 
 FetchContent_Declare(
-	lua
-	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua
+	luajit	
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/LuaJIT
 	OVERRIDE_FIND_PACKAGE
 )
-FetchContent_MakeAvailable(lua)
+FetchContent_MakeAvailable(luajit)
 
-FetchContent_Declare(
-	tlsf
-	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tlsf
-	OVERRIDE_FIND_PACKAGE
-)
-FetchContent_MakeAvailable(tlsf)
