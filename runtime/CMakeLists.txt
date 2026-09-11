@@ -5,6 +5,9 @@ set(SOURCES
     rpmalloc.h
     rpmalloc.c
 
+    scene.h
+    scene.cpp
+
     program.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -24,9 +27,10 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_definitions(${PROJECT_NAME} 
-    PUBLIC 
-        RPMALLOC_ENABLE_OVERRIDE=0
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+        ENABLE_STATISTICS=1
+        ENABLE_UNMAP=1  
 )
 
 source_group(
@@ -41,8 +45,10 @@ source_group(
 find_package(SDL REQUIRED)
 find_package(box3d REQUIRED)
 find_package(luajit REQUIRED)
+find_package(EnTT REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3)
 target_link_libraries(${PROJECT_NAME} PUBLIC box3d)
 target_link_libraries(${PROJECT_NAME} PUBLIC luajit)
+target_link_libraries(${PROJECT_NAME} PUBLIC EnTT)
 

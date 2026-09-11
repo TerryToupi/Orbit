@@ -26,3 +26,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(luajit)
 
+FetchContent_Declare(
+	entt	
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/entt
+	OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(entt)
