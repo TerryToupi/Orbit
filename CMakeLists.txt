@@ -15,8 +15,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 include(cmake/options.cmake)
 
+option(ORBIT_BUILD_TESTS "Build runtime foundation tests" OFF)
+option(ORBIT_BUILD_GPU_TESTS "Build compositor tests requiring a GPU and window system" OFF)
+if(ORBIT_BUILD_TESTS)
+	enable_testing()
+endif()
+
 set(CMAKE_FOLDER "vendor")
 add_subdirectory(vendor)
 unset(CMAKE_FOLDER)
 
 add_subdirectory(runtime)
+
+if(ORBIT_BUILD_TESTS)
+	add_subdirectory(tests)
+endif()

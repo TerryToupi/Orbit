@@ -1,139 +1,82 @@
-#include "SDL3/SDL_stdinc.h"
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include <rpmalloc.h>
+#include <memory_setup.h>
 
-#include <scene.h>
+#include <thread_context.h>
+#include <servers.h>
+#include <asset_factory.h>
+#include <render/rendering_compositor.h>
+#include <memory>
 
-struct component
+// Single borrowed preview mesh until the actual Scene implementation exists.
+struct PreviewScene final : Scene
 {
-    std::byte data[1024];
+    SceneMesh instance = {};
+    SceneMatrix camera = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+
+    Span<SceneMesh> meshes() const override { return {&instance, 1}; }
+    const SceneMatrix& view_projection() const override { return camera; }
 };
 
 struct AppState
 {
+    ThreadContext   thread_context = {};
+    Servers         servers = {};
+    AssetFactory    assets = {};
     SDL_Window      *window = nullptr;
-    SDL_Renderer    *renderer = nullptr;
+    RenderingCompositor compositor = {};
+    PreviewScene    scene = {};
+    AssetHandle<MeshAsset> preview = {};
 };
-
-static void* sdl_malloc(size_t size)
-{
-    return rpmalloc(size);
-}
-
-static void* sdl_calloc(size_t count, size_t size)
-{
-    return rpcalloc(count, size);
-}
-
-static void* sdl_realloc(void* ptr, size_t size)
-{
-    return rprealloc(ptr, size);
-}
-
-static void sdl_free(void* ptr)
-{
-    rpfree(ptr);
-}
-
-void dump_memory()
-{
-    rpmalloc_global_statistics_t stats{};
-    rpmalloc_global_statistics(&stats);
-
-    SDL_Log("rpmalloc memory:");
-    SDL_Log("  mapped:          %zu MB",
-        stats.mapped / (1024 * 1024));
-
-    SDL_Log("  mapped peak:     %zu MB",
-        stats.mapped_peak / (1024 * 1024));
-    
-    SDL_Log("  commited peak:     %zu MB",
-        stats.committed / (1024 * 1024));
-
-    SDL_Log("  huge allocated:  %zu MB",
-        stats.huge_alloc / (1024 * 1024));
-
-    SDL_Log("  huge peak:       %zu MB",
-        stats.huge_alloc_peak / (1024 * 1024));
-}
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv)
 {
-    rpmalloc_config_t rp_config = {
-        .enable_huge_pages = 1
-    };
-
-    if (rpmalloc_initialize_config(nullptr, &rp_config) != 0)
+    if (!initialize_memory())
+        return SDL_APP_FAILURE;
+    if (!SDL_Init(SDL_INIT_VIDEO))
         return SDL_APP_FAILURE;
 
-    /*
-     * Tell SDL to use rpmalloc.
-     *
-     * Do this BEFORE SDL_Init().
-     */
-
-    if (!SDL_SetMemoryFunctions(
-        sdl_malloc,
-        sdl_calloc,
-        sdl_realloc,
-        sdl_free))
-    {
-        rpmalloc_finalize();
+    AppState* state = static_cast<AppState*>(SDL_malloc(sizeof(AppState)));
+    std::construct_at(state);
+    *appstate = state;
+    if (!set_thread_context(&state->thread_context)) {
+        SDL_Log("Thread context initialization failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-
-    // -----------------------------------------------------
-    // SDL
-    // -----------------------------------------------------
-
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        rpmalloc_finalize();
+    if (!create_servers(state->servers)) {
+        SDL_Log("Server initialization failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-    auto* state = (AppState*)SDL_malloc(sizeof(AppState));
-    
-    Registry world;
+    if (!create_asset_factory(state->assets, state->servers.artifacts, ".")) {
+        SDL_Log("Asset factory initialization failed: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
     
     state->window = SDL_CreateWindow(
-        "SDL3 Callbacks",
+        "ORbit",
         1280,
         720,
-        SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
     );
 
     if (!state->window) {
         SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
-        SDL_free(appstate);
-        SDL_Quit();
         return SDL_APP_FAILURE;
     }
 
-    state->renderer = SDL_CreateRenderer(
-        state->window,
-        nullptr
-    );
-
-    if (!state->renderer) {
-        SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
-        SDL_DestroyWindow(state->window);
-        SDL_free(appstate);
-        SDL_Quit();
+    if (!create_rendering_compositor(state->compositor, state->window)) {
+        SDL_Log("Rendering initialization failed: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-    *appstate = state;
-    
-    auto player = world.create();
+    if (argc > 1)
+        state->preview = asset_load(state->assets, argv[1]);
 
     return SDL_APP_CONTINUE;
 }
 
-SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
+SDL_AppResult SDL_AppEvent(void*, SDL_Event* event)
 {
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
@@ -150,52 +93,34 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
-    dump_memory();
+    AppState* state = static_cast<AppState*>(appstate);
 
-    auto* state = static_cast<AppState*>(appstate);
+    ArtifactEvent event;
+    while (command_next_event(state->servers.artifacts.commands, event))
+        assets_process_event(state->assets, event);
+    assets_tick(state->assets);
 
-    SDL_SetRenderDrawColor(
-        state->renderer,
-        20,
-        20,
-        20,
-        255
-    );
-
-    SDL_RenderClear(state->renderer);
-
-    SDL_FRect rect{
-        .x = 100.0f,
-        .y = 100.0f,
-        .w = 200.0f,
-        .h = 200.0f
-    };
-
-    SDL_SetRenderDrawColor(
-        state->renderer,
-        255,
-        120,
-        40,
-        255
-    );
-
-    SDL_RenderFillRect(
-        state->renderer,
-        &rect
-    );
-
-    SDL_RenderPresent(state->renderer);
+    if (asset_valid(state->assets, state->preview))
+        state->scene.instance.mesh = asset_get(state->assets, state->preview);
+    if (!state->compositor.render(state->scene)) {
+        SDL_Log("Rendering failed: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
 
     return SDL_APP_CONTINUE;
 }
 
-void SDL_AppQuit(void* appstate, SDL_AppResult result)
+void SDL_AppQuit(void* appstate, SDL_AppResult)
 {
-    auto* state = static_cast<AppState*>(appstate);
+    AppState* state = static_cast<AppState*>(appstate);
 
     if (state) {
-        SDL_DestroyRenderer(state->renderer);
+        destroy_rendering_compositor(state->compositor);
+        destroy_asset_factory(state->assets);
+        destroy_servers(state->servers);
         SDL_DestroyWindow(state->window);
+        destroy_thread_context(state->thread_context);
+        std::destroy_at(state);
         SDL_free(state);
     }
 

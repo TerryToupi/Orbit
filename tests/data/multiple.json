@@ -1,0 +1,24 @@
+{
+  "asset": {"version": "2.0"},
+  "buffers": [{"byteLength": 104}],
+  "bufferViews": [
+    {"buffer": 0, "byteOffset": 0, "byteLength": 36},
+    {"buffer": 0, "byteOffset": 36, "byteLength": 36},
+    {"buffer": 0, "byteOffset": 72, "byteLength": 24},
+    {"buffer": 0, "byteOffset": 96, "byteLength": 6}
+  ],
+  "accessors": [
+    {"bufferView": 0, "componentType": 5126, "count": 3, "type": "VEC3"},
+    {"bufferView": 1, "componentType": 5126, "count": 3, "type": "VEC3"},
+    {"bufferView": 2, "componentType": 5126, "count": 3, "type": "VEC2"},
+    {"bufferView": 3, "componentType": 5123, "count": 3, "type": "SCALAR"}
+  ],
+  "materials": [{}, {}],
+  "meshes": [{"primitives": [
+    {"attributes": {"POSITION": 0, "NORMAL": 1, "TEXCOORD_0": 2}, "indices": 3, "material": 1},
+    {"attributes": {"POSITION": 0}, "material": 0}
+  ]}],
+  "nodes": [{"mesh": 0}, {"mesh": 0, "translation": [0, 0, 5]}],
+  "scenes": [{"nodes": [0, 1]}],
+  "scene": 0
+}

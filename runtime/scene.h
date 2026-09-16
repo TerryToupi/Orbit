@@ -1,44 +1,25 @@
-#ifndef __ORBIT_SCENE__
-#define __ORBIT_SCENE__
+#ifndef ORBIT_SCENE_H
+#define ORBIT_SCENE_H
 
-#include <SDL3/SDL.h>
-#include <entt/entt.hpp>
+#include <mesh.h>
 
-template<typename T>
-class SDLForwardAllocator
+using SceneMatrix = float[16];
+
+struct SceneMesh
 {
-public:
-    using value_type = T;
-    
-    template<typename U>
-    constexpr SDLForwardAllocator(const SDLForwardAllocator<U>&) noexcept {}
-    
-    constexpr SDLForwardAllocator() noexcept = default;
-    
-    [[nodiscard]] T* allocate(std::size_t n)
-    {
-        auto* ptr = SDL_malloc(n * sizeof(T));
-
-        if (!ptr)
-            throw std::bad_alloc{};
-
-        return static_cast<T*>(ptr);
-    }
-
-    void deallocate(T* ptr, std::size_t) noexcept
-    {
-        SDL_free(ptr);
-    }
+    const MeshAsset* mesh = nullptr;
+    SceneMatrix world = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 };
 
-template<typename T, typename U>
-constexpr bool operator==(
-    const SDLForwardAllocator<T>&,
-    const SDLForwardAllocator<U>&) noexcept
+// Main-thread borrow for one render call. Meshes are immutable and remain alive until the compositor is destroyed.
+// Matrices are column-major, acting on column vectors. Projection uses SDL GPU's 0..1 clip depth.
+struct Scene
 {
-    return true;
-}
+    virtual Span<SceneMesh> meshes() const = 0;
+    virtual const SceneMatrix& view_projection() const = 0;
 
-using Registry = entt::basic_registry<entt::entity, SDLForwardAllocator<entt::entity>>;
+protected:
+    ~Scene() = default;
+};
 
 #endif

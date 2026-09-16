@@ -1,5 +1,12 @@
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+if(MSVC)
+	add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/GR->" "$<$<COMPILE_LANGUAGE:CXX>:/EHs-c->")
+	add_compile_definitions("$<$<COMPILE_LANGUAGE:CXX>:_HAS_EXCEPTIONS=0>")
+else()
+	add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>" "$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>")
+endif()
+
 if (MSVC OR APPLE OR UNIX)
 	option(ORBIT_SANITIZE "Enable sanitizers for some builds" OFF)
 	set(ORBIT_SANITIZER_TYPE "address" CACHE STRING "Type of sanitizer to use (address, thread, undefined, memory)")
