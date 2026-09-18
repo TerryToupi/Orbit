@@ -75,7 +75,7 @@ Duplicate requests queued while a build runs share its result; no second success
 Changed inputs produce a **different key**: keep the previous ready key until the replacement becomes ready. Starting or failing
 the replacement never destroys the old artifact. No logical alias can change the meaning of an immutable computation key.
 
-`ByteHistogram` v1 produces immutable bytes; `ImportGLTF` v2 produces an arena-owned ImportedScene and one CPU MeshAsset per imported mesh.
+`ByteHistogram` v1 produces immutable bytes; `ImportGLTF` v3 produces an arena-owned ImportedScene and one CPU MeshAsset per imported mesh.
 The [asset factory](assets.md) retains current/pending generations and publishes on the main thread. Producers extend typed dispatch, not public callbacks.
 
 ## File identity and validation

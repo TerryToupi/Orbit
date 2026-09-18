@@ -8,12 +8,10 @@ constexpr SDL_GPUTextureFormat gbuffer_formats[] = {SDL_GPU_TEXTUREFORMAT_R8G8B8
 
 struct GBufferPass
 {
-    SDL_GPUShader* vertex = nullptr;
-    SDL_GPUShader* fragment = nullptr;
     SDL_GPUGraphicsPipeline* pipeline = nullptr;
 };
 
-bool create_gbuffer_pass(SDL_GPUDevice* device, const char* shaders, GBufferPass& pass);
+bool create_gbuffer_pass(SDL_GPUDevice* device, SDL_GPUShader* vertex, SDL_GPUShader* fragment, GBufferPass& pass);
 void destroy_gbuffer_pass(SDL_GPUDevice* device, GBufferPass& pass);
 void gbuffer_pass(SDL_GPUCommandBuffer* commands, const GBufferPass& pass, SDL_GPUTexture* depth,
                   SDL_GPUTexture* const (&colors)[2], Span<GeometryDraw> draws);

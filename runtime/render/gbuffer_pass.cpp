@@ -1,16 +1,10 @@
 #include <render/gbuffer_pass.h>
 
-bool create_gbuffer_pass(SDL_GPUDevice* device, const char* shaders, GBufferPass& pass)
+bool create_gbuffer_pass(SDL_GPUDevice* device, SDL_GPUShader* vertex, SDL_GPUShader* fragment, GBufferPass& pass)
 {
-    pass.vertex = load_geometry_shader(device, shaders, "geometry.vert", SDL_GPU_SHADERSTAGE_VERTEX);
-    if (!pass.vertex)
-        return false;
-    pass.fragment = load_geometry_shader(device, shaders, "gbuffer.frag", SDL_GPU_SHADERSTAGE_FRAGMENT);
-    if (!pass.fragment)
-        return false;
     SDL_GPUColorTargetDescription targets[] = {{.format = gbuffer_formats[0]}, {.format = gbuffer_formats[1]}};
     SDL_GPUGraphicsPipelineCreateInfo info = {
-        .vertex_shader = pass.vertex, .fragment_shader = pass.fragment, .vertex_input_state = geometry_input,
+        .vertex_shader = vertex, .fragment_shader = fragment, .vertex_input_state = geometry_input,
         .primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
         .rasterizer_state = {.fill_mode = SDL_GPU_FILLMODE_FILL, .cull_mode = SDL_GPU_CULLMODE_NONE,
                             .front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE, .enable_depth_clip = true},
@@ -25,8 +19,6 @@ bool create_gbuffer_pass(SDL_GPUDevice* device, const char* shaders, GBufferPass
 void destroy_gbuffer_pass(SDL_GPUDevice* device, GBufferPass& pass)
 {
     if (pass.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, pass.pipeline);
-    if (pass.fragment) SDL_ReleaseGPUShader(device, pass.fragment);
-    if (pass.vertex) SDL_ReleaseGPUShader(device, pass.vertex);
     pass = {};
 }
 

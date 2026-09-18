@@ -5,12 +5,10 @@
 
 struct DepthPrepass
 {
-    SDL_GPUShader* vertex = nullptr;
-    SDL_GPUShader* fragment = nullptr;
     SDL_GPUGraphicsPipeline* pipeline = nullptr;
 };
 
-bool create_depth_prepass(SDL_GPUDevice* device, const char* shaders, DepthPrepass& pass);
+bool create_depth_prepass(SDL_GPUDevice* device, SDL_GPUShader* vertex, SDL_GPUShader* fragment, DepthPrepass& pass);
 void destroy_depth_prepass(SDL_GPUDevice* device, DepthPrepass& pass);
 void depth_prepass(SDL_GPUCommandBuffer* commands, const DepthPrepass& pass, SDL_GPUTexture* depth, Span<GeometryDraw> draws);
 

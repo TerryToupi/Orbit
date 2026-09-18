@@ -3,6 +3,42 @@
 #include <thread_context.h>
 #include <SDL3/SDL_error.h>
 
+static void asset_changed(AssetFactory& factory, uint32_t index)
+{
+    if (!factory.slots[index].changed) {
+        factory.slots[index].changed = true;
+        factory.changes[factory.change_count++] = index;
+    }
+}
+
+bool asset_next_change(AssetFactory& factory, AssetHandle<MeshAsset>& handle)
+{
+    assert(factory.thread == SDL_GetCurrentThreadID());
+    if (!factory.change_count)
+        return false;
+    uint32_t index = factory.changes[--factory.change_count];
+    factory.slots[index].changed = false;
+    handle = {.index = index, .generation = factory.slots[index].handle_generation};
+    return true;
+}
+
+void asset_unload(AssetFactory& factory, AssetHandle<MeshAsset> handle)
+{
+    assert(asset_valid(factory, handle));
+    AssetSlot& slot = factory.slots[handle.index];
+    slot.current = nullptr;
+    slot.source = {};
+    slot.generation = 0;
+    slot.request = 0;
+    slot.phase = AssetPhase::None;
+    slot.state = AssetState::Unloaded;
+    slot.error = AssetError::None;
+    slot.reload_again = false;
+    slot.message[0] = 0;
+    ++slot.handle_generation;
+    asset_changed(factory, handle.index);
+}
+
 AssetID asset_id(const char* normalized_name)
 {
     assert(normalized_name);
@@ -24,6 +60,7 @@ bool create_asset_factory(AssetFactory& factory, ArtifactCache& artifacts, const
     factory.capacity = 128;
     factory.slots = static_cast<AssetSlot*>(SDL_malloc(sizeof(AssetSlot) * factory.capacity));
     factory.index = static_cast<AssetIndex*>(SDL_malloc(sizeof(AssetIndex) * factory.capacity));
+    factory.changes = static_cast<uint32_t*>(SDL_malloc(sizeof(uint32_t) * factory.capacity));
     return true;
 }
 
@@ -32,6 +69,7 @@ void destroy_asset_factory(AssetFactory& factory)
     assert(!factory.thread || factory.thread == SDL_GetCurrentThreadID());
     SDL_free(factory.slots);
     SDL_free(factory.index);
+    SDL_free(factory.changes);
     destroy_arena(factory.storage);
     factory = {};
 }
@@ -78,12 +116,17 @@ AssetHandle<MeshAsset> asset_load(AssetFactory& factory, const char* name)
             SDL_SetError("AssetID collision");
             return {};
         }
+        if (factory.slots[slot].state == AssetState::Unloaded) {
+            factory.slots[slot].state = AssetState::Loading;
+            factory.slots[slot].phase = AssetPhase::FileQueued;
+        }
         return {.index = slot, .generation = factory.slots[slot].handle_generation};
     }
     if (factory.count == factory.capacity) {
         factory.capacity += 128;
         factory.slots = static_cast<AssetSlot*>(SDL_realloc(factory.slots, sizeof(AssetSlot) * factory.capacity));
         factory.index = static_cast<AssetIndex*>(SDL_realloc(factory.index, sizeof(AssetIndex) * factory.capacity));
+        factory.changes = static_cast<uint32_t*>(SDL_realloc(factory.changes, sizeof(uint32_t) * factory.capacity));
     }
     char* copied = arena_allocate<char>(factory.storage, SDL_strlen(normalized) + 1);
     SDL_memcpy(copied, normalized, SDL_strlen(normalized) + 1);
@@ -110,20 +153,24 @@ AssetHandle<MeshAsset> asset_find(const AssetFactory& factory, AssetID id)
     if (first == factory.count || factory.index[first].id != id)
         return {};
     uint32_t slot = factory.index[first].slot;
+    if (factory.slots[slot].state == AssetState::Unloaded)
+        return {};
     return {.index = slot, .generation = factory.slots[slot].handle_generation};
 }
 
 bool asset_valid(const AssetFactory& factory, AssetHandle<MeshAsset> handle)
 {
     assert(factory.thread == SDL_GetCurrentThreadID());
-    return handle.index < factory.count && factory.slots[handle.index].handle_generation == handle.generation;
+    return handle.index < factory.count && factory.slots[handle.index].handle_generation == handle.generation &&
+           factory.slots[handle.index].state != AssetState::Unloaded;
 }
 
 AssetStatus asset_status(const AssetFactory& factory, AssetHandle<MeshAsset> handle)
 {
     assert(asset_valid(factory, handle));
     const AssetSlot& slot = factory.slots[handle.index];
-    return {.id = slot.id, .generation = slot.generation, .state = slot.state, .error = slot.error, .loading = slot.phase != AssetPhase::None};
+    return {.id = slot.id, .generation = slot.generation, .source = slot.source,
+            .state = slot.state, .error = slot.error, .loading = slot.phase != AssetPhase::None};
 }
 
 const MeshAsset* asset_get(const AssetFactory& factory, AssetHandle<MeshAsset> handle)
@@ -195,6 +242,7 @@ bool assets_process_event(AssetFactory& factory, const ArtifactEvent& event)
             slot.pending_source = event.result.content;
             if (slot.current && slot.source == slot.pending_source) {
                 slot.generation = slot.pending_generation;
+                asset_changed(factory, i);
                 slot.phase = AssetPhase::None;
                 slot.error = AssetError::None;
                 slot.message[0] = 0;
@@ -220,6 +268,7 @@ bool assets_process_event(AssetFactory& factory, const ArtifactEvent& event)
             }
             if (selected) {
                 slot.current = selected;
+                asset_changed(factory, i);
                 slot.source = slot.pending_source;
                 slot.generation = slot.pending_generation;
                 slot.state = AssetState::Ready;

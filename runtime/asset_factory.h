@@ -15,7 +15,7 @@ struct AssetHandle
     bool operator==(const AssetHandle&) const = default;
 };
 
-enum class AssetState : uint32_t { Loading, Ready, Failed };
+enum class AssetState : uint32_t { Loading, Ready, Failed, Unloaded };
 enum class AssetError : uint32_t { None, Source, Import };
 enum class AssetPhase : uint32_t { None, FileQueued, FilePending, ImportQueued, ImportPending };
 
@@ -23,6 +23,7 @@ struct AssetStatus
 {
     AssetID id = 0;
     uint64_t generation = 0;
+    ContentHash source = {};
     AssetState state = AssetState::Loading;
     AssetError error = AssetError::None;
     bool loading = false;
@@ -45,6 +46,7 @@ struct AssetSlot
     AssetError error = AssetError::None;
     AssetPhase phase = AssetPhase::FileQueued;
     bool reload_again = false;
+    bool changed = false;
     char message[160] = {};
 };
 
@@ -64,6 +66,8 @@ struct AssetFactory
     const char* root = nullptr;
     AssetSlot* slots = nullptr;
     AssetIndex* index = nullptr;
+    uint32_t* changes = nullptr;
+    uint32_t change_count = 0;
     uint32_t count = 0;
     uint32_t capacity = 0;
 };
@@ -81,6 +85,11 @@ AssetStatus asset_status(const AssetFactory& factory, AssetHandle<MeshAsset> han
 // Borrow until the next factory event/reload/destruction; persist the handle, not this pointer. Null until first successful load.
 const MeshAsset* asset_get(const AssetFactory& factory, AssetHandle<MeshAsset> handle);
 void asset_reload(AssetFactory& factory, AssetHandle<MeshAsset> handle);
+// Invalidates handles and drops the logical asset; immutable artifact storage remains cache-owned.
+void asset_unload(AssetFactory& factory, AssetHandle<MeshAsset> handle);
+// Main-loop change dispatch, coalesced per slot. Includes unloads; the returned handle can be invalid.
+// Drain after processing asset events, before preparing renderer resources.
+bool asset_next_change(AssetFactory& factory, AssetHandle<MeshAsset>& handle);
 
 // Main-loop plumbing: submit queued batches, and dispatch polled artifact events. False leaves an event for another consumer.
 // Backpressure keeps requests queued for a later tick; no blocking wait or private result draining.

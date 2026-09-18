@@ -8,7 +8,7 @@
 struct ImportedScene;
 struct MeshAsset;
 
-constexpr uint32_t gltf_import_version = 2;
+constexpr uint32_t gltf_import_version = 3;
 
 enum class ArtifactKind : uint32_t { ByteHistogram = 1, File = 2, ImportGLTF = 3 };
 enum class ArtifactState : uint32_t { Missing, Building, Ready, Failed };

@@ -15,13 +15,16 @@ struct GpuMesh
 {
     SDL_GPUBuffer* vertices = nullptr;
     SDL_GPUBuffer* indices = nullptr;
-    Arena storage = {};
-    Span<GpuMeshPrimitive> primitives = {};
+    size_t vertex_bytes = 0;
+    Span<GpuMeshPrimitive> primitives = {}; // owned allocation
     SDL_GPUIndexElementSize index_type = SDL_GPU_INDEXELEMENTSIZE_16BIT;
 };
 
-// Upload submits before subsequent draws. GPU resources are released through SDL's deferred release semantics.
-bool upload_gpu_mesh(SDL_GPUDevice* device, const MeshAsset& source, GpuMesh& mesh);
+// Creation requires an empty destination. Pack the same source into spans sized for vertex_bytes and source.indices.size.
+// Packing writes the current geometry ABI during upload preparation.
+// Release after recording/submitting all uses, before device destruction. SDL defers GPU release until queued uses finish.
+bool create_gpu_mesh(SDL_GPUDevice* device, const MeshAsset& source, GpuMesh& mesh);
 void destroy_gpu_mesh(SDL_GPUDevice* device, GpuMesh& mesh);
+bool pack_gpu_mesh(const MeshAsset& source, GpuMesh& mesh, uint8_t* vertices, uint8_t* indices);
 
 #endif

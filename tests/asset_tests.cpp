@@ -1,4 +1,5 @@
 #include <asset_factory.h>
+#include <render/render_asset_cache.h>
 #include <gltf_import.h>
 #include <path.h>
 #include <servers.h>
@@ -12,84 +13,7 @@
 static_assert(sizeof(AssetID) == 8 && sizeof(AssetHandle<MeshAsset>) == 8);
 static_assert(std::is_trivially_copyable_v<MeshAsset> && std::is_trivially_copyable_v<ImportedScene>);
 
-static void put_u32(uint8_t* output, uint32_t value)
-{
-    for (uint32_t i = 0; i < 4; ++i)
-        output[i] = uint8_t(value >> (i * 8));
-}
-
-static void put_float(uint8_t* output, float value)
-{
-    uint32_t bits;
-    SDL_memcpy(&bits, &value, sizeof(bits));
-    put_u32(output, bits);
-}
-
-static Span<uint8_t> fixture(Arena& arena, const char* name, uint32_t variant = 0, const char* from = nullptr, const char* to = nullptr)
-{
-    char path[1024];
-    SDL_snprintf(path, sizeof(path), "%s/%s", ORBIT_TEST_DATA, name);
-    size_t size = 0;
-    char* json = static_cast<char*>(SDL_LoadFile(path, &size));
-    if (!json)
-        return {};
-    const char* text = json;
-    if (from) {
-        const char* match = SDL_strstr(json, from);
-        if (!match) {
-            SDL_free(json);
-            return {};
-        }
-        size_t before = size_t(match - json), after = size - before - SDL_strlen(from);
-        size = before + SDL_strlen(to) + after;
-        char* changed = arena_allocate<char>(arena, size);
-        SDL_memcpy(changed, json, before);
-        SDL_memcpy(changed + before, to, SDL_strlen(to));
-        SDL_memcpy(changed + before + SDL_strlen(to), match + SDL_strlen(from), after);
-        text = changed;
-    }
-    size_t padded = (size + 3) / 4 * 4 + variant * 4;
-    uint32_t binary_size = SDL_strcmp(name, "tangent.json") == 0 ? 152 : (SDL_strcmp(name, "index32.json") == 0 ? 108 : 104);
-    size_t total = 12 + 8 + padded + 8 + binary_size;
-    uint8_t* bytes = arena_allocate<uint8_t>(arena, total);
-    put_u32(bytes, 0x46546c67);
-    put_u32(bytes + 4, 2);
-    put_u32(bytes + 8, uint32_t(total));
-    put_u32(bytes + 12, uint32_t(padded));
-    put_u32(bytes + 16, 0x4e4f534a);
-    SDL_memcpy(bytes + 20, text, size);
-    SDL_memset(bytes + 20 + size, ' ', padded - size);
-    SDL_free(json);
-    put_u32(bytes + 20 + padded, binary_size);
-    put_u32(bytes + 24 + padded, 0x004e4942);
-    uint8_t* bin = bytes + 28 + padded;
-    SDL_memset(bin, 0, binary_size);
-    put_float(bin + 12, float(variant + 1));
-    put_float(bin + 28, float(variant + 1));
-    for (uint32_t i = 0; i < 3; ++i) {
-        if (SDL_strcmp(name, "transform.json") == 0) {
-            put_float(bin + 36 + i * 12, 0.70710678118f);
-            put_float(bin + 40 + i * 12, 0.70710678118f);
-        } else {
-            put_float(bin + 44 + i * 12, 1);
-        }
-    }
-    put_float(bin + 80, 1);
-    put_float(bin + 92, 1);
-    bin[98] = 1;
-    bin[100] = 2;
-    if (binary_size == 152) {
-        for (uint32_t i = 0; i < 3; ++i) {
-            put_float(bin + 104 + i * 16, 1);
-            put_float(bin + 116 + i * 16, -1);
-        }
-    } else if (binary_size == 108) {
-        put_u32(bin + 96, 0);
-        put_u32(bin + 100, 1);
-        put_u32(bin + 104, 2);
-    }
-    return {bytes, total};
-}
+#include "mesh_fixture.h"
 
 static bool write_bytes(const char* path, Span<uint8_t> bytes)
 {
@@ -151,15 +75,15 @@ static bool test_import(const char* name)
     CHECK(attribute(mesh, 0, VertexSemantic::Position)[3] == 1 && attribute(mesh, 0, VertexSemantic::Position)[7] == 1);
     CHECK(reinterpret_cast<const uint16_t*>(mesh.indices.data)[0] == 0 && reinterpret_cast<const uint16_t*>(mesh.indices.data)[1] == 1);
     CHECK(reinterpret_cast<const uint16_t*>(mesh.indices.data)[2] == 2);
-    CHECK(mesh.bounds.min[0] == 0 && mesh.bounds.max[0] == 1 && mesh.bounds.max[1] == 1 && mesh.bounds.max[2] == 0);
-    CHECK(mesh.primitives.data[0].bounds.max[0] == 1 && mesh.primitives.data[0].bounds.max[1] == 1);
+    CHECK(mesh.bounds.lowerBound.x == 0 && mesh.bounds.upperBound.x == 1 && mesh.bounds.upperBound.y == 1 && mesh.bounds.upperBound.z == 0);
+    CHECK(mesh.primitives.data[0].bounds.upperBound.x == 1 && mesh.primitives.data[0].bounds.upperBound.y == 1);
     CHECK(!attribute(mesh, 0, VertexSemantic::Tangent));
     if (SDL_strcmp(name, "multiple.json") == 0) {
         CHECK(scene.materials.size == 2 && scene.nodes.size == 2);
         CHECK(scene.meshes.data[0].primitives.data[0].material == 1 && scene.meshes.data[0].primitives.data[1].material == 0);
         CHECK(mesh.primitives.size == 2 && mesh.indices.size == 12 && mesh.streams.size == 4);
         CHECK(mesh.primitives.data[1].first_index == 3 && mesh.primitives.data[1].index_count == 3);
-        CHECK(mesh.primitives.data[1].stream_count == 1 && mesh.primitives.data[1].bounds.max[1] == 1);
+        CHECK(mesh.primitives.data[1].stream_count == 1 && mesh.primitives.data[1].bounds.upperBound.y == 1);
         CHECK(!attribute(mesh, 1, VertexSemantic::Normal) && !attribute(mesh, 1, VertexSemantic::TexCoord0));
         CHECK(reinterpret_cast<const uint16_t*>(mesh.indices.data)[3] == 0);
         CHECK(scene.nodes.data[1].world[14] == 5);
@@ -304,7 +228,7 @@ static bool test_mesh_layouts()
     ImportedMesh large = {.primitives = {&primitive, 1}};
     CHECK(build_mesh_asset(output, large, mesh, error));
     destroy_arena(input);
-    CHECK(mesh.index_type == MeshIndexType::UInt32 && mesh.indices.size == 12 && mesh.bounds.max[0] == 9);
+    CHECK(mesh.index_type == MeshIndexType::UInt32 && mesh.indices.size == 12 && mesh.bounds.upperBound.x == 9);
     CHECK(reinterpret_cast<const uint32_t*>(mesh.indices.data)[2] == 65536);
     CHECK(attribute(mesh, 0, VertexSemantic::Position)[65536 * 3] == 9);
     destroy_arena(output);
@@ -494,6 +418,68 @@ static bool test_factory()
     return true;
 }
 
+static bool test_render_requests()
+{
+    Servers servers;
+    CHECK(create_servers(servers, {.thread_count = 2, .command_buffers = 2}));
+    AssetFactory factory;
+    CHECK(create_asset_factory(factory, servers.artifacts, ORBIT_TEST_DIRECTORY));
+    Arena fixtures;
+    CHECK(write_bytes(ORBIT_TEST_DIRECTORY "/render-request.glb", fixture(fixtures, "triangle.json")));
+    AssetHandle<MeshAsset> handle = asset_load(factory, "render-request.glb");
+    RenderAssetCache cache = {.assets = &factory};
+    CHECK(request_render_mesh(cache, asset_id("render-request.glb")) == handle);
+    CHECK(cache.entries[handle.index].state == GPUAssetState::Missing && !cache.pending_count);
+    TestEvents counts;
+    CHECK(pump(factory, counts));
+    render_assets_process_changes(cache);
+    CHECK(cache.pending_count == 1 && cache.entries[handle.index].state == GPUAssetState::PendingUpload);
+    CHECK(!render_mesh(cache, handle));
+    CHECK(request_render_mesh(cache, asset_id("render-request.glb")) == handle && cache.pending_count == 1);
+    asset_reload(factory, handle);
+    CHECK(pump(factory, counts));
+    render_assets_process_changes(cache);
+    CHECK(cache.pending_count == 1);
+    CHECK(write_bytes(ORBIT_TEST_DIRECTORY "/render-request.glb", fixture(fixtures, "triangle.json", 1)));
+    asset_reload(factory, handle);
+    CHECK(pump(factory, counts));
+    render_assets_process_changes(cache);
+    CHECK(cache.pending_count == 1 && cache.entries[handle.index].observed == asset_status(factory, handle).source);
+    asset_unload(factory, handle);
+    CHECK(!asset_valid(factory, handle) && !asset_valid(factory, asset_find(factory, asset_id("render-request.glb"))));
+    render_assets_process_changes(cache);
+    CHECK(cache.entries[handle.index].state == GPUAssetState::Missing && !render_mesh(cache, handle));
+    // Reusing the logical name gets a new handle; a still-queued old request must not upload a loading asset.
+    AssetHandle<MeshAsset> next = asset_load(factory, "render-request.glb");
+    CHECK(next.index == handle.index && next.generation != handle.generation);
+    CHECK(request_render_mesh(cache, asset_id("render-request.glb")) == next);
+    GPUTransferQueue transfers;
+    prepare_render_assets(cache, transfers);
+    CHECK(!transfers.count && !transfers.staging);
+    finish_render_assets(cache, transfers);
+    CHECK(!cache.pending_count);
+    CHECK(pump(factory, counts));
+    render_assets_process_changes(cache);
+    CHECK(cache.pending_count == 1 && !render_mesh(cache, next));
+    asset_reload(factory, next);
+    assets_tick(factory);
+    asset_unload(factory, next);
+    ArtifactEvent event;
+    CHECK(next_event(servers.artifacts, event));
+    CHECK(!assets_process_event(factory, event));
+    CHECK(!asset_valid(factory, next));
+    render_assets_process_changes(cache);
+    prepare_render_assets(cache, transfers);
+    finish_render_assets(cache, transfers);
+    CHECK(!cache.pending_count);
+    destroy_render_asset_cache(cache);
+    destroy_asset_factory(factory);
+    destroy_servers(servers);
+    destroy_arena(fixtures);
+    CHECK(SDL_RemovePath(ORBIT_TEST_DIRECTORY "/render-request.glb"));
+    return true;
+}
+
 static bool test_subassets()
 {
     Servers servers;
@@ -554,7 +540,7 @@ int main()
     if (!set_thread_context(&context))
         return 1;
     if (!test_paths() || !test_import("triangle.json") || !test_import("multiple.json") || !test_import("transform.json") ||
-        !test_bad_imports() || !test_encodings() || !test_mesh_layouts() || !test_factory() || !test_subassets())
+        !test_bad_imports() || !test_encodings() || !test_mesh_layouts() || !test_factory() || !test_render_requests() || !test_subassets())
         return 1;
     destroy_thread_context(context);
     SDL_Quit();

@@ -1,0 +1,5 @@
+add_executable(rendering_demo main.cpp)
+target_link_libraries(rendering_demo PRIVATE orbit_runtime)
+add_dependencies(rendering_demo orbit_render_shaders)
+set_target_properties(rendering_demo PROPERTIES CXX_EXTENSIONS NO RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>")
+configure_file(assets/ChronographWatch.glb "${CMAKE_BINARY_DIR}/bin/rendering_demo_assets/ChronographWatch.glb" COPYONLY)

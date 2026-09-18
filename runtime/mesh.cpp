@@ -50,14 +50,16 @@ bool build_mesh_asset(Arena& storage, const ImportedMesh& source, MeshAsset& mes
     uint8_t* vertices = static_cast<uint8_t*>(arena_allocate(storage, vertex_bytes, alignof(float)));
     uint8_t* indices = static_cast<uint8_t*>(arena_allocate(storage, index_bytes, alignof(uint32_t)));
     mesh = {.streams = {streams, stream_count}, .indices = {indices, index_bytes}, .primitives = {primitives, source.primitives.size},
-            .index_type = index_type, .bounds = {.min = {FLT_MAX, FLT_MAX, FLT_MAX}, .max = {-FLT_MAX, -FLT_MAX, -FLT_MAX}}};
+            .index_type = index_type, .bounds = {.lowerBound = {.x = FLT_MAX, .y = FLT_MAX, .z = FLT_MAX},
+                       .upperBound = {.x = -FLT_MAX, .y = -FLT_MAX, .z = -FLT_MAX}}};
     uint32_t stream = 0, first_index = 0;
     for (size_t i = 0; i < source.primitives.size; ++i) {
         const ImportedPrimitive& p = source.primitives.data[i];
         MeshPrimitive& primitive = primitives[i];
         primitive = {.first_index = first_index, .index_count = uint32_t(p.indices.size), .first_stream = stream,
                      .vertex_count = uint32_t(p.positions.size / 3),
-                     .bounds = {.min = {FLT_MAX, FLT_MAX, FLT_MAX}, .max = {-FLT_MAX, -FLT_MAX, -FLT_MAX}}};
+                     .bounds = {.lowerBound = {.x = FLT_MAX, .y = FLT_MAX, .z = FLT_MAX},
+                       .upperBound = {.x = -FLT_MAX, .y = -FLT_MAX, .z = -FLT_MAX}}};
         Span<float> values[] = {p.positions, p.normals, p.tangents, p.texcoords};
         const VertexSemantic semantics[] = {VertexSemantic::Position, VertexSemantic::Normal, VertexSemantic::Tangent, VertexSemantic::TexCoord0};
         const VertexFormat formats[] = {VertexFormat::Float3, VertexFormat::Float3, VertexFormat::Float4, VertexFormat::Float2};
@@ -72,16 +74,12 @@ bool build_mesh_asset(Arena& storage, const ImportedMesh& source, MeshAsset& mes
             ++stream;
         }
         primitive.stream_count = stream - primitive.first_stream;
-        for (size_t v = 0; v < p.positions.size; ++v) {
-            uint32_t axis = uint32_t(v % 3);
-            float value = p.positions.data[v];
-            if (value < primitive.bounds.min[axis]) primitive.bounds.min[axis] = value;
-            if (value > primitive.bounds.max[axis]) primitive.bounds.max[axis] = value;
+        for (size_t v = 0; v < p.positions.size; v += 3) {
+            b3Vec3 position = {.x = p.positions.data[v], .y = p.positions.data[v + 1], .z = p.positions.data[v + 2]};
+            primitive.bounds.lowerBound = b3Min(primitive.bounds.lowerBound, position);
+            primitive.bounds.upperBound = b3Max(primitive.bounds.upperBound, position);
         }
-        for (uint32_t axis = 0; axis < 3; ++axis) {
-            if (primitive.bounds.min[axis] < mesh.bounds.min[axis]) mesh.bounds.min[axis] = primitive.bounds.min[axis];
-            if (primitive.bounds.max[axis] > mesh.bounds.max[axis]) mesh.bounds.max[axis] = primitive.bounds.max[axis];
-        }
+        mesh.bounds = b3AABB_Union(mesh.bounds, primitive.bounds);
         for (size_t j = 0; j < p.indices.size; ++j) {
             uint32_t index = p.indices.data[j];
             if (index_type == MeshIndexType::UInt16)

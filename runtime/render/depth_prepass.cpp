@@ -1,15 +1,9 @@
 #include <render/depth_prepass.h>
 
-bool create_depth_prepass(SDL_GPUDevice* device, const char* shaders, DepthPrepass& pass)
+bool create_depth_prepass(SDL_GPUDevice* device, SDL_GPUShader* vertex, SDL_GPUShader* fragment, DepthPrepass& pass)
 {
-    pass.vertex = load_geometry_shader(device, shaders, "geometry.vert", SDL_GPU_SHADERSTAGE_VERTEX);
-    if (!pass.vertex)
-        return false;
-    pass.fragment = load_geometry_shader(device, shaders, "depth.frag", SDL_GPU_SHADERSTAGE_FRAGMENT);
-    if (!pass.fragment)
-        return false;
     SDL_GPUGraphicsPipelineCreateInfo info = {
-        .vertex_shader = pass.vertex, .fragment_shader = pass.fragment, .vertex_input_state = geometry_input,
+        .vertex_shader = vertex, .fragment_shader = fragment, .vertex_input_state = geometry_input,
         .primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
         .rasterizer_state = {.fill_mode = SDL_GPU_FILLMODE_FILL, .cull_mode = SDL_GPU_CULLMODE_NONE,
                             .front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE, .enable_depth_clip = true},
@@ -23,8 +17,6 @@ bool create_depth_prepass(SDL_GPUDevice* device, const char* shaders, DepthPrepa
 void destroy_depth_prepass(SDL_GPUDevice* device, DepthPrepass& pass)
 {
     if (pass.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, pass.pipeline);
-    if (pass.fragment) SDL_ReleaseGPUShader(device, pass.fragment);
-    if (pass.vertex) SDL_ReleaseGPUShader(device, pass.vertex);
     pass = {};
 }
 

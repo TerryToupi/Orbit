@@ -34,13 +34,17 @@ belong to Content; parsed scenes and CPU meshes belong to artifact-owned arenas 
 work pending is safe, provided the server caches still live. `asset_get` returns a borrow, valid through the current main-thread
 use until subsequent factory event processing/reload/destruction. No owning pointers or references between assets are introduced.
 
+`asset_unload` invalidates existing handles and drops the logical asset. Loading that name again retains its slot and ID but returns
+a new handle generation. In-flight results cannot republish an unloaded asset; immutable artifact storage remains until cache shutdown.
+`asset_next_change` drains coalesced publication/unload notifications for main-loop consumers such as the [render asset cache](rendering.md).
+
 `asset_reload` queues an explicit refresh. Ready data remains accessible during loading and after a failed replacement; status
 reports the last error separately. Successful replacement changes the current mesh and file generation, not the handle.
 Repeated reloads during a pending load coalesce to one subsequent refresh. Automatic file watching remains deferred.
 
 ## Pipeline and representation
 
-File commands produce immutable Content. `ImportGLTF` keys include source ContentHash, kind and version (currently 2). The existing
+File commands produce immutable Content. `ImportGLTF` keys include source ContentHash, kind and version (currently 3). The existing
 artifact owner lane suppresses duplicate successful computation, including identical files at different paths. Its result owns
 an `ImportedScene` and one separately built `MeshAsset` per imported mesh. Named selections share this computation and its immutable
 results. These are typed in-memory results, not serialized structs or a disk format.
@@ -75,8 +79,9 @@ The importer never calls cgltf's filesystem loading APIs.
 
 V1 accepts embedded-buffer GLB static triangle meshes, float positions/normals/tangents, float or normalized unsigned-byte/unsigned-short UV0,
 unsigned indices or implicit sequential indices, multiple primitives, and the default scene (first scene if no default is selected).
-With no scenes, root nodes are used. Required extensions, compressed/sparse geometry, skins, animation, morph targets and mesh GPU
-instancing fail explicitly. Cameras, lights, extra UVs, vertex colors and material/image shading data are ignored.
+With no scenes, root nodes are used. Required extensions, compressed/sparse geometry, skins, morph targets and mesh GPU instancing
+fail explicitly. Animation tracks are ignored; nodes retain their authored transforms. Cameras, lights, extra UVs, vertex colors
+and material/image shading data are ignored.
 External buffers and JSON `.gltf` are deferred until asynchronous dependency loading exists; no synchronous fallback is hidden here.
 
 There was no existing shared path normalizer or engine coordinate convention. `path.*` now provides lexical normalization outside
@@ -94,4 +99,5 @@ lifetime, bounded-queue backpressure and pending-import shutdown. Run both suite
 Slot metadata grows in coarse blocks; ID lookup is binary search. Pending-slot scanning and event matching are linear in registered
 slots for this first slice. Idle scans allocate nothing; loading commands batch into existing bounded queues and retry on later ticks
 when saturated. Imported and runtime geometry both remain resident for now; eviction and representation optimization await profiling.
-No GPU resources, compiler, binary format, packages, generic dependency graph or importer plugin system are implemented.
+GPU resources belong to the renderer integration; this CPU asset layer has no SDL GPU dependency. Compiler, binary format, packages,
+generic dependency graph and importer plugin systems remain deferred.

@@ -13,12 +13,15 @@ set(SOURCES
     mesh.h mesh.cpp
     gltf_import.h gltf_import.cpp
     asset_factory.h asset_factory.cpp
-    scene.h
+    render/graphics_math.h render/graphics_math.cpp
     render/gpu_mesh.h render/gpu_mesh.cpp
+    render/gpu_transfer_queue.h render/gpu_transfer_queue.cpp
+    render/render_asset_cache.h render/render_asset_cache.cpp
     render/geometry_pass.h render/geometry_pass.cpp
     render/depth_prepass.h render/depth_prepass.cpp
     render/gbuffer_pass.h render/gbuffer_pass.cpp
     render/rendering_compositor.h render/rendering_compositor.cpp
+    render/rendering_shaders.cpp
 )
 
 find_package(SDL REQUIRED)
@@ -31,7 +34,7 @@ target_include_directories(orbit_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(orbit_runtime SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../vendor/cgltf)
 target_compile_features(orbit_runtime PUBLIC cxx_std_20)
 target_compile_definitions(orbit_runtime PUBLIC ENABLE_STATISTICS=1 ENABLE_UNMAP=1)
-target_link_libraries(orbit_runtime PUBLIC SDL3::SDL3)
+target_link_libraries(orbit_runtime PUBLIC SDL3::SDL3 box3d)
 set_target_properties(orbit_runtime PROPERTIES CXX_EXTENSIONS NO C_STANDARD 11 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX runtime FILES ${SOURCES})
 

@@ -4,7 +4,8 @@ Yet another Game Engine!
 The runtime entry point is `runtime/program.cpp`. See [asynchronous servers](docs/servers.md) for file streaming, immutable content,
 artifact computation, command ownership and shutdown.
 The [CPU static-mesh asset pipeline](docs/assets.md) adds asynchronous GLB import, stable mesh handles and explicit hot reload without GPU resources.
-The [rendering compositor](docs/rendering.md) consumes an abstract Scene and owns SDL GPU uploads, depth/GBuffer passes, resizing, and presentation.
+The [rendering compositor](docs/rendering.md) consumes persistent GPU meshes and records depth/GBuffer passes and presentation.
+The [rendering demo](examples/rendering_demo/README.md) exercises asset loading, batched uploads, hot reload and resizing end to end.
 
 ## Runtime memory
 

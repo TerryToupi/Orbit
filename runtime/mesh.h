@@ -3,14 +3,9 @@
 
 #include <arena.h>
 #include <span.h>
+#include <box3d/math_functions.h>
 
-// Right-handed, +Y up, +Z model front; column vectors and column-major matrices. Front faces are counterclockwise.
-struct MeshBounds
-{
-    float min[3] = {};
-    float max[3] = {};
-};
-
+// Meters, right-handed, +Y up, +Z model front. Front faces are counterclockwise.
 // Tightly packed float components; absent attributes have empty spans. Indices are primitive-local.
 struct ImportedPrimitive
 {
@@ -67,7 +62,7 @@ struct MeshPrimitive
     uint32_t first_stream = 0;
     uint32_t stream_count = 0;
     uint32_t vertex_count = 0;
-    MeshBounds bounds = {};
+    b3AABB bounds = {};
 };
 
 // Triangle geometry in mesh-local space. Each primitive binds its stream range; indices address those streams from zero.
@@ -78,7 +73,7 @@ struct MeshAsset
     Span<uint8_t> indices = {};
     Span<MeshPrimitive> primitives = {};
     MeshIndexType index_type = MeshIndexType::UInt16;
-    MeshBounds bounds = {};
+    b3AABB bounds = {};
 };
 
 // Copies into independent arena-owned storage. Node transforms and source material assignments are not baked into geometry.

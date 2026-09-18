@@ -1,7 +1,11 @@
-cbuffer Geometry : register(b0, space1)
+cbuffer Camera : register(b0, space1)
+{
+    column_major float4x4 view_projection;
+};
+
+cbuffer Object : register(b1, space1)
 {
     column_major float4x4 world;
-    column_major float4x4 view_projection;
 };
 
 struct Output

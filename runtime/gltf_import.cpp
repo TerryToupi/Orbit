@@ -24,8 +24,8 @@ static bool validate_source(cgltf_data& data, Arena& scratch, char (&error)[160]
         SDL_strlcpy(error, "Only self-contained GLB buffers are supported; external resources require asynchronous dependency loading", sizeof(error));
         return false;
     }
-    if (data.skins_count || data.animations_count || data.extensions_required_count) {
-        SDL_strlcpy(error, "Skins, animations and required extensions are not supported", sizeof(error));
+    if (data.skins_count || data.extensions_required_count) {
+        SDL_strlcpy(error, "Skins and required extensions are not supported", sizeof(error));
         return false;
     }
     if (!data.bin || data.buffers[0].size > data.bin_size) {
