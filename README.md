@@ -5,6 +5,8 @@ The runtime entry point is `runtime/program.cpp`. See [asynchronous servers](doc
 artifact computation, command ownership and shutdown.
 The [CPU static-mesh asset pipeline](docs/assets.md) adds asynchronous GLB import, stable mesh handles and explicit hot reload without GPU resources.
 The [rendering compositor](docs/rendering.md) consumes persistent GPU meshes and records depth/GBuffer passes and presentation.
+The [Scene layer](docs/scene.md) owns entities, components, SceneSystems and independent Box3D worlds.
+[Box3D execution](docs/physics.md) uses the persistent async lanes directly, with explicit physics phase barriers.
 The [rendering demo](examples/rendering_demo/README.md) exercises asset loading, batched uploads, hot reload and resizing end to end.
 
 ## Runtime memory
@@ -36,3 +38,5 @@ End scopes in reverse order per arena and destroy containers before reclaiming t
 on its owner thread before exit or SDL shutdown; it clears the current binding and frees scratch blocks.
 
 Configure with `-DORBIT_BUILD_TESTS=ON`, build `runtime_tests`, and run `ctest --test-dir <build-directory>` to test the foundation.
+
+The main thread stays separate from one persistent async cohort with collective ticks; see [multicore execution](docs/multithreading.md).
